@@ -10,7 +10,7 @@ use Psr\Http\Message\ServerRequestInterface;
 
 final class Module extends WebModule
 {
-    public function before(ServerRequestInterface $request)
+    public function before(ServerRequestInterface $request): bool|ResponseInterface
     {
         return true;
     }

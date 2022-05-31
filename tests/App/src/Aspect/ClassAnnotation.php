@@ -17,7 +17,8 @@ class ClassAnnotation implements AnnotationInterface
     /**
      * @param ReflectionClass $reflector
      */
-    public function process(object $instance, Reflector $reflector, array $arguments = []): void
+    public function process(object $instance, Reflector $reflector, array $arguments = []): mixed
     {
+        return $this;
     }
 }

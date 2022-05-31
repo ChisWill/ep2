@@ -9,7 +9,6 @@ use Ep\Console\Command;
 use Ep\Console\Service;
 use Ep\Contract\ConsoleRequestInterface;
 use Ep\Contract\ConsoleResponseInterface;
-use Ep\Tests\App\Aspect\ConsoleAspect;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputOption;
@@ -28,7 +27,7 @@ class InitCommand extends Command
             ->addOption('type', 't', InputOption::VALUE_NONE);
     }
 
-    public function before(ConsoleRequestInterface $request, ConsoleResponseInterface $response)
+    public function before(ConsoleRequestInterface $request, ConsoleResponseInterface $response): bool|ConsoleResponseInterface
     {
         $this->getService()->writeln('command before');
         return true;

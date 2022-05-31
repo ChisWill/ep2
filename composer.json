@@ -64,8 +64,14 @@
         }
     },
     "scripts": {
-        "post-package-install": "@php ./bin/ep generate/key",
-        "post-update-cmd": "@php ./bin/ep scan --ns=Ep/Tests/Support"
+        "post-install-cmd": [
+            "@php -r \"file_exists('./tests/App/.env') || copy('./tests/App/.env.example', './tests/App/.env');\"",
+            "@php ./bin/ep generate/key"
+        ],
+        "post-update-cmd": [
+            "@php ./bin/ep scan --ns=Ep/Tests/Support"
+        ],
+        "post-autoload-dump": []
     },
     "bin": [
         "bin/ep"

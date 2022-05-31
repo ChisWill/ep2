@@ -24,7 +24,7 @@ class CurlCommand extends Command
 
         $r = [];
         for ($i = 0; $i < 10; $i++) {
-            $r[] = Curl::getMulti($url, '', [], 40);
+            $r[] = Curl::getMulti($url, [], 40);
         }
 
         t($r);
@@ -39,7 +39,7 @@ class CurlCommand extends Command
 
         $count = 0;
         for ($i = 0; $i < 5; $i++) {
-            $ret = Curl::getMulti($url, '', [], 100);
+            $ret = Curl::getMulti($url, [], 100);
             foreach ($ret as $row) {
                 if (strpos($row, 'true') !== false) {
                     $count++;

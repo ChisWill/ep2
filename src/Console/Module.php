@@ -15,10 +15,7 @@ abstract class Module implements ModuleInterface
 {
     use FilterTrait;
 
-    /**
-     * @return true|ConsoleResponseInterface
-     */
-    public function before(ConsoleRequestInterface $request, ConsoleResponseInterface $response)
+    public function before(ConsoleRequestInterface $request, ConsoleResponseInterface $response): bool|ConsoleResponseInterface
     {
         return true;
     }
