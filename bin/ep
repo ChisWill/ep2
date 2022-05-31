@@ -1,0 +1,43 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+use Ep\Console\Application;
+use Ep\Console\Input;
+
+(static function (): void {
+    $cwd = getcwd();
+
+    if (file_exists($cwd . '/ep.json')) {
+        $options = json_decode(file_get_contents($cwd . '/ep.json'), true);
+    } else {
+        fwrite(STDERR, "Could not find a ep.json file in {$cwd}" . PHP_EOL);
+        exit(1);
+    }
+
+    require($options['bootstrap'] ?? './vendor/autoload.php');
+    unset($options['bootstrap']);
+
+    $container = Ep::create(realpath($options['rootPath'] ?? './'));
+    unset($options['rootPath']);
+
+    $options['common'] ??= [];
+    $options['common']['userRootNamespace'] = Ep::getConfig()->switch([
+        'rootNamespace' => 'Ep',
+        'commandSuffix' => 'Command',
+        'actionSuffix' => 'Action',
+        'defaultAction' => 'index',
+    ])['rootNamespace'];
+
+    $input = $container->get(Input::class);
+    foreach ($options as $name => $value) {
+        $input->setOption($name, $value);
+    }
+
+    $exitCode = $container
+        ->get(Application::class)
+        ->run($input);
+
+    exit($exitCode);
+})();

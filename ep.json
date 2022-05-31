@@ -1,0 +1,23 @@
+{
+    "bootstrap": "vendor/autoload.php",
+    "rootPath": "tests/App",
+    "common": {
+        "db": null
+    },
+    "apps": {},
+    "generate": {
+        "db": "sqlite",
+        "model.path": "Model",
+        "model.prefix": null
+    },
+    "migrate": {
+        "db": "sqlite",
+        "path": "Migration"
+    },
+    "serve": {
+        "address": "localhost",
+        "port": "8080",
+        "docroot": "tests/App/public",
+        "router": "tests/App/public/index.php"
+    }
+}
