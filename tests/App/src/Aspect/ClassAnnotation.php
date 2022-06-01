@@ -4,15 +4,13 @@ declare(strict_types=1);
 
 namespace Ep\Tests\App\Aspect;
 
-use Ep\Contract\AnnotationInterface;
+use Attribute;
+use Ep\Contract\Attribute\ProcessInterface;
 use ReflectionClass;
 use Reflector;
 
-/**
- * @Annotation
- * @Target("CLASS")
- */
-class ClassAnnotation implements AnnotationInterface
+#[Attribute(Attribute::TARGET_CLASS)]
+class ClassAnnotation implements ProcessInterface
 {
     /**
      * @param ReflectionClass $reflector

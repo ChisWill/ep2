@@ -14,9 +14,6 @@ use Ep\Contract\ConsoleFactoryInterface;
 use Ep\Contract\InjectorInterface;
 use Ep\Web\Application;
 use Ep\Web\NotFoundHandler;
-use Doctrine\Common\Annotations\AnnotationReader;
-use Doctrine\Common\Annotations\PsrCachedReader;
-use Doctrine\Common\Annotations\Reader;
 use HttpSoft\Message\ResponseFactory;
 use HttpSoft\Message\ServerRequestFactory;
 use HttpSoft\Message\StreamFactory;
@@ -75,8 +72,6 @@ return [
         '@vendor' => $config->vendorPath,
         '@ep' => dirname(__DIR__)
     ] + $config->aliases),
-    // Annotation
-    Reader::class => static fn (CacheItemPoolInterface $cache): Reader => $config->debug ? new AnnotationReader() : new PsrCachedReader(new AnnotationReader(), $cache, false),
     // Web
     Application::class => [
         '__construct()' => [

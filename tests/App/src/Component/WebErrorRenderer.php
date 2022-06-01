@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Ep\Tests\App\Component;
 
-use Ep\Annotation\Inject;
+use Ep\Attribute\Inject;
 use Ep\Contract\ContextTrait;
 use Ep\Contract\WebErrorRendererInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -17,9 +17,7 @@ class WebErrorRenderer implements WebErrorRendererInterface
 
     public string $id = 'demo';
 
-    /**
-     * @Inject
-     */
+    #[Inject]
     private LoggerInterface $log;
 
     public function render(Throwable $t, ServerRequestInterface $request): string

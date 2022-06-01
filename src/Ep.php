@@ -10,7 +10,6 @@ use Ep\Contract\EnvInterface;
 use Ep\Contract\InjectorInterface;
 use Ep\Kit\Annotate;
 use Ep\Kit\Util;
-use Doctrine\Common\Annotations\AnnotationRegistry;
 use Yiisoft\Db\Connection\Connection;
 use Yiisoft\Di\Container as YiiContainer;
 use Yiisoft\Di\ContainerConfig;
@@ -49,8 +48,6 @@ final class Ep
 
         self::$container = (new YiiContainer(self::createContainerConfig($definitions)))->get(ContainerInterface::class);
 
-        AnnotationRegistry::registerLoader('class_exists');
-
         if (!self::isSelf()) {
             self::bootstrap();
         }
@@ -67,14 +64,14 @@ final class Ep
 
     private static function bootstrap(): void
     {
-        foreach (self::getCache()->get(Constant::CACHE_ANNOTATION_CONFIGURE_DATA) ?: [] as $class => $data) {
-            $instance = self::$container->get(call_user_func([$class, 'handler']));
-            if ($instance instanceof BootstrapInterface) {
-                $instance->bootstrap($data);
-            } else {
-                throw new LogicException(sprintf('The class %s is not implements %s.', get_class($instance), BootstrapInterface::class));
-            }
-        }
+        // foreach (self::getCache()->get(Constant::CACHE_ANNOTATION_CONFIGURE_DATA) ?: [] as $class => $data) {
+        //     $instance = self::$container->get(call_user_func([$class, 'handler']));
+        //     if ($instance instanceof BootstrapInterface) {
+        //         $instance->bootstrap($data);
+        //     } else {
+        //         throw new LogicException(sprintf('The class %s is not implements %s.', get_class($instance), BootstrapInterface::class));
+        //     }
+        // }
     }
 
     public static function getEnv(): Env

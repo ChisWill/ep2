@@ -5,54 +5,59 @@ declare(strict_types=1);
 namespace Ep\Tests\App\Controller;
 
 use Ep;
+use Ep\Attribute\Inject;
+use Ep\Attribute\Route;
+use Ep\Tests\App\Annotation\MethodAttribute;
+use Ep\Tests\App\Annotation\TestAspect1;
+use Ep\Tests\App\Annotation\TestAspect2;
 use Ep\Tests\App\Component\Controller;
+use Ep\Tests\App\Objects\Human\Child;
 use Ep\Tests\App\Service\TestService;
 use Psr\Http\Message\ServerRequestInterface;
-use Ep\Annotation\Inject;
-use Ep\Annotation\Route;
-use Ep\Contract\InjectorInterface;
-use Ep\Tests\App\Aspect\ClassAnnotation;
-use Ep\Tests\App\Service\DemoService;
+use ReflectionMethod;
 use Yiisoft\Db\Connection\Connection;
 
-/**
- * @ClassAnnotation
- * @Route(value="t")
- */
+#[Route('t', method: 'GET')]
 class TestController extends Controller
 {
-    /**
-     * @Inject(name="mary")
-     */
-    private TestService $service;
-    /**
-     * @Inject
-     */
-    private DemoService $demoService;
-
-    /**
-     * @Inject
-     */
-    private InjectorInterface $injector;
-
     private Connection $db;
 
-    public function __construct()
-    {
+    public function __construct(
+        private TestService $testService
+    ) {
         $this->setMiddlewares([]);
 
         $this->db = Ep::getDb('sqlite');
     }
 
-    /**
-     * @Route("index", {"GET","POST"})
-     */
     public function indexAction(ServerRequestInterface $serverRequest)
     {
-        $view = $this->getView()->withLayout('test');
+        $this->testService->index();
+    }
 
-        $message = 'hi';
+    public function viewAction()
+    {
+        $message = 'Title';
 
-        return $this->string($view->render('/index/index', compact('message')));
+        return $this->render('/index/index', compact('message'));
+    }
+
+    #[Inject(name: 'lala')]
+    private Child $child;
+
+    #[MethodAttribute('name', age: 10, params: ['key' => 'value'])]
+    public function attributeAction(Child $child)
+    {
+        tt($this->child->do(), $child->do());
+
+        $method = new ReflectionMethod($this, 'attributeAction');
+        foreach ($method->getAttributes(MethodAttribute::class) as $v) {
+            tt($v->newInstance());
+        }
+    }
+
+    #[TestAspect1(name: 'first'), TestAspect2(name: 'second')]
+    public function aspectAction()
+    {
     }
 }

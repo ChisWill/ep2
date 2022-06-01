@@ -4,66 +4,51 @@ declare(strict_types=1);
 
 namespace Ep\Kit;
 
-use Ep\Annotation\Aspect;
-use Ep\Annotation\Configure;
-use Ep\Base\Config;
 use Ep\Base\Constant;
-use Ep\Contract\AnnotationInterface;
-use Doctrine\Common\Annotations\Annotation\Target;
-use Doctrine\Common\Annotations\Reader;
+use Ep\Contract\Attribute\AspectInterface;
+use Ep\Contract\Attribute\ConfigureInterface;
+use Ep\Contract\Attribute\ProcessInterface;
+use Yiisoft\Arrays\ArrayHelper;
 use Yiisoft\Injector\Injector;
 use Psr\Container\ContainerInterface;
 use Psr\SimpleCache\CacheInterface;
+use Attribute;
+use Ep\Contract\HandlerInterface;
+use ReflectionAttribute;
 use ReflectionClass;
 use ReflectionFunction;
+use ReflectionProperty;
 
 final class Annotate
 {
     private Injector $injector;
-    private ?array $cacheData = null;
 
     public function __construct(
-        ContainerInterface $container,
-        Config $config,
-        private Reader $reader,
+        private ContainerInterface $container,
         private CacheInterface $cache
     ) {
         $this->injector = new Injector($container);
-        if (!$config->debug) {
-            $this->cacheData = $cache->get(Constant::CACHE_ANNOTATION_INJECT_DATA) ?: [];
-        }
     }
 
-    public function class(object $instance): ?ReflectionClass
+    public function class(object $instance): ReflectionClass
     {
-        $reflectionClass = null;
-        if ($this->cacheData === null) {
-            $exists = true;
-        } else {
-            $exists = isset($this->cacheData[get_class($instance)][Target::TARGET_CLASS]);
-        }
-
-        if ($exists) {
-            $reflectionClass = new ReflectionClass($instance);
-            $annotations = $this->reader->getClassAnnotations($reflectionClass);
-            foreach ($annotations as $annotation) {
-                if ($annotation instanceof AnnotationInterface) {
-                    $annotation->process($instance, $reflectionClass);
-                }
+        $reflectionClass = new ReflectionClass($instance);
+        foreach ($reflectionClass->getAttributes() as $reflectionAttribute) {
+            $attribute = $reflectionAttribute->newInstance();
+            if ($attribute instanceof ProcessInterface) {
+                $attribute->process($instance, $reflectionClass);
             }
         }
-
         return $reflectionClass;
     }
 
     public function property(object $instance, array $arguments = []): void
     {
-        $reflectionClass = $this->class($instance) ?? new ReflectionClass($instance);
-
-        foreach ($this->getProperties($reflectionClass) as $property) {
-            foreach ($this->reader->getPropertyAnnotations($property) as $annotation) {
-                if ($annotation instanceof AnnotationInterface) {
-                    $annotation->process($instance, $property, $arguments);
+        foreach ($this->getProperties($this->class($instance)) as $reflectionProperty) {
+            foreach ($reflectionProperty->getAttributes() as $reflectionAttribute) {
+                $attribute = $reflectionAttribute->newInstance();
+                if ($attribute instanceof ProcessInterface) {
+                    $attribute->process($instance, $reflectionProperty, $arguments);
                 }
             }
         }
@@ -71,52 +56,41 @@ final class Annotate
 
     public function method(object $instance, string $method, array $arguments = []): mixed
     {
-        if ($this->cacheData === null) {
-            $reflectionMethod = (new ReflectionClass($instance))->getMethod($method);
-        } else {
-            if (isset($this->cacheData[get_class($instance)][Target::TARGET_METHOD][$method])) {
-                $reflectionMethod = (new ReflectionClass($instance))->getMethod($method);
-            }
-        }
+        $callback = fn (): mixed => $this->injector->invoke([$instance, $method], $arguments);
 
-        $callback = fn () => $this->injector->invoke([$instance, $method], $arguments);
-        if (isset($reflectionMethod)) {
-            $annotations = $this->reader->getMethodAnnotations($reflectionMethod);
-            foreach ($annotations as $annotation) {
-                if ($annotation instanceof Aspect) {
-                    return $annotation->process($instance, new ReflectionFunction($callback), $arguments);
-                } elseif ($annotation instanceof AnnotationInterface) {
-                    $annotation->process($instance, $reflectionMethod, $arguments);
-                }
+        $reflectionMethod = (new ReflectionClass($instance))->getMethod($method);
+        $aspects = [];
+        foreach ($reflectionMethod->getAttributes() as $reflectionAttribute) {
+            $attribute = $reflectionAttribute->newInstance();
+            if ($attribute instanceof AspectInterface) {
+                $aspects[] = $attribute;
             }
         }
-        return $callback();
+        if ($aspects) {
+            return $this->wrapHandler($aspects, $callback)->handle();
+        } else {
+            return $callback();
+        }
     }
 
     public function cache(array $classList, callable $callback = null): void
     {
-        $injectData = $configureData = [];
+        $configureData = [];
 
-        $setData = static function (array $annotations, string $class, string $name, int $type) use (&$injectData, &$configureData): void {
-            foreach ($annotations as $annotation) {
-                if ($annotation instanceof Configure) {
+        $classList = ['Ep\Tests\App\Controller\TestController'];
+
+        $setData = static function (array $attributes, string $class, int $type, string $name = null) use (&$configureData): void {
+            foreach ($attributes as $attribute) {
+                /** @var ReflectionAttribute $attribute */
+                $instance = $attribute->newInstance();
+                if ($instance instanceof ConfigureInterface) {
                     switch ($type) {
-                        case Target::TARGET_CLASS:
-                            $configureData[get_class($annotation)][$class][$type] = $annotation->getValues();
+                        case Attribute::TARGET_CLASS:
+                            $configureData[get_class($attribute)][$class][$type] = $instance->getValues();
                             break;
-                        case Target::TARGET_PROPERTY:
-                        case Target::TARGET_METHOD:
-                            $configureData[get_class($annotation)][$class][$type][] = array_merge($annotation->getValues(), ['target' => $name]);
-                            break;
-                    }
-                } else {
-                    switch ($type) {
-                        case Target::TARGET_CLASS:
-                            $injectData[$class][$type] = true;
-                            break;
-                        case Target::TARGET_PROPERTY:
-                        case Target::TARGET_METHOD:
-                            $injectData[$class][$type][$name] = true;
+                        case Attribute::TARGET_PROPERTY:
+                        case Attribute::TARGET_METHOD:
+                            $configureData[get_class($attribute)][$class][$type][] = array_merge($instance->getValues(), ['target' => $name]);
                             break;
                     }
                 }
@@ -130,14 +104,14 @@ final class Annotate
 
             $reflectionClass = new ReflectionClass($class);
 
-            $setData($this->reader->getClassAnnotations($reflectionClass), $class, $class, Target::TARGET_CLASS);
+            $setData($reflectionClass->getAttributes(), $class, Attribute::TARGET_CLASS);
 
             foreach ($reflectionClass->getProperties() as $property) {
-                $setData($this->reader->getPropertyAnnotations($property), $class, $property->getName(), Target::TARGET_PROPERTY);
+                $setData($property->getAttributes(), $class, Attribute::TARGET_PROPERTY, $property->getName());
             }
 
             foreach ($reflectionClass->getMethods() as $method) {
-                $setData($this->reader->getMethodAnnotations($method), $class, $method->getName(), Target::TARGET_METHOD);
+                $setData($method->getAttributes(), $class, Attribute::TARGET_METHOD, $method->getName());
             }
 
             if ($callback !== null) {
@@ -145,23 +119,80 @@ final class Annotate
             }
         }
 
-        $this->cache->set(Constant::CACHE_ANNOTATION_INJECT_DATA, $injectData, 86400 * 365 * 100);
         $this->cache->set(Constant::CACHE_ANNOTATION_CONFIGURE_DATA, $configureData, 86400 * 365 * 100);
     }
 
+    /**
+     * @return ReflectionProperty[]
+     */
     private function getProperties(ReflectionClass $reflectionClass): array
     {
         $parentClass = $reflectionClass->getParentClass();
         $properties = $parentClass === false ? [] : $this->getProperties($parentClass);
 
-        if ($this->cacheData === null) {
-            $properties = array_merge($properties, $reflectionClass->getProperties());
-        } else {
-            foreach ($this->cacheData[$reflectionClass->getName()][Target::TARGET_PROPERTY] ?? [] as $name => $v) {
-                $properties[] = $reflectionClass->getProperty($name);
-            }
-        }
+        return ArrayHelper::index($reflectionClass->getProperties(), static fn (ReflectionProperty $property): string => $property->getName()) + $properties;
+    }
 
-        return $properties;
+    /**
+     * @param AspectInterface[] $aspects
+     */
+    private function wrapHandler(array $aspects, callable $callback): HandlerInterface
+    {
+        $handler = $this->wrapClosure($callback);
+        foreach ($aspects as $aspect) {
+            $handler = $this->wrapAspect($this->injector->make($aspect));
+        }
+        return $handler;
+    }
+
+    public function process(object $instance, Reflector $reflector, array $arguments = []): mixed
+    {
+        krsort($this->class);
+        $handler = $this->wrapClosure($reflector->getClosure());
+        foreach ($this->class as $class => $args) {
+            $handler = $this->wrapAspect(Ep::getInjector()->make($class, array_merge($arguments, $args)), $handler);
+        }
+        return $handler->handle();
+    }
+
+    private function wrapClosure(Closure $closure): HandlerInterface
+    {
+        return new class($closure) implements HandlerInterface
+        {
+            public function __construct(private Closure $closure)
+            {
+                $this->closure = $closure;
+            }
+
+            /**
+             * {@inheritDoc}
+             */
+            public function handle(): mixed
+            {
+                return call_user_func($this->closure);
+            }
+        };
+    }
+
+    private function wrapAspect(AspectInterface $aspect, HandlerInterface $handler): HandlerInterface
+    {
+        return new class($aspect, $handler) implements HandlerInterface
+        {
+            public function __construct(
+                private AspectInterface $aspect,
+                private HandlerInterface $handler
+            ) {
+                $this->aspect = $aspect;
+                $this->handler = $handler;
+            }
+
+            /**
+             * {@inheritDoc}
+             */
+            public function handle(): mixed
+            {
+                return $this->aspect->process($this->handler);
+            }
+        };
     }
 }

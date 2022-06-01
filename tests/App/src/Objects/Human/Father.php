@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Ep\Tests\App\Objects\Human;
 
-use Ep\Annotation\Inject;
+use Ep\Attribute\Inject;
 use Ep\Tests\App\Objects\Weapon\Sword;
 
 class Father extends GrandPa
 {
-    /**
-     * @Inject
-     */
+    #[Inject]
     private Sword $sword;
+
+    private string $name = 'Father';
 
     private function getWeapon(): string
     {
@@ -21,6 +21,6 @@ class Father extends GrandPa
 
     public function fight(): string
     {
-        return $this->shoot() . $this->getWeapon() . '<br>';
+        return $this->name . '-' . $this->getWeapon() . '<br>' . $this->shoot();
     }
 }

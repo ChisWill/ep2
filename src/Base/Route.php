@@ -7,11 +7,11 @@ namespace Ep\Base;
 use Ep\Contract\BootstrapInterface;
 use Ep\Exception\NotFoundException;
 use Ep\Helper\Str;
-use Doctrine\Common\Annotations\Annotation\Target;
 use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
 use Yiisoft\Aliases\Aliases;
 use Yiisoft\Http\Method;
+use Attribute;
 use Closure;
 
 use function FastRoute\cachedDispatcher;
@@ -29,19 +29,19 @@ final class Route implements BootstrapInterface
     public function bootstrap(array $data = []): void
     {
         foreach ($data as $class => $value) {
-            if (!isset($value[Target::TARGET_METHOD])) {
+            if (!isset($value[Attribute::TARGET_METHOD])) {
                 continue;
             }
 
-            if (isset($value[Target::TARGET_CLASS])) {
-                $path = rtrim($value[Target::TARGET_CLASS]['value'], '/') . '/';
-                $method = (array) ($value[Target::TARGET_CLASS]['method'] ?? Method::GET);
+            if (isset($value[Attribute::TARGET_CLASS])) {
+                $path = rtrim($value[Attribute::TARGET_CLASS]['value'], '/') . '/';
+                $method = (array) ($value[Attribute::TARGET_CLASS]['method'] ?? Method::GET);
             } else {
                 $path = '/';
                 $method = [Method::GET];
             }
 
-            foreach ($value[Target::TARGET_METHOD] as $item) {
+            foreach ($value[Attribute::TARGET_METHOD] as $item) {
                 $this->annotationRules['/' . trim($path . trim($item['value'], '/'), '/')] = [
                     (array) ($item['method'] ?? $method),
                     [$class, Str::rtrim($item['target'], $this->config->actionSuffix)]

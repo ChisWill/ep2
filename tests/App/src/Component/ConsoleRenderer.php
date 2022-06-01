@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Ep\Tests\App\Component;
 
-use Ep\Annotation\Inject;
+use Ep\Attribute\Inject;
 use Ep\Contract\ConsoleErrorRendererInterface;
 use Throwable;
 use Ep\Contract\ConsoleRequestInterface;
@@ -12,9 +12,7 @@ use Psr\Log\LoggerInterface;
 
 class ConsoleRenderer implements ConsoleErrorRendererInterface
 {
-    /**
-     * @Inject
-     */
+    #[Inject]
     private LoggerInterface $log;
 
     public function render(Throwable $t, ConsoleRequestInterface $request): string

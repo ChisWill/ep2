@@ -6,7 +6,6 @@ namespace Ep\Tests\App\Controller;
 
 use DateInterval;
 use Ep;
-use Ep\Annotation\Route;
 use Ep\Auth\AuthRepository;
 use Ep\Auth\Method\HttpSession;
 use Ep\Db\Query;
@@ -41,17 +40,11 @@ class DemoController extends Controller
         $this->db = Ep::getDb('sqlite');
     }
 
-    /**
-     * @Route("index", method="GET")
-     */
     public function indexAction()
     {
         return $this->string('<h1>hello world</h1>');
     }
 
-    /**
-     * @Route("json")
-     */
     public function jsonAction(ServerRequestInterface $request)
     {
         if ($request->getMethod() === Method::POST) {

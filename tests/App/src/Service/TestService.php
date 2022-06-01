@@ -4,15 +4,13 @@ declare(strict_types=1);
 
 namespace Ep\Tests\App\Service;
 
-use Ep\Annotation\Inject;
+use Ep\Attribute\Inject;
 use Ep\Web\Service;
 use Psr\Http\Message\ResponseInterface;
 
 final class TestService
 {
-    /**
-     * @Inject
-     */
+    #[Inject]
     private Service $service;
 
     public string $name = 'empty';
@@ -20,6 +18,10 @@ final class TestService
     protected int $age = 18;
 
     private bool $is = false;
+
+    public function index(): void
+    {
+    }
 
     public function getRandom(): ResponseInterface
     {
