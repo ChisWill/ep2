@@ -15,7 +15,7 @@ final class Env implements EnvInterface
 
     public function __construct(private string $rootPath)
     {
-        $this->repository = $this->getRepository();
+        $this->repository = $this->createRepository();
 
         Dotenv::create($this->repository, $rootPath)->safeLoad();
     }
@@ -62,7 +62,7 @@ final class Env implements EnvInterface
         }
     }
 
-    private function getRepository(): RepositoryInterface
+    private function createRepository(): RepositoryInterface
     {
         return RepositoryBuilder::createWithDefaultAdapters()
             ->immutable()

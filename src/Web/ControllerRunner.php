@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Ep\Web;
 
+use Ep\Base\Config;
 use Ep\Base\ControllerRunner as BaseControllerRunner;
 use Ep\Contract\ControllerInterface;
 use Ep\Contract\ModuleInterface;
@@ -14,9 +15,11 @@ use Closure;
 
 final class ControllerRunner extends BaseControllerRunner
 {
-    public function __construct(ContainerInterface $container, private RequestHandlerFactory $requestHandlerFactory)
-    {
-        parent::__construct($container);
+    public function __construct(
+        private ContainerInterface $container,
+        private Config $config,
+        private RequestHandlerFactory $requestHandlerFactory
+    ) {
     }
 
     /**

@@ -18,9 +18,11 @@ final class TestAspect2 implements AspectInterface
 
 	public function handle(HandlerInterface $handler): mixed
 	{
-		tt($this->name);
+		t($this->name);
 
 		$result = $handler->handle();
+
+		t($this->name);
 
 		return $result;
 	}

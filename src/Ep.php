@@ -3,9 +3,7 @@
 declare(strict_types=1);
 
 use Ep\Base\Config;
-use Ep\Base\Constant;
 use Ep\Base\Env;
-use Ep\Contract\BootstrapInterface;
 use Ep\Contract\EnvInterface;
 use Ep\Contract\InjectorInterface;
 use Ep\Kit\Annotate;
@@ -21,38 +19,32 @@ use Psr\SimpleCache\CacheInterface;
 
 final class Ep
 {
-    public const VERSION = '1.0';
-
-    private static Env $env;
-    private static Config $config;
-    private static ContainerInterface $container;
+    public const VERSION = '2.0';
 
     private function __construct()
     {
     }
 
+    private static EnvInterface $env;
+    private static Config $config;
+    private static ContainerInterface $container;
+
     private static bool $init = false;
 
-    public static function create(string|EnvInterface $envOrRootPath): ContainerInterface
+    public static function create(string $rootPath): ContainerInterface
     {
         if (self::$init) {
             return self::$container;
         }
         self::$init = true;
 
-        self::$env = $envOrRootPath instanceof EnvInterface ? $envOrRootPath : new Env($envOrRootPath);
+        self::$env = new Env($rootPath);
         self::$config = self::$env->getConfig();
 
         $definitions = self::$config->getDi() + require(dirname(__DIR__) . '/config/definitions.php');
         $definitions[Factory::class] = static fn (ContainerInterface $container) => new Factory($container, $definitions, self::$config->debug);
 
-        self::$container = (new YiiContainer(self::createContainerConfig($definitions)))->get(ContainerInterface::class);
-
-        if (!self::isSelf()) {
-            self::bootstrap();
-        }
-
-        return self::$container;
+        return self::$container = (new YiiContainer(self::createContainerConfig($definitions)))->get(ContainerInterface::class);
     }
 
     public static function createContainerConfig(array $definitions): ContainerConfigInterface
@@ -62,19 +54,7 @@ final class Ep
             ->withValidate(self::$config->debug);
     }
 
-    private static function bootstrap(): void
-    {
-        // foreach (self::getCache()->get(Constant::CACHE_ANNOTATION_CONFIGURE_DATA) ?: [] as $class => $data) {
-        //     $instance = self::$container->get(call_user_func([$class, 'handler']));
-        //     if ($instance instanceof BootstrapInterface) {
-        //         $instance->bootstrap($data);
-        //     } else {
-        //         throw new LogicException(sprintf('The class %s is not implements %s.', get_class($instance), BootstrapInterface::class));
-        //     }
-        // }
-    }
-
-    public static function getEnv(): Env
+    public static function getEnv(): EnvInterface
     {
         return self::$env;
     }

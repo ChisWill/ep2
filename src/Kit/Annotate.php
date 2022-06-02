@@ -8,15 +8,13 @@ use Ep\Base\Constant;
 use Ep\Contract\Attribute\AspectInterface;
 use Ep\Contract\Attribute\ConfigureInterface;
 use Ep\Contract\Attribute\ProcessInterface;
-use Yiisoft\Arrays\ArrayHelper;
 use Yiisoft\Injector\Injector;
 use Psr\Container\ContainerInterface;
 use Psr\SimpleCache\CacheInterface;
 use Attribute;
-use Ep\Contract\HandlerInterface;
 use ReflectionAttribute;
 use ReflectionClass;
-use ReflectionFunction;
+use ReflectionMethod;
 use ReflectionProperty;
 
 final class Annotate
@@ -25,7 +23,8 @@ final class Annotate
 
     public function __construct(
         private ContainerInterface $container,
-        private CacheInterface $cache
+        private CacheInterface $cache,
+        private Wrapper $wrapper
     ) {
         $this->injector = new Injector($container);
     }
@@ -56,41 +55,37 @@ final class Annotate
 
     public function method(object $instance, string $method, array $arguments = []): mixed
     {
-        $callback = fn (): mixed => $this->injector->invoke([$instance, $method], $arguments);
+        $handler = fn (): mixed => $this->injector->invoke([$instance, $method], $arguments);
 
-        $reflectionMethod = (new ReflectionClass($instance))->getMethod($method);
         $aspects = [];
-        foreach ($reflectionMethod->getAttributes() as $reflectionAttribute) {
+        foreach ((new ReflectionMethod($instance, $method))->getAttributes() as $reflectionAttribute) {
             $attribute = $reflectionAttribute->newInstance();
             if ($attribute instanceof AspectInterface) {
                 $aspects[] = $attribute;
             }
         }
         if ($aspects) {
-            return $this->wrapHandler($aspects, $callback)->handle();
+            return $this->wrapper->aspect($aspects, $handler)->handle();
         } else {
-            return $callback();
+            return $handler();
         }
     }
 
     public function cache(array $classList, callable $callback = null): void
     {
-        $configureData = [];
-
-        $classList = ['Ep\Tests\App\Controller\TestController'];
-
-        $setData = static function (array $attributes, string $class, int $type, string $name = null) use (&$configureData): void {
+        $data = [];
+        $setData = static function (array $attributes, string $class, int $type, string $name = null) use (&$data): void {
             foreach ($attributes as $attribute) {
                 /** @var ReflectionAttribute $attribute */
                 $instance = $attribute->newInstance();
                 if ($instance instanceof ConfigureInterface) {
                     switch ($type) {
                         case Attribute::TARGET_CLASS:
-                            $configureData[get_class($attribute)][$class][$type] = $instance->getValues();
+                            $data[$attribute->getName()][$class][$type] = $instance->getValues();
                             break;
                         case Attribute::TARGET_PROPERTY:
                         case Attribute::TARGET_METHOD:
-                            $configureData[get_class($attribute)][$class][$type][] = array_merge($instance->getValues(), ['target' => $name]);
+                            $data[$attribute->getName()][$class][$type][] = ['target' => $name] + $instance->getValues();
                             break;
                     }
                 }
@@ -114,12 +109,12 @@ final class Annotate
                 $setData($method->getAttributes(), $class, Attribute::TARGET_METHOD, $method->getName());
             }
 
-            if ($callback !== null) {
+            if (is_callable($callback)) {
                 call_user_func($callback, $class);
             }
         }
 
-        $this->cache->set(Constant::CACHE_ANNOTATION_CONFIGURE_DATA, $configureData, 86400 * 365 * 100);
+        $this->cache->set(Constant::CACHE_ATTRIBUTE_DATA, $data, 86400 * 365 * 100);
     }
 
     /**
@@ -130,69 +125,6 @@ final class Annotate
         $parentClass = $reflectionClass->getParentClass();
         $properties = $parentClass === false ? [] : $this->getProperties($parentClass);
 
-        return ArrayHelper::index($reflectionClass->getProperties(), static fn (ReflectionProperty $property): string => $property->getName()) + $properties;
-    }
-
-    /**
-     * @param AspectInterface[] $aspects
-     */
-    private function wrapHandler(array $aspects, callable $callback): HandlerInterface
-    {
-        $handler = $this->wrapClosure($callback);
-        foreach ($aspects as $aspect) {
-            $handler = $this->wrapAspect($this->injector->make($aspect));
-        }
-        return $handler;
-    }
-
-    public function process(object $instance, Reflector $reflector, array $arguments = []): mixed
-    {
-        krsort($this->class);
-        $handler = $this->wrapClosure($reflector->getClosure());
-        foreach ($this->class as $class => $args) {
-            $handler = $this->wrapAspect(Ep::getInjector()->make($class, array_merge($arguments, $args)), $handler);
-        }
-        return $handler->handle();
-    }
-
-    private function wrapClosure(Closure $closure): HandlerInterface
-    {
-        return new class($closure) implements HandlerInterface
-        {
-            public function __construct(private Closure $closure)
-            {
-                $this->closure = $closure;
-            }
-
-            /**
-             * {@inheritDoc}
-             */
-            public function handle(): mixed
-            {
-                return call_user_func($this->closure);
-            }
-        };
-    }
-
-    private function wrapAspect(AspectInterface $aspect, HandlerInterface $handler): HandlerInterface
-    {
-        return new class($aspect, $handler) implements HandlerInterface
-        {
-            public function __construct(
-                private AspectInterface $aspect,
-                private HandlerInterface $handler
-            ) {
-                $this->aspect = $aspect;
-                $this->handler = $handler;
-            }
-
-            /**
-             * {@inheritDoc}
-             */
-            public function handle(): mixed
-            {
-                return $this->aspect->process($this->handler);
-            }
-        };
+        return array_merge($properties, $reflectionClass->getProperties());
     }
 }

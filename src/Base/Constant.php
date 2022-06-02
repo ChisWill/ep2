@@ -6,7 +6,5 @@ namespace Ep\Base;
 
 final class Constant
 {
-    public const CACHE_ANNOTATION_INJECT_DATA = 'Ep-Cache-Annotation-Inject-Data';
-
-    public const CACHE_ANNOTATION_CONFIGURE_DATA = 'Ep-Cache-Annotation-Configure-Data';
+    public const CACHE_ATTRIBUTE_DATA = 'Ep-Cache-Attribute-Data';
 }

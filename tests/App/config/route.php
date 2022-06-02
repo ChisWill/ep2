@@ -12,7 +12,7 @@ return function (RouteCollector $route): void {
     $route->addGroup('/try', function (RouteCollector $route) {
         $route->addRoute(Method::ALL, '/{action:[a-zA-Z][\w-]*}', 'test/<action>');
     });
-    $route->get('/ping', [StateController::class, 'ping']);
+    $route->get('/p', [StateController::class, 'ping']);
     $route->get('/advance/say', [TestEPRunController::class, 'say']);
     $route->get('/advance/run', [TestEPRunController::class, 'run']);
 };

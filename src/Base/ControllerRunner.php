@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Ep\Base;
 
+use Ep\Attribute\Inject;
 use Ep\Base\ControllerLoaderResult;
 use Ep\Contract\ControllerInterface;
 use Ep\Contract\InjectorInterface;
@@ -16,16 +17,12 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 
 abstract class ControllerRunner
 {
-    protected Config $config;
-    protected InjectorInterface $injector;
-    protected EventDispatcherInterface $eventDispatcher;
-
-    public function __construct(protected ContainerInterface $container)
-    {
-        $this->config = $container->get(Config::class);
-        $this->injector = $container->get(InjectorInterface::class);
-        $this->eventDispatcher = $container->get(EventDispatcherInterface::class);
-    }
+    #[Inject]
+    private ContainerInterface $container;
+    #[Inject]
+    private InjectorInterface $injector;
+    #[Inject]
+    private EventDispatcherInterface $eventDispatcher;
 
     /**
      * @throws NotFoundException

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Ep\Tests\App\Command;
 
-use Ep\Annotation\Aspect;
 use Ep\Console\Command;
 use Ep\Console\Service;
 use Ep\Contract\ConsoleRequestInterface;
@@ -39,9 +38,6 @@ class InitCommand extends Command
         return $response;
     }
 
-    /**
-     * @Aspect(ConsoleAspect::class)
-     */
     public function indexAction(ConsoleRequestInterface $request)
     {
         $message = 'Welcome Basic, ' . $request->getArgument('name');

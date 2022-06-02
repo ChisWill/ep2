@@ -4,45 +4,48 @@ declare(strict_types=1);
 
 namespace Ep\Base;
 
-use Ep\Contract\BootstrapInterface;
+use Ep\Attribute\Route as AttributeRoute;
 use Ep\Exception\NotFoundException;
 use Ep\Helper\Str;
 use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
 use Yiisoft\Aliases\Aliases;
 use Yiisoft\Http\Method;
+use Psr\SimpleCache\CacheInterface;
 use Attribute;
 use Closure;
 
 use function FastRoute\cachedDispatcher;
 
-final class Route implements BootstrapInterface
+final class Route
 {
+    private array $attributeRules = [];
+
     public function __construct(
         private Config $config,
-        private Aliases $aliases
+        private Aliases $aliases,
+        private CacheInterface $cache
     ) {
+        $this->bootstrap();
     }
 
-    private array $annotationRules = [];
-
-    public function bootstrap(array $data = []): void
+    private function bootstrap(): void
     {
-        foreach ($data as $class => $value) {
+        foreach ($this->cache->get(Constant::CACHE_ATTRIBUTE_DATA)[AttributeRoute::class] ?? [] as $class => $value) {
             if (!isset($value[Attribute::TARGET_METHOD])) {
                 continue;
             }
 
             if (isset($value[Attribute::TARGET_CLASS])) {
-                $path = rtrim($value[Attribute::TARGET_CLASS]['value'], '/') . '/';
-                $method = (array) ($value[Attribute::TARGET_CLASS]['method'] ?? Method::GET);
+                $path = '/' . trim($value[Attribute::TARGET_CLASS]['path'], '/');
+                $method = $value[Attribute::TARGET_CLASS]['method'] ?? Method::GET;
             } else {
-                $path = '/';
-                $method = [Method::GET];
+                $path = '';
+                $method = Method::GET;
             }
 
             foreach ($value[Attribute::TARGET_METHOD] as $item) {
-                $this->annotationRules['/' . trim($path . trim($item['value'], '/'), '/')] = [
+                $this->attributeRules[sprintf('%s/%s', $path, trim($item['path'], '/'))] = [
                     (array) ($item['method'] ?? $method),
                     [$class, Str::rtrim($item['target'], $this->config->actionSuffix)]
                 ];
@@ -101,7 +104,7 @@ final class Route implements BootstrapInterface
                     $route->addGroup($this->baseUrl, $this->rule);
                 }
 
-                $route->addGroup($this->baseUrl, $this->getAnnotationRule());
+                $route->addGroup($this->baseUrl, $this->getAttributeRules());
 
                 if ($this->enableDefaultRule) {
                     $route->addGroup($this->baseUrl, fn (RouteCollector $r) => $r->addRoute(...$this->defaultRule));
@@ -143,10 +146,10 @@ final class Route implements BootstrapInterface
         return [true, $handler, $params];
     }
 
-    private function getAnnotationRule(): Closure
+    private function getAttributeRules(): Closure
     {
         return function (RouteCollector $route): void {
-            foreach ($this->annotationRules as $path => [$method, $handler]) {
+            foreach ($this->attributeRules as $path => [$method, $handler]) {
                 $route->addRoute($method, $path, $handler);
             }
         };

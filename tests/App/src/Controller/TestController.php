@@ -7,6 +7,7 @@ namespace Ep\Tests\App\Controller;
 use Ep;
 use Ep\Attribute\Inject;
 use Ep\Attribute\Route;
+use Ep\Tests\App\Annotation\ClassAttribute;
 use Ep\Tests\App\Annotation\MethodAttribute;
 use Ep\Tests\App\Annotation\TestAspect1;
 use Ep\Tests\App\Annotation\TestAspect2;
@@ -17,7 +18,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use ReflectionMethod;
 use Yiisoft\Db\Connection\Connection;
 
-#[Route('t', method: 'GET')]
+#[Route('t', method: 'GET'), ClassAttribute(name: 'Test')]
 class TestController extends Controller
 {
     private Connection $db;
@@ -30,11 +31,13 @@ class TestController extends Controller
         $this->db = Ep::getDb('sqlite');
     }
 
+    #[Route('main')]
     public function indexAction(ServerRequestInterface $serverRequest)
     {
         $this->testService->index();
     }
 
+    #[Route('v')]
     public function viewAction()
     {
         $message = 'Title';
@@ -59,5 +62,6 @@ class TestController extends Controller
     #[TestAspect1(name: 'first'), TestAspect2(name: 'second')]
     public function aspectAction()
     {
+        t('over');
     }
 }

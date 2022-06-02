@@ -22,7 +22,7 @@ final class Container implements ContainerInterface
     /**
      * {@inheritDoc}
      */
-    public function get($id)
+    public function get(string $id): mixed
     {
         $instance = $this->container->get($id);
 
@@ -37,7 +37,7 @@ final class Container implements ContainerInterface
     /**
      * {@inheritDoc}
      */
-    public function has($id)
+    public function has(string $id): bool
     {
         return $this->container->has($id);
     }

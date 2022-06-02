@@ -9,7 +9,9 @@ use Ep\Contract\ControllerInterface;
 use Ep\Contract\ModuleInterface;
 use Ep\Exception\NotFoundException;
 use Ep\Helper\Str;
+use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use InvalidArgumentException;
 
 final class ControllerLoader
@@ -31,12 +33,12 @@ final class ControllerLoader
     }
 
     /**
-     * @param  mixed $handler
-     * 
      * @throws InvalidArgumentException
      * @throws NotFoundException
+     * @throws NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
      */
-    public function parse($handler): ControllerLoaderResult
+    public function parse(string|array $handler): ControllerLoaderResult
     {
         [$prefix, $class, $actionId] = $this->parseHandler($handler);
 
@@ -48,22 +50,22 @@ final class ControllerLoader
     }
 
     /**
-     * @param  string|array $handler
-     * 
      * @throws InvalidArgumentException
      */
-    public function parseHandler($handler): array
+    public function parseHandler(string|array $handler): array
     {
         switch (gettype($handler)) {
             case 'string':
                 return $this->parseStringHandler($handler);
             case 'array':
                 return $this->parseArrayHandler($handler);
-            default:
-                throw new InvalidArgumentException('The route handler is invalid.');
         }
     }
 
+    /**
+     * @throws NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     */
     private function createModule(string $prefix): ?ModuleInterface
     {
         $prefix = str_replace('/', '\\', $prefix);
@@ -78,6 +80,11 @@ final class ControllerLoader
         }
     }
 
+    /**
+     * @throws NotFoundException
+     * @throws NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     */
     private function createController(string $class, string $actionId): ControllerInterface
     {
         if (!class_exists($class)) {
@@ -97,6 +104,9 @@ final class ControllerLoader
         return $actionId . $this->config->actionSuffix;
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     private function parseArrayHandler(array $handler): array
     {
         switch (count($handler)) {

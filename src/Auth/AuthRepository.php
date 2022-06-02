@@ -30,10 +30,7 @@ final class AuthRepository
 
     private array $failureHandlers = [];
 
-    /**
-     * @param string|RequestHandlerInterface $handler
-     */
-    public function bindFailureHandler(string $method, $handler): self
+    public function bindFailureHandler(string $method, string|RequestHandlerInterface $handler): self
     {
         $this->failureHandlers[$method] = $handler;
         return $this;

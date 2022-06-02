@@ -13,7 +13,7 @@ final class Route implements ConfigureInterface
 {
     public function __construct(
         private string $path,
-        private string $method = Method::GET
+        private ?string $method = null
     ) {
     }
 
