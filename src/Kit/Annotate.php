@@ -8,10 +8,12 @@ use Ep\Base\Constant;
 use Ep\Contract\Attribute\AspectInterface;
 use Ep\Contract\Attribute\ConfigureInterface;
 use Ep\Contract\Attribute\ProcessInterface;
+use Ep\Contract\HandlerInterface;
 use Yiisoft\Injector\Injector;
 use Psr\Container\ContainerInterface;
 use Psr\SimpleCache\CacheInterface;
 use Attribute;
+use Closure;
 use ReflectionAttribute;
 use ReflectionClass;
 use ReflectionMethod;
@@ -23,8 +25,7 @@ final class Annotate
 
     public function __construct(
         private ContainerInterface $container,
-        private CacheInterface $cache,
-        private Wrapper $wrapper
+        private CacheInterface $cache
     ) {
         $this->injector = new Injector($container);
     }
@@ -65,7 +66,7 @@ final class Annotate
             }
         }
         if ($aspects) {
-            return $this->wrapper->aspect($aspects, $handler)->handle();
+            return $this->wrapAspects($aspects, $handler)->handle();
         } else {
             return $handler();
         }
@@ -126,5 +127,56 @@ final class Annotate
         $properties = $parentClass === false ? [] : $this->getProperties($parentClass);
 
         return array_merge($properties, $reflectionClass->getProperties());
+    }
+
+    /**
+     * @param AspectInterface[] $aspects
+     */
+    private function wrapAspects(array $aspects, Closure $callback): HandlerInterface
+    {
+        krsort($aspects);
+        $handler = $this->wrapClosure($callback);
+        foreach ($aspects as $aspect) {
+            $handler = $this->wrapAspect($aspect, $handler);
+        }
+        return $handler;
+    }
+
+    private function wrapClosure(Closure $callback): HandlerInterface
+    {
+        return new class($callback) implements HandlerInterface
+        {
+            public function __construct(private Closure $callback)
+            {
+            }
+
+            /**
+             * {@inheritDoc}
+             */
+            public function handle(): mixed
+            {
+                return call_user_func($this->callback);
+            }
+        };
+    }
+
+    private function wrapAspect(AspectInterface $aspect, HandlerInterface $handler): HandlerInterface
+    {
+        return new class($aspect, $handler) implements HandlerInterface
+        {
+            public function __construct(
+                private AspectInterface $aspect,
+                private HandlerInterface $handler
+            ) {
+            }
+
+            /**
+             * {@inheritDoc}
+             */
+            public function handle(): mixed
+            {
+                return $this->aspect->handle($this->handler);
+            }
+        };
     }
 }

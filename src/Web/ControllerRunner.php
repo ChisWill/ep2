@@ -23,11 +23,13 @@ final class ControllerRunner extends BaseControllerRunner
     }
 
     /**
+     * {@inheritDoc}
+     * 
      * @param  ServerRequestInterface $request
      * 
      * @return ResponseInterface
      */
-    protected function runModule(ModuleInterface $module, ControllerInterface $controller, string $action, mixed $request, mixed $response = null): mixed
+    protected function runModule(ModuleInterface $module, ControllerInterface $controller, string $action, $request, $response = null): mixed
     {
         if ($middlewares = $module->getMiddlewares()) {
             return $this->requestHandlerFactory
@@ -39,6 +41,8 @@ final class ControllerRunner extends BaseControllerRunner
     }
 
     /**
+     * {@inheritDoc}
+     * 
      * @param  ServerRequestInterface $request
      * 
      * @return ResponseInterface

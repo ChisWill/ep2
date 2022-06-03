@@ -117,6 +117,9 @@ final class Route
         );
     }
 
+    /**
+     * @throws NotFoundException
+     */
     private function solveRouteInfo(array $routeInfo): array
     {
         switch ($routeInfo[0]) {

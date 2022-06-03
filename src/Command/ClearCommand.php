@@ -12,12 +12,8 @@ use Yiisoft\Aliases\Aliases;
 
 final class ClearCommand extends Command
 {
-    private Config $config;
-
-    public function __construct(Config $config)
+    public function __construct(private Config $config)
     {
-        $this->config = $config;
-
         $this->createDefinition('index')->setDescription('Clear runtime cache');
     }
 

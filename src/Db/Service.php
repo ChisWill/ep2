@@ -8,11 +8,8 @@ use Yiisoft\Db\Connection\ConnectionInterface;
 
 final class Service
 {
-    private ConnectionInterface $db;
-
-    public function __construct(ConnectionInterface $db)
+    public function __construct(private ConnectionInterface $db)
     {
-        $this->db = $db;
     }
 
     public function getTables(string $prefix = ''): array

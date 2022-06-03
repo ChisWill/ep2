@@ -5,31 +5,18 @@ declare(strict_types=1);
 namespace Ep\Command\Service;
 
 use Ep;
-use Ep\Base\Config;
-use Ep\Console\Service as ConsoleService;
+use Ep\Attribute\Inject;
 use Ep\Contract\ConsoleRequestInterface;
 use Ep\Kit\Util;
-use Yiisoft\Aliases\Aliases;
 use Yiisoft\Db\Connection\Connection;
 use Yiisoft\Db\Connection\ConnectionInterface;
-use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use InvalidArgumentException;
 
 abstract class Service
 {
-    protected Config $config;
-    protected ConsoleService $consoleService;
-    protected Util $util;
-    protected Aliases $aliases;
-
-    public function __construct(protected ContainerInterface $container)
-    {
-        $this->config = $container->get(Config::class);
-        $this->consoleService = $container->get(ConsoleService::class);
-        $this->util = $container->get(Util::class);
-        $this->aliases = $container->get(Aliases::class);
-    }
+    #[Inject]
+    private Util $util;
 
     protected ConsoleRequestInterface $request;
 

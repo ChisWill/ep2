@@ -12,7 +12,9 @@ use Ep\Contract\ModuleInterface;
 use Ep\Event\AfterRequest;
 use Ep\Event\BeforeRequest;
 use Ep\Exception\NotFoundException;
+use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
 abstract class ControllerRunner
@@ -26,6 +28,8 @@ abstract class ControllerRunner
 
     /**
      * @throws NotFoundException
+     * @throws NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
      */
     public function run(mixed $handler, mixed $request, mixed $response = null): mixed
     {
@@ -44,6 +48,7 @@ abstract class ControllerRunner
      * @param  mixed $response
      * 
      * @return mixed
+     * @throws NotFoundException
      */
     public function runResult(ControllerLoaderResult $result, $request, $response = null)
     {
@@ -55,6 +60,7 @@ abstract class ControllerRunner
      * @param  mixed $response
      * 
      * @return mixed
+     * @throws NotFoundException
      */
     public function runAll(?ModuleInterface $module, ControllerInterface $controller, string $action, $request, $response = null)
     {
@@ -76,6 +82,7 @@ abstract class ControllerRunner
      * @param  mixed $response
      * 
      * @return mixed
+     * @throws NotFoundException
      */
     protected function runModule(ModuleInterface $module, ControllerInterface $controller, string $action, $request, $response = null)
     {
@@ -92,6 +99,7 @@ abstract class ControllerRunner
      * @param  mixed $response
      * 
      * @return mixed
+     * @throws NotFoundException
      */
     protected function runAction(ControllerInterface $controller, string $action, $request, $response = null)
     {

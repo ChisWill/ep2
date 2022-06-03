@@ -12,12 +12,8 @@ use Symfony\Component\Console\Input\InputOption;
 
 final class ScanCommand extends Command
 {
-    private ScanService $service;
-
-    public function __construct(ScanService $service)
+    public function __construct(private ScanService $service)
     {
-        $this->service = $service;
-
         $this
             ->createDefinition('index')
             ->addOption('ns', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'The extra namespace to scan')

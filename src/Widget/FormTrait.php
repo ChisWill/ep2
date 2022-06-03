@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Ep\Widget;
 
-use Yiisoft\Validator\Error;
 use Yiisoft\Validator\Result;
 use Yiisoft\Validator\Validator;
 

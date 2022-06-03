@@ -16,11 +16,8 @@ use SplFileInfo;
 
 final class Service
 {
-    private ResponseFactoryInterface $responseFactory;
-
-    public function __construct(ResponseFactoryInterface $responseFactory)
+    public function __construct(private ResponseFactoryInterface $responseFactory)
     {
-        $this->responseFactory = $responseFactory;
     }
 
     private ?ServerRequestInterface $request = null;

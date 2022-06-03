@@ -12,12 +12,8 @@ use Symfony\Component\Console\Input\InputOption;
 
 final class ServeCommand extends Command
 {
-    private ServeService $service;
-
-    public function __construct(ServeService $service)
+    public function __construct(private ServeService $service)
     {
-        $this->service = $service;
-
         $this
             ->createDefinition('index')
             ->addOption('address', null, InputOption::VALUE_REQUIRED, 'Host to serve at')

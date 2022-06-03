@@ -4,20 +4,17 @@ declare(strict_types=1);
 
 namespace Ep\Command\Service;
 
+use Ep\Console\Service as ConsoleService;
 use Ep\Kit\Annotate;
-use Psr\Container\ContainerInterface;
+use Ep\Kit\Util;
 
 final class ScanService extends Service
 {
-    private Annotate $annotate;
-
     public function __construct(
-        ContainerInterface $container,
-        Annotate $annotate
+        private Annotate $annotate,
+        private ConsoleService $consoleService,
+        private Util $util
     ) {
-        parent::__construct($container);
-
-        $this->annotate = $annotate;
     }
 
     /**

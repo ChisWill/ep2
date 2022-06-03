@@ -20,16 +20,25 @@ final class Util
     ) {
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public function rootPath(string $path = ''): string
     {
         return $this->aliases->get('@root') . ($path ? DIRECTORY_SEPARATOR . $path : '');
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public function vendorPath(string $path = ''): string
     {
         return $this->aliases->get('@vendor') . ($path ? DIRECTORY_SEPARATOR . $path : '');
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public function getClassList(string $rootNamespace, array $exceptPatterns = []): array
     {
         $result = [];
@@ -57,6 +66,9 @@ final class Util
         return $this->appPath[$rootNamespace];
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     private function getAppPathByComposer(string $rootNamespace): string
     {
         $rootNamespace = trim($rootNamespace, '\\') . '\\';
@@ -74,11 +86,17 @@ final class Util
         return $path;
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public function getClassNameByFile(string $rootNamespace, string $file): string
     {
         return str_replace([$this->getAppPath($rootNamespace), '.php', '/'], [$rootNamespace, '', '\\'], $file);
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public function findClassFiles(string $path, array $exceptPatterns = []): array
     {
         return FileHelper::findFiles($path, [

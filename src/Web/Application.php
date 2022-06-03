@@ -7,6 +7,8 @@ namespace Ep\Web;
 use Ep\Base\ErrorHandler;
 use Ep\Web\Middleware\InterceptorMiddleware;
 use Ep\Web\Middleware\RouteMiddleware;
+use HttpSoft\Emitter\Exception\HeadersAlreadySentException;
+use HttpSoft\Emitter\Exception\OutputAlreadySentException;
 use HttpSoft\Emitter\SapiEmitter;
 use HttpSoft\ServerRequest\ServerRequestCreator;
 use Yiisoft\Http\Method;
@@ -65,6 +67,10 @@ final class Application
             ->handle($request);
     }
 
+    /**
+     * @throws HeadersAlreadySentException
+     * @throws OutputAlreadySentException
+     */
     public function emit(ServerRequestInterface $request, ResponseInterface $response): void
     {
         $this->sapiEmitter->emit(

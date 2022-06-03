@@ -10,7 +10,6 @@ use Throwable;
 
 final class ErrorHandler
 {
-
     private function __construct(private ErrorRendererInterface $errorRenderer)
     {
     }
@@ -36,6 +35,9 @@ final class ErrorHandler
         exit(1);
     }
 
+    /**
+     * @throws ErrorException
+     */
     public function handleError(int $severity, string $message, string $file, int $line): void
     {
         if (!(error_reporting() & $severity)) {
@@ -45,6 +47,9 @@ final class ErrorHandler
         throw new ErrorException($message, $severity, $severity, $file, $line);
     }
 
+    /**
+     * @throws ErrorException
+     */
     public function handleFatalError(mixed $request): void
     {
         $error = error_get_last();

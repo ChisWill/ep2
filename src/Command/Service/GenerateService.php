@@ -5,25 +5,25 @@ declare(strict_types=1);
 namespace Ep\Command\Service;
 
 use Ep\Base\View;
+use Ep\Console\Service as ConsoleService;
 use Ep\Helper\File;
 use Ep\Helper\Str;
 use Ep\Kit\Crypt;
+use Ep\Kit\Util;
 use Yiisoft\Db\Schema\ColumnSchema;
 use Yiisoft\Db\Schema\Schema;
 use Yiisoft\Db\Schema\TableSchema;
 use Yiisoft\Strings\StringHelper;
-use Psr\Container\ContainerInterface;
 use InvalidArgumentException;
 
 final class GenerateService extends Service
 {
     public function __construct(
-        ContainerInterface $container,
+        private ConsoleService $consoleService,
+        private Util $util,
         private View $view,
         private Crypt $crypt
     ) {
-        parent::__construct($container);
-
         $this->view = $view
             ->withViewPath('@ep/views')
             ->withPrefix('generate');

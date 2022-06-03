@@ -4,20 +4,16 @@ declare(strict_types=1);
 
 namespace Ep\Base;
 
+use Ep\Attribute\Inject;
 use Ep\Contract\ContextInterface;
 use Yiisoft\Aliases\Aliases;
-use Psr\Container\ContainerInterface;
 
 class View
 {
-    protected Config $config;
-    protected Aliases $aliases;
-
-    public function __construct(ContainerInterface $container)
-    {
-        $this->config = $container->get(Config::class);
-        $this->aliases = $container->get(Aliases::class);
-    }
+    #[Inject]
+    private Config $config;
+    #[Inject]
+    private Aliases $aliases;
 
     private string $layout = 'main';
 

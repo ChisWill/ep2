@@ -6,22 +6,18 @@ namespace Ep\Event;
 
 final class AfterRequest
 {
-    public function __construct(private mixed $request, private mixed $response)
-    {
+    public function __construct(
+        private mixed $request,
+        private mixed $response
+    ) {
     }
 
-    /**
-     * @return mixed
-     */
-    public function getRequest()
+    public function getRequest(): mixed
     {
         return $this->request;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getResponse()
+    public function getResponse(): mixed
     {
         return $this->response;
     }

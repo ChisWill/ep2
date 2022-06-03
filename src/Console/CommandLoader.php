@@ -48,21 +48,13 @@ final class CommandLoader implements CommandLoaderInterface
         $commandName = $this->parse($name);
         return new class($this->controllerLoader->parse($commandName), $this->controllerRunner, $this->factory, $commandName, $name) extends SymfonyCommand
         {
-            private ControllerLoaderResult $result;
-            private ControllerRunner $runner;
-            private ConsoleFactoryInterface $factory;
-
             public function __construct(
-                ControllerLoaderResult $result,
-                ControllerRunner $runner,
-                ConsoleFactoryInterface $factory,
+                private ControllerLoaderResult $result,
+                private ControllerRunner $runner,
+                private ConsoleFactoryInterface $factory,
                 string $name,
                 string $alias
             ) {
-                $this->result = $result;
-                $this->runner = $runner;
-                $this->factory = $factory;
-
                 if ($name !== $alias) {
                     $this->setAliases([$alias]);
                 }

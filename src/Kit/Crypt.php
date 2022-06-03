@@ -49,6 +49,9 @@ final class Crypt
         return $new;
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     private function getKey(): string
     {
         if ($this->key === null) {
@@ -99,6 +102,9 @@ final class Crypt
         return random_bytes($length / 8);
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     private function validate(): void
     {
         if (!$this->config->debug) {
@@ -124,6 +130,9 @@ final class Crypt
         }
     }
 
+    /**
+     * @throws CryptException
+     */
     private function getJsonPayload(string $payload): array
     {
         $payload = json_decode(base64_decode($payload), true);

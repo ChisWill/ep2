@@ -13,18 +13,14 @@ use Symfony\Component\Console\Input\InputOption;
 
 final class GenerateCommand extends Command
 {
-    private GenerateService $service;
-
-    public function __construct(GenerateService $service)
+    public function __construct(private GenerateService $service)
     {
-        $this->service = $service;
-
         $this->createDefinition('key')->setDescription('Generate secret key');
 
         $this
             ->createDefinition('model')
             ->addArgument('table', InputArgument::REQUIRED | InputArgument::IS_ARRAY, 'Table name')
-            ->addOption('app', 'a', InputOption::VALUE_REQUIRED, 'App name')
+            ->addOption('app', null, InputOption::VALUE_REQUIRED, 'App name')
             ->addOption('db', null, InputOption::VALUE_REQUIRED, 'Db name')
             ->addOption('path', null, InputOption::VALUE_REQUIRED, 'Save path')
             ->addOption('prefix', null, InputOption::VALUE_REQUIRED, 'Table prefix')

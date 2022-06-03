@@ -9,11 +9,9 @@ use Psr\EventDispatcher\EventDispatcherInterface as PsrEventDispatcherInterface;
 
 final class EventDispatcher implements SymfonyEventDispatcherInterface
 {
-    private PsrEventDispatcherInterface $dispatcher;
 
-    public function __construct(PsrEventDispatcherInterface $dispatcher)
+    public function __construct(private PsrEventDispatcherInterface $dispatcher)
     {
-        $this->dispatcher = $dispatcher;
     }
 
     /**

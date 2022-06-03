@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Ep\Command\Service;
 
+use Ep\Base\Config;
 use Ep\Command\Helper\MigrateBuilder;
+use Ep\Console\Service as ConsoleService;
 use Ep\Contract\MigrateInterface;
 use Ep\Db\ActiveRecord;
 use Ep\Db\Query;
@@ -14,7 +16,6 @@ use Ep\Helper\File;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Files\FileHelper;
 use Yiisoft\Files\PathMatcher\PathMatcher;
-use Psr\Container\ContainerInterface;
 use Closure;
 use Throwable;
 
@@ -23,11 +24,10 @@ final class MigrateService extends Service
     private string $tableName;
 
     public function __construct(
-        ContainerInterface $container,
+        private Config $config,
+        private ConsoleService $consoleService,
         private GenerateService $generateService
     ) {
-        parent::__construct($container);
-
         $this->tableName = $this->config->migrationTableName;
     }
 

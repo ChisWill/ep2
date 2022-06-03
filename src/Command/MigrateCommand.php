@@ -13,23 +13,19 @@ use Symfony\Component\Console\Input\InputOption;
 
 final class MigrateCommand extends Command
 {
-    private MigrateService $service;
-
-    public function __construct(MigrateService $service)
+    public function __construct(private MigrateService $service)
     {
-        $this->service = $service;
-
         $this
             ->createDefinition('create')
             ->addArgument('name', InputArgument::REQUIRED, 'Migration name')
             ->addOption('path', null, InputOption::VALUE_REQUIRED, 'Save path')
-            ->addOption('app', 'a', InputOption::VALUE_REQUIRED, 'App name')
+            ->addOption('app', null, InputOption::VALUE_REQUIRED, 'App name')
             ->setDescription('Create an empty migration');
 
         $this
             ->createDefinition('init')
             ->addOption('path', null, InputOption::VALUE_REQUIRED, 'Save path')
-            ->addOption('app', 'a', InputOption::VALUE_REQUIRED, 'App name')
+            ->addOption('app', null, InputOption::VALUE_REQUIRED, 'App name')
             ->addOption('db', null, InputOption::VALUE_REQUIRED, 'Db name')
             ->addOption('prefix', null, InputOption::VALUE_REQUIRED, 'Table prefix')
             ->addOption('data', null, InputOption::VALUE_NONE, 'Whether initialize table data')
@@ -38,14 +34,14 @@ final class MigrateCommand extends Command
         $this
             ->createDefinition('list')
             ->addOption('path', null, InputOption::VALUE_REQUIRED, 'Save path')
-            ->addOption('app', 'a', InputOption::VALUE_REQUIRED, 'App name')
+            ->addOption('app', null, InputOption::VALUE_REQUIRED, 'App name')
             ->addOption('db', null, InputOption::VALUE_REQUIRED, 'Db name')
             ->setDescription('Print list of all migrations');
 
         $this
             ->createDefinition('up')
             ->addOption('path', null, InputOption::VALUE_REQUIRED, 'Save path')
-            ->addOption('app', 'a', InputOption::VALUE_REQUIRED, 'App name')
+            ->addOption('app', null, InputOption::VALUE_REQUIRED, 'App name')
             ->addOption('db', null, InputOption::VALUE_REQUIRED, 'Db name')
             ->addOption('step', null, InputOption::VALUE_REQUIRED, 'The number of migrations to apply')
             ->setDescription('Execute all new migrations');
@@ -53,7 +49,7 @@ final class MigrateCommand extends Command
         $this
             ->createDefinition('down')
             ->addOption('path', null, InputOption::VALUE_REQUIRED, 'Save path')
-            ->addOption('app', 'a', InputOption::VALUE_REQUIRED, 'App name')
+            ->addOption('app', null, InputOption::VALUE_REQUIRED, 'App name')
             ->addOption('db', null, InputOption::VALUE_REQUIRED, 'Db name')
             ->addOption('step', null, InputOption::VALUE_REQUIRED, 'The number of migtions to downgrade')
             ->addOption('all', null, InputOption::VALUE_NONE, 'Whether downgrade all migration history')

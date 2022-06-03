@@ -16,7 +16,6 @@ use Yiisoft\Html\Html;
 use Yiisoft\Html\Tag\Script;
 use Yiisoft\Html\Tag\Style;
 use Yiisoft\Json\Json;
-use Psr\Container\ContainerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use InvalidArgumentException;
 
@@ -33,12 +32,9 @@ final class View extends BaseView
     private AssetManager $assetManager;
 
     public function __construct(
-        ContainerInterface $container,
-        Factory $factory,
-        private EventDispatcherInterface $eventDispatcher
+        private EventDispatcherInterface $eventDispatcher,
+        Factory $factory
     ) {
-        parent::__construct($container);
-
         $this->assetManager = $factory->create(AssetManager::class);
     }
 
