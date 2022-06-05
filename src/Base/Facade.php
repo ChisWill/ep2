@@ -13,9 +13,7 @@ abstract class Facade
 
     public static function __callStatic(string $name, array $arguments): mixed
     {
-        $instance = self::getInstance();
-
-        return $instance->$name(...$arguments);
+        return self::getInstance()->$name(...$arguments);
     }
 
     public static function swap(object $instance): void
@@ -33,7 +31,7 @@ abstract class Facade
         throw new InvalidArgumentException(sprintf('%s does not implement method %s().', static::class, __FUNCTION__));
     }
 
-    private static function getInstance(): object
+    public static function getInstance(): object
     {
         $id = static::getFacadeAccessor();
 

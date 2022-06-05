@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Ep\Web;
 
+use Ep\Base\Constant;
 use Ep\Contract\ContextTrait;
 use Ep\Contract\ContextInterface;
 use Yiisoft\Http\Status;
@@ -29,7 +30,7 @@ final class NotFoundHandler implements RequestHandlerInterface, ContextInterface
         return $this->service->string(
             $this->getView()->renderPartial('notFound', [
                 'path' => $request->getUri()->getPath(),
-                'exception' => $request->getAttribute('exception')
+                'exception' => $request->getAttribute(Constant::REQUEST_ATTRIBUTE_EXCEPTION)
             ]),
             Status::NOT_FOUND
         );

@@ -28,6 +28,8 @@ use Ep\Console\Input;
         'commandSuffix' => 'Command',
         'actionSuffix' => 'Action',
         'defaultAction' => 'index',
+        'enableDefaultRouteRule' => true,
+        'defaultRouteRule' => null
     ])['rootNamespace'];
 
     $input = $container->get(Input::class);

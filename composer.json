@@ -70,9 +70,7 @@
         "post-update-cmd": [
             "@php ./bin/ep scan --ns=Ep/Tests/Support"
         ],
-        "post-autoload-dump": [
-            "@php ./bin/ep scan --ns=Ep/Tests/Support"
-        ]
+        "post-autoload-dump": []
     },
     "bin": [
         "bin/ep"

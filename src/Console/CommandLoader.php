@@ -7,7 +7,7 @@ namespace Ep\Console;
 use Ep\Base\Config;
 use Ep\Base\ControllerLoader;
 use Ep\Base\ControllerLoaderResult;
-use Ep\Base\Route;
+use Ep\Base\Router;
 use Ep\Contract\ConsoleFactoryInterface;
 use Ep\Exception\NotFoundException;
 use Ep\Helper\Str;
@@ -26,12 +26,15 @@ final class CommandLoader implements CommandLoaderInterface
 {
     public function __construct(
         private Config $config,
-        private Route $route,
+        private Router $router,
         private ControllerLoader $controllerLoader,
         private ControllerRunner $controllerRunner,
         private ConsoleFactoryInterface $factory,
         private Util $util
     ) {
+        $this->router = $router
+            ->withEnableDefaultRule($config->enableDefaultRouteRule)
+            ->withDefaultRule($config->defaultRouteRule);
         $this->controllerLoader = $controllerLoader->withSuffix($controllerRunner->getControllerSuffix());
     }
 
@@ -114,9 +117,7 @@ final class CommandLoader implements CommandLoaderInterface
     private function parse(string $name): string
     {
         if (!isset($this->commandNames[$name])) {
-            [, $handler] = $this->route
-                ->withRule($this->config->getRouteRule())
-                ->match('/' . $name);
+            [, $handler] = $this->router->match('/' . $name);
 
             [, $class, $actionId] = $this->controllerLoader->parseHandler($handler);
 

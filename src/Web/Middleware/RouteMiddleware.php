@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace Ep\Web\Middleware;
 
 use Ep\Base\Config;
-use Ep\Base\Route;
+use Ep\Base\Constant;
+use Ep\Base\Router;
 use Ep\Exception\NotFoundException;
 use Ep\Web\ControllerRunner;
 use Ep\Web\Service;
@@ -19,23 +20,26 @@ final class RouteMiddleware implements MiddlewareInterface
 {
 
     public function __construct(
-        private Config $config,
-        private Route $route,
+        private Router $router,
         private ControllerRunner $controllerRunner,
-        private Service $service
+        private Service $service,
+        Config $config
     ) {
+        $this->router = $router
+            ->withEnableDefaultRule($config->enableDefaultRouteRule)
+            ->withDefaultRule($config->defaultRouteRule);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         try {
-            [$allowed, $result, $params] = $this->route
-                ->withBaseUrl($this->config->baseUrl)
-                ->withRule($this->config->getRouteRule())
-                ->match(
-                    $request->getUri()->getPath(),
-                    $request->getMethod()
-                );
+            [$allowed, $result, $params] = $this->router->match(
+                $request->getUri()->getPath(),
+                $request->getMethod()
+            );
 
             if (!$allowed) {
                 return $this->service->status(Status::METHOD_NOT_ALLOWED);
@@ -47,7 +51,7 @@ final class RouteMiddleware implements MiddlewareInterface
 
             return $this->controllerRunner->run($result, $request);
         } catch (NotFoundException $e) {
-            return $handler->handle($request->withAttribute('exception', $e));
+            return $handler->handle($request->withAttribute(Constant::REQUEST_ATTRIBUTE_EXCEPTION, $e));
         }
     }
 }

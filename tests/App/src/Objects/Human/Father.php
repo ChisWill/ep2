@@ -12,7 +12,7 @@ class Father extends GrandPa
     #[Inject]
     private Sword $sword;
 
-    private string $name = 'Father';
+    protected string $name = 'Father';
 
     private function getWeapon(): string
     {

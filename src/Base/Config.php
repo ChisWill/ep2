@@ -8,7 +8,7 @@ use Closure;
 use InvalidArgumentException;
 
 /**
- * Do not set the property after instantiation
+ * The properties of Config are readonly
  */
 final class Config
 {
@@ -21,11 +21,7 @@ final class Config
      */
     public array $aliases = [];
     /**
-     * Default base url
-     */
-    public string $baseUrl = '';
-    /**
-     * Is debug
+     * Whether start applicaion in debug mode
      */
     public bool $debug = true;
     /**
@@ -61,6 +57,14 @@ final class Config
      */
     public string $defaultAction = 'index';
     /**
+     * Whether enable the default route rule
+     */
+    public bool $enableDefaultRouteRule = true;
+    /**
+     * Default route rule
+     */
+    public ?array $defaultRouteRule = null;
+    /**
      * Runtime directory
      */
     public string $runtimeDir = '@root/runtime';
@@ -85,35 +89,21 @@ final class Config
      */
     public ?string $secretKey = null;
     /**
-     * Params
+     * The custom parameters
      */
     public array $params = [];
     /**
+     * The custom DI configuration
+     * 
      * ```php
      * 
-     * use Ep\Base\Config;
-     * 
-     * return static fn (Ep\Base\Config $config, array $params): array => [
+     * return static fn (\Ep\Base\Config $config, array $params): array => [
      *     FooInterface::class => Foo::class
      * ];
      * 
      * ```
      */
     private ?Closure $di = null;
-    /**
-     * ```php
-     * 
-     * use FastRoute\RouteCollector;
-     *
-     * return function (RouteCollector $route): void {
-     *     $route->addGroup('/api', function (RouteCollector $route) {
-     *         $route->get('/error/index', 'error/index');
-     *     });
-     * };
-     * 
-     * ```
-     */
-    private ?Closure $route = null;
 
     public function __construct(array $config)
     {
@@ -143,10 +133,5 @@ final class Config
     public function getDi(): array
     {
         return $this->di ? call_user_func($this->di, $this, $this->params) : [];
-    }
-
-    public function getRouteRule(): Closure
-    {
-        return $this->route ?? static fn (): bool => true;
     }
 }

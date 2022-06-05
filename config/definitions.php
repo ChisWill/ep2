@@ -131,5 +131,5 @@ return [
     // Event
     ListenerCollection::class => static fn (ListenerCollectionFactory $listenerCollectionFactory): ListenerCollection => $listenerCollectionFactory->create($config->events),
     ListenerProviderInterface::class => Provider::class,
-    EventDispatcherInterface::class => Dispatcher::class,
+    EventDispatcherInterface::class => Dispatcher::class
 ];

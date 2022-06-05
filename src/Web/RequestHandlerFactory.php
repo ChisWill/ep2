@@ -10,6 +10,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Closure;
 
 final class RequestHandlerFactory
 {
@@ -28,17 +29,14 @@ final class RequestHandlerFactory
         return $handler;
     }
 
-    public function create(callable $callback): RequestHandlerInterface
+    public function create(Closure $callback): RequestHandlerInterface
     {
         return new class($callback, $this->injector) implements RequestHandlerInterface
         {
-            private $callback;
-
             public function __construct(
-                callable $callback,
+                private Closure $callback,
                 private InjectorInterface $injector
             ) {
-                $this->callback = $callback;
             }
 
             public function handle(ServerRequestInterface $request): ResponseInterface
@@ -67,8 +65,10 @@ final class RequestHandlerFactory
         {
             private $callback;
 
-            public function __construct(callable $callback, private InjectorInterface $injector)
-            {
+            public function __construct(
+                callable $callback,
+                private InjectorInterface $injector
+            ) {
                 $this->callback = $callback;
             }
 

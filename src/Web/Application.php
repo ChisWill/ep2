@@ -52,7 +52,7 @@ final class Application
 
     public function createRequest(): ServerRequestInterface
     {
-        return new ServerRequest($this->serverRequestCreator->createFromGlobals());
+        return $this->serverRequestCreator->createFromGlobals();
     }
 
     public function register(ServerRequestInterface $request): void

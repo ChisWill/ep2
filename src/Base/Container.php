@@ -39,6 +39,6 @@ final class Container implements ContainerInterface
      */
     public function has(string $id): bool
     {
-        return $this->container->has($id);
+        return isset($this->flags[$id]) || $this->container->has($id);
     }
 }

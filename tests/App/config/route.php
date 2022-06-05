@@ -2,17 +2,15 @@
 
 declare(strict_types=1);
 
-use Ep\Tests\App\Advance\FrontEnd\Controller\TestEPRunController;
+use Ep\Base\RouteCollection;
+use Ep\Facade\Route;
 use Ep\Tests\App\Controller\StateController;
-use FastRoute\RouteCollector;
-use Yiisoft\Http\Method;
 
-return function (RouteCollector $route): void {
-    $route->get('/site', 'state/ping');
-    $route->addGroup('/try', function (RouteCollector $route) {
-        $route->addRoute(Method::ALL, '/{action:[a-zA-Z][\w-]*}', 'test/<action>');
-    });
-    $route->get('/p', [StateController::class, 'ping']);
-    $route->get('/advance/say', [TestEPRunController::class, 'say']);
-    $route->get('/advance/run', [TestEPRunController::class, 'run']);
-};
+Route::get('/p', [StateController::class, 'ping'])->name('ping');
+
+Route::group('/try',  function (RouteCollection $route) {
+    $route->get('/{action:[a-zA-Z][\w-]*}', 'test/<action>')->name('all');
+    $route->group('/again', function (RouteCollection $route) {
+        $route->get('/{action:[a-zA-Z][\w-]*}', 'test/again/<action>');
+    })->name('a');
+})->name('t');

@@ -8,8 +8,11 @@ require(dirname(__DIR__, 3) . '/vendor/autoload.php');
 
 $start = microtime(true);
 
-Ep::create(dirname(__DIR__))->get(Application::class)->run();
+$app = Ep::create(dirname(__DIR__))->get(Application::class);
 
+require(dirname(__DIR__) . '/config/route.php');
 $end = microtime(true);
 
 Ep::getLogger()->info(($end - $start) * 1000 . 'ms');
+
+$app->run();

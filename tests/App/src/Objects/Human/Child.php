@@ -12,7 +12,7 @@ final class Child extends Father
     #[Inject]
     private Gun $gun;
 
-    private string $name = 'Child';
+    protected string $name = 'Child';
 
     private function getWeapon(): string
     {

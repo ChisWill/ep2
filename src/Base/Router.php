@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Ep\Base;
 
-use Ep\Attribute\Route as AttributeRoute;
+use Ep\Attribute\Route;
 use Ep\Exception\NotFoundException;
 use Ep\Helper\Str;
 use FastRoute\Dispatcher;
@@ -13,11 +13,10 @@ use Yiisoft\Aliases\Aliases;
 use Yiisoft\Http\Method;
 use Psr\SimpleCache\CacheInterface;
 use Attribute;
-use Closure;
 
 use function FastRoute\cachedDispatcher;
 
-final class Route
+final class Router
 {
     private array $attributeRules = [];
 
@@ -31,7 +30,7 @@ final class Route
 
     private function bootstrap(): void
     {
-        foreach ($this->cache->get(Constant::CACHE_ATTRIBUTE_DATA)[AttributeRoute::class] ?? [] as $class => $value) {
+        foreach ($this->cache->get(Constant::CACHE_ATTRIBUTE_DATA)[Route::class] ?? [] as $class => $value) {
             if (!isset($value[Attribute::TARGET_METHOD])) {
                 continue;
             }
@@ -68,28 +67,13 @@ final class Route
         '<prefix>/<controller>/<action>'
     ];
 
-    public function withDefaultRule(array $rule): self
+    public function withDefaultRule(?array $rule): self
     {
+        if ($rule === null) {
+            return $this;
+        }
         $new = clone $this;
         $new->defaultRule = $rule;
-        return $new;
-    }
-
-    private string $baseUrl = '';
-
-    public function withBaseUrl(string $baseUrl): self
-    {
-        $new = clone $this;
-        $new->baseUrl = $baseUrl;
-        return $new;
-    }
-
-    private ?Closure $rule = null;
-
-    public function withRule(Closure $rule): self
-    {
-        $new = clone $this;
-        $new->rule = $rule;
         return $new;
     }
 
@@ -98,16 +82,16 @@ final class Route
      */
     public function match(string $path, string $method = Method::GET): array
     {
-        return $this->solveRouteInfo(
+        return $this->solveRouteResult(
             cachedDispatcher(function (RouteCollector $route): void {
-                if ($this->rule) {
-                    $route->addGroup($this->baseUrl, $this->rule);
-                }
+                // if ($this->rule) {
+                //     $route->addGroup('', $this->rule);
+                // }
 
-                $route->addGroup($this->baseUrl, $this->getAttributeRules());
+                $this->addAttributeRoute($route);
 
                 if ($this->enableDefaultRule) {
-                    $route->addGroup($this->baseUrl, fn (RouteCollector $r) => $r->addRoute(...$this->defaultRule));
+                    $route->addRoute(...$this->defaultRule);
                 }
             }, [
                 'cacheFile' => $this->aliases->get($this->config->runtimeDir . '/route.cache'),
@@ -120,11 +104,11 @@ final class Route
     /**
      * @throws NotFoundException
      */
-    private function solveRouteInfo(array $routeInfo): array
+    private function solveRouteResult(array $routeResult): array
     {
-        switch ($routeInfo[0]) {
+        switch ($routeResult[0]) {
             case Dispatcher::FOUND:
-                return $this->replaceHandler($routeInfo[1], $routeInfo[2]);
+                return $this->replaceHandler($routeResult[1], $routeResult[2]);
             case Dispatcher::METHOD_NOT_ALLOWED:
                 return [false, null, null];
             default:
@@ -149,12 +133,10 @@ final class Route
         return [true, $handler, $params];
     }
 
-    private function getAttributeRules(): Closure
+    private function addAttributeRoute(RouteCollector $route): void
     {
-        return function (RouteCollector $route): void {
-            foreach ($this->attributeRules as $path => [$method, $handler]) {
-                $route->addRoute($method, $path, $handler);
-            }
+        foreach ($this->attributeRules as $path => [$method, $handler]) {
+            $route->addRoute($method, $path, $handler);
         };
     }
 }

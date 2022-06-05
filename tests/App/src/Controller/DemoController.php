@@ -17,7 +17,6 @@ use Ep\Tests\App\Facade\Logger;
 use Ep\Tests\App\Form\TestForm;
 use Ep\Tests\App\Model\Student;
 use Ep\Tests\Support\Object\Animal\Bird;
-use Ep\Web\ServerRequest;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
@@ -68,7 +67,7 @@ class DemoController extends Controller
         return $this->json($return);
     }
 
-    public function downloadAction(ServerRequest $request, Aliases $aliases)
+    public function downloadAction(ServerRequestInterface $request, Aliases $aliases)
     {
         // $name = 'eye.png';
         $name = 'face.jpg';
@@ -83,7 +82,7 @@ class DemoController extends Controller
             ->download($file, $newName);
     }
 
-    public function requestAction(ServerRequest $request)
+    public function requestAction(ServerRequestInterface $request)
     {
         $result = [
             'method' => $request->getMethod(),
@@ -305,9 +304,9 @@ class DemoController extends Controller
         return $this->json($r);
     }
 
-    public function paginateAction(ServerRequest $serverRequest)
+    public function paginateAction(ServerRequestInterface $request)
     {
-        $page = (int) ($serverRequest->getQueryParams()['page'] ?? 1);
+        $page = (int) ($request->getQueryParams()['page'] ?? 1);
         $query = Student::find($this->db)->asArray();
         $count = $query->count();
 

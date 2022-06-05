@@ -12,7 +12,7 @@ class GrandPa
     #[Inject]
     private Bow $bow;
 
-    private string $name = 'GrandPa';
+    protected string $name = 'GrandPa';
 
     private function getWeapon(): string
     {
@@ -22,5 +22,10 @@ class GrandPa
     public function shoot(): string
     {
         return $this->name . '-' . $this->getWeapon() . '<br>';
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
     }
 }

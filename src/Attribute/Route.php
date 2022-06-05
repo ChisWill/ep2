@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Ep\Attribute;
 
 use Ep\Contract\Attribute\ConfigureInterface;
-use Yiisoft\Http\Method;
 use Attribute;
 
 #[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_METHOD)]
@@ -13,7 +12,7 @@ final class Route implements ConfigureInterface
 {
     public function __construct(
         private string $path,
-        private ?string $method = null
+        private string|array|null $method = null
     ) {
     }
 

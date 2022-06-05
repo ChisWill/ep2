@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Ep\Web\Middleware;
 
-use Ep\Base\Config;
 use Ep\Contract\FilterInterface;
 use Ep\Contract\InterceptorInterface;
 use Ep\Web\RequestHandlerFactory;
@@ -25,7 +24,6 @@ final class InterceptorMiddleware implements MiddlewareInterface
         private ContainerInterface $container,
         private RequestHandlerFactory $requestHandlerFactory,
         private Service $service,
-        Config $config,
         InterceptorInterface $interceptor = null
     ) {
         if ($interceptor === null) {
@@ -33,13 +31,16 @@ final class InterceptorMiddleware implements MiddlewareInterface
         }
 
         foreach ($interceptor->includePath() as $path => $class) {
-            $this->includePath['/' . trim($config->baseUrl . $path, '/')] = (array) $class;
+            $this->includePath['/' . trim($path, '/')] = (array) $class;
         }
         foreach ($interceptor->excludePath() as $path => $class) {
-            $this->excludePath['/' . trim($config->baseUrl . $path, '/')] = (array) $class;
+            $this->excludePath['/' . trim($path, '/')] = (array) $class;
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $requestPath = $request->getUri()->getPath();
