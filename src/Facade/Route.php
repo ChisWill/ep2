@@ -8,6 +8,7 @@ use Ep\Base\Facade;
 use Ep\Base\RouteCollection;
 
 /**
+ * @method static \Ep\Base\RouteCollection name(string $name)
  * @method static \Ep\Base\RouteCollector get(string $pattern, \callable|string $action)
  * @method static \Ep\Base\RouteCollector post(string $pattern, \callable|string $action)
  * @method static \Ep\Base\RouteCollector put(string $pattern, \callable|string $action)

@@ -16,9 +16,13 @@ abstract class Facade
         return self::getInstance()->$name(...$arguments);
     }
 
-    public static function swap(object $instance): void
+    public static function swap(object $new): object
     {
-        self::$instances[static::getFacadeAccessor()] = $instance;
+        $old = self::getInstance();
+
+        self::$instances[static::getFacadeAccessor()] = $new;
+
+        return $old;
     }
 
     public static function clear(): void

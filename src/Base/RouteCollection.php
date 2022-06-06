@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Ep\Base;
 
+use Ep\Facade\Route;
 use Yiisoft\Http\Method;
 use Closure;
 
@@ -60,6 +61,14 @@ final class RouteCollection
         return $this->names;
     }
 
+    private ?string $name = null;
+
+    public function name(string $name): RouteCollection
+    {
+        $this->name = $name;
+        return $this;
+    }
+
     public function get(string $pattern, string|array|Closure $action): RouteCollector
     {
         return $this->match(Method::GET, $pattern, $action);
@@ -103,14 +112,28 @@ final class RouteCollection
     public function match(string|array $method, string $pattern, string|array|Closure $action): RouteCollector
     {
         $route = new RouteCollector($method, $pattern, $action);
+
+        if ($this->name !== null) {
+            $route->name($this->name);
+            $this->name = null;
+        }
+
         array_push($this->routes, $route);
+
         return $route;
     }
 
     public function group(string $prefix, Closure $callback): RouteGroup
     {
         $group = new RouteGroup($prefix, $callback);
+
+        if ($this->name !== null) {
+            $group->name($this->name);
+            $this->name = null;
+        }
+
         array_push($this->routes, $group);
+
         return $group;
     }
 }
@@ -176,8 +199,12 @@ final class RouteGroup
 
     public function getRoutes(): array
     {
-        $route = new RouteCollection();
-        call_user_func($this->callback, $route);
-        return $route->getRoutes();
+        $new = new RouteCollection();
+
+        $old = Route::swap($new);
+
+        call_user_func($this->callback);
+
+        return Route::swap($old)->getRoutes();
     }
 }
