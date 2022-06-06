@@ -16,6 +16,7 @@ use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use Closure;
 
 abstract class ControllerRunner
 {
@@ -31,8 +32,12 @@ abstract class ControllerRunner
      * @throws NotFoundExceptionInterface
      * @throws ContainerExceptionInterface
      */
-    public function run(mixed $handler, mixed $request, mixed $response = null): mixed
+    public function run(string|array|Closure $handler, mixed $request, mixed $response = null): mixed
     {
+        if ($handler instanceof Closure) {
+            return $this->runClosure($handler, $request, $response);
+        }
+
         return $this->runResult(
             $this->container
                 ->get(ControllerLoader::class)
@@ -53,6 +58,23 @@ abstract class ControllerRunner
     public function runResult(ControllerLoaderResult $result, $request, $response = null)
     {
         return $this->runAll($result->getModule(), $result->getController(), $result->getAction(), $request, $response);
+    }
+
+    /**
+     * @param  mixed $request
+     * @param  mixed $response
+     * 
+     * @return mixed
+     */
+    public function runClosure(Closure $handler, $request, $response = null)
+    {
+        $request = $this->eventDispatcher->dispatch(new BeforeRequest($request, $response))->getRequest();
+
+        try {
+            return $result = $this->injector->invoke($handler, array_filter([$request, $response]));
+        } finally {
+            $this->eventDispatcher->dispatch(new AfterRequest($request, $result ?? null));
+        }
     }
 
     /**

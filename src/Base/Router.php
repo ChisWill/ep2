@@ -8,48 +8,28 @@ use Ep\Attribute\Route;
 use Ep\Exception\NotFoundException;
 use Ep\Helper\Str;
 use FastRoute\Dispatcher;
-use FastRoute\RouteCollector;
+use FastRoute\RouteCollector as FastRouteCollector;
 use Yiisoft\Aliases\Aliases;
 use Yiisoft\Http\Method;
 use Psr\SimpleCache\CacheInterface;
 use Attribute;
+use Closure;
 
 use function FastRoute\cachedDispatcher;
 
 final class Router
 {
+    private array $collectionRules = [];
     private array $attributeRules = [];
 
     public function __construct(
         private Config $config,
         private Aliases $aliases,
-        private CacheInterface $cache
+        private CacheInterface $cache,
+        private RouteCollection $routeCollection
     ) {
-        $this->bootstrap();
-    }
-
-    private function bootstrap(): void
-    {
-        foreach ($this->cache->get(Constant::CACHE_ATTRIBUTE_DATA)[Route::class] ?? [] as $class => $value) {
-            if (!isset($value[Attribute::TARGET_METHOD])) {
-                continue;
-            }
-
-            if (isset($value[Attribute::TARGET_CLASS])) {
-                $path = '/' . trim($value[Attribute::TARGET_CLASS]['path'], '/');
-                $method = $value[Attribute::TARGET_CLASS]['method'] ?? Method::GET;
-            } else {
-                $path = '';
-                $method = Method::GET;
-            }
-
-            foreach ($value[Attribute::TARGET_METHOD] as $item) {
-                $this->attributeRules[sprintf('%s/%s', $path, trim($item['path'], '/'))] = [
-                    (array) ($item['method'] ?? $method),
-                    [$class, Str::rtrim($item['target'], $this->config->actionSuffix)]
-                ];
-            }
-        }
+        $this->initCollection();
+        $this->initAttribute();
     }
 
     private bool $enableDefaultRule = true;
@@ -83,10 +63,8 @@ final class Router
     public function match(string $path, string $method = Method::GET): array
     {
         return $this->solveRouteResult(
-            cachedDispatcher(function (RouteCollector $route): void {
-                // if ($this->rule) {
-                //     $route->addGroup('', $this->rule);
-                // }
+            cachedDispatcher(function (FastRouteCollector $route): void {
+                $this->addCollectionRoute($route);
 
                 $this->addAttributeRoute($route);
 
@@ -116,7 +94,7 @@ final class Router
         }
     }
 
-    private function replaceHandler(string|array $handler, array $params): array
+    private function replaceHandler(string|array|Closure $handler, array $params): array
     {
         if (is_string($handler)) {
             preg_match_all('/<(\w+)>/', $handler, $matches);
@@ -133,10 +111,69 @@ final class Router
         return [true, $handler, $params];
     }
 
-    private function addAttributeRoute(RouteCollector $route): void
+    private function addAttributeRoute(FastRouteCollector $route): void
     {
         foreach ($this->attributeRules as $path => [$method, $handler]) {
             $route->addRoute($method, $path, $handler);
         };
+    }
+
+    private function addCollectionRoute(FastRouteCollector $route): void
+    {
+        $add = static function (string|int $group, array $rules) use (&$add, $route): void {
+            if (is_string($group)) {
+                $route->addGroup($group, static function () use ($add, $rules): void {
+                    foreach ($rules as $group => $rule) {
+                        $add($group, $rule);
+                    }
+                });
+            } else {
+                $route->addRoute(...$rules);
+            }
+        };
+        foreach ($this->collectionRules as $group => $rule) {
+            $add($group, $rule);
+        };
+    }
+
+    private function initAttribute(): void
+    {
+        foreach ($this->cache->get(Constant::CACHE_ATTRIBUTE_DATA)[Route::class] ?? [] as $class => $value) {
+            if (!isset($value[Attribute::TARGET_METHOD])) {
+                continue;
+            }
+
+            if (isset($value[Attribute::TARGET_CLASS])) {
+                $path = '/' . trim($value[Attribute::TARGET_CLASS]['path'], '/');
+                $method = $value[Attribute::TARGET_CLASS]['method'] ?? Method::GET;
+            } else {
+                $path = '';
+                $method = Method::GET;
+            }
+
+            foreach ($value[Attribute::TARGET_METHOD] as $item) {
+                $this->attributeRules[sprintf('%s/%s', $path, trim($item['path'], '/'))] = [
+                    (array) ($item['method'] ?? $method),
+                    [$class, Str::rtrim($item['target'], $this->config->actionSuffix)]
+                ];
+            }
+        }
+    }
+
+    private function initCollection(): void
+    {
+        $fetch = static function (RouteCollector|RouteGroup $route, array &$list) use (&$fetch): void {
+            if ($route instanceof RouteCollector) {
+                $list[] = $route->getRule();
+            } elseif ($route instanceof RouteGroup) {
+                $list[$route->getPrefix()] = [];
+                foreach ($route->getRoutes() as $r) {
+                    $fetch($r, $list[$route->getPrefix()]);
+                }
+            }
+        };
+        foreach ($this->routeCollection->getRoutes() as $route) {
+            $fetch($route, $this->collectionRules);
+        }
     }
 }

@@ -4,13 +4,26 @@ declare(strict_types=1);
 
 use Ep\Base\RouteCollection;
 use Ep\Facade\Route;
-use Ep\Tests\App\Controller\StateController;
+use Psr\Http\Message\ResponseFactoryInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
-Route::get('/p', [StateController::class, 'ping'])->name('ping');
+Route::get('/p', function (ServerRequestInterface $request, ResponseFactoryInterface $factory) {
+    $res = $factory->createResponse();
+    $res->getBody()->write('pong');
+    return $res;
+})
+    ->name('ping');
 
-Route::group('/try',  function (RouteCollection $route) {
-    $route->get('/{action:[a-zA-Z][\w-]*}', 'test/<action>')->name('all');
-    $route->group('/again', function (RouteCollection $route) {
-        $route->get('/{action:[a-zA-Z][\w-]*}', 'test/again/<action>');
-    })->name('a');
-})->name('t');
+Route::group('/try', function (RouteCollection $route) {
+    $route
+        ->group('/again', function (RouteCollection $route) {
+            $route
+                ->get('/{action:[a-zA-Z][\w-]*}', 'test/<action>')
+                ->name('child');
+        })
+        ->name('a-');
+    $route
+        ->get('/{ctrl:[\w]+}/{action:[a-zA-Z][\w-]*}', '<ctrl>/<action>')
+        ->name('parent');
+})
+    ->name('t-');

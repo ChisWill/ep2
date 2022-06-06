@@ -22,42 +22,38 @@ final class RouteCollection
     {
         if ($this->names === null) {
             $this->names = [];
-            $fetch = static function (RouteCollector|RouteGroup $route) use (&$fetch) {
+            $fetch = static function (RouteCollector|RouteGroup $route) use (&$fetch): array {
                 if ($route instanceof RouteCollector) {
                     $name = $route->getName();
-                    if ($name !== null) {
-                        return [$name => $route->getRule()];
+                    if ($name === null) {
+                        return [];
                     } else {
-                        return null;
+                        return [
+                            [
+                                'name' => $name,
+                                'rule' => $route->getRule()
+                            ]
+                        ];
                     }
                 } elseif ($route instanceof RouteGroup) {
-                    $prefix = $route->getName();
+                    $name = $route->getName();
+                    $prefix = $route->getPrefix();
                     $list = [];
-                    foreach ($route->getRoute(new RouteCollection()) as $item) {
-                        $result = $fetch($item);
-                        if ($result !== null) {
-                            if (is_string(key($result))) {
-                                $list += $result;
-                            } else {
-                                foreach ($result as $r) {
-                                    $list += $r;
-                                }
-                            }
+                    foreach ($route->getRoutes() as $item) {
+                        foreach ($fetch($item) as $r) {
+                            $r['rule'][1] = $prefix . $r['rule'][1];
+                            $list[] = [
+                                'name' => $name . $r['name'],
+                                'rule' => $r['rule']
+                            ];
                         }
                     }
-                    return $list ?: null;
+                    return $list;
                 }
             };
             foreach ($this->routes as $route) {
-                $result = $fetch($route);
-                if ($result !== null) {
-                    if (is_string(key($result))) {
-                        $this->names += $result;
-                    } else {
-                        foreach ($result as $r) {
-                            $this->names += $r;
-                        }
-                    }
+                foreach ($fetch($route) as $r) {
+                    $this->names[$r['name']] = $r['rule'];
                 }
             }
         }
@@ -173,8 +169,14 @@ final class RouteGroup
         return $this->name;
     }
 
-    public function getRoute(RouteCollection $route): array
+    public function getPrefix(): string
     {
+        return $this->prefix;
+    }
+
+    public function getRoutes(): array
+    {
+        $route = new RouteCollection();
         call_user_func($this->callback, $route);
         return $route->getRoutes();
     }

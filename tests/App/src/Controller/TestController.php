@@ -8,6 +8,7 @@ use Ep;
 use Ep\Attribute\Inject;
 use Ep\Attribute\Route;
 use Ep\Base\RouteCollection;
+use Ep\Kit\UrlGenerator;
 use Ep\Tests\App\Annotation\ClassAttribute;
 use Ep\Tests\App\Annotation\MethodAttribute;
 use Ep\Tests\App\Annotation\TestAspect1;
@@ -39,6 +40,8 @@ class TestController extends Controller
     public function indexAction(ServerRequestInterface $serverRequest)
     {
         $this->testService->index();
+
+        return $this->success();
     }
 
     #[Route('v')]
@@ -69,8 +72,12 @@ class TestController extends Controller
         $this->print($this->father->getName());
     }
 
-    public function routeAction(RouteCollection $routeCollection)
+    public function routeAction(RouteCollection $routeCollection, UrlGenerator $urlGenerator)
     {
-        tt($routeCollection->getRoutes(), $routeCollection->getNames());
+        tt($urlGenerator->generate('t-parent', [
+            'ctrl' => 'test',
+            'action' => 'route',
+            'id' => 9
+        ]), $routeCollection->getRoutes(), $routeCollection->getNames());
     }
 }
