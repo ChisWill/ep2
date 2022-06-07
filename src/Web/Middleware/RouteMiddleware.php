@@ -18,7 +18,6 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 final class RouteMiddleware implements MiddlewareInterface
 {
-
     public function __construct(
         private Router $router,
         private ControllerRunner $controllerRunner,

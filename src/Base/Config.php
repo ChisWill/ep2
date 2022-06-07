@@ -114,7 +114,7 @@ final class Config
 
     public function __set(string $name, mixed $value): void
     {
-        throw new InvalidArgumentException("The \"{$name}\" configuration is invalid.");
+        throw new InvalidArgumentException("The configuration \"{$name}\" can't be set.");
     }
 
     /**

@@ -10,10 +10,7 @@ use ReflectionClass;
 
 trait ConfigurableTrait
 {
-    /**
-     * @return static
-     */
-    public function configure(array $properties)
+    public function configure(array $properties): static
     {
         if (Ep::getConfig()->debug) {
             foreach ($properties as $name => $value) {
@@ -34,10 +31,7 @@ trait ConfigurableTrait
         return $this;
     }
 
-    /**
-     * @return static
-     */
-    public function clone(array $properties)
+    public function clone(array $properties): static
     {
         $new = clone $this;
 

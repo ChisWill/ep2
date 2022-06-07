@@ -14,8 +14,8 @@ final class Injector implements InjectorInterface
     private YiiInjector $injector;
 
     public function __construct(
-        private ContainerInterface $container,
-        private Annotate $annotate
+        private Annotate $annotate,
+        ContainerInterface $container
     ) {
         $this->injector = new YiiInjector($container);
     }

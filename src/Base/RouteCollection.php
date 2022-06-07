@@ -199,9 +199,7 @@ final class RouteGroup
 
     public function getRoutes(): array
     {
-        $new = new RouteCollection();
-
-        $old = Route::swap($new);
+        $old = Route::swap(new RouteCollection());
 
         call_user_func($this->callback);
 
