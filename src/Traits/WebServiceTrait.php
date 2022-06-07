@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Ep\Traits;
 
 use Ep\Attribute\Inject;
-use Ep\Contract\ContextTrait;
 use Ep\Web\Service;
 use Ep\Web\View;
 use Yiisoft\Http\Status;
@@ -13,9 +12,9 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use SplFileInfo;
 
-trait WebService
+trait WebServiceTrait
 {
-    use ContextTrait;
+    use ViewTrait;
 
     #[Inject]
     private Service $service;
@@ -73,8 +72,13 @@ trait WebService
             ->download($file, $name);
     }
 
-    private function getViewClass(): string
+    protected function getViewClass(): string
     {
         return View::class;
+    }
+
+    protected function getContextId(): string
+    {
+        return $this->id;
     }
 }

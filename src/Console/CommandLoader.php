@@ -162,7 +162,7 @@ final class CommandLoader implements CommandLoaderInterface
         foreach ($files as $className) {
             $map[$className] = array_filter(
                 (new ReflectionClass($this->config->rootNamespace . '\\' . str_replace('/', '\\', $className)))->getMethods(ReflectionMethod::IS_PUBLIC),
-                fn (ReflectionMethod $ref): bool => strpos($ref->getName(), $this->config->actionSuffix) !== false
+                fn (ReflectionMethod $ref): bool => str_ends_with($ref->getName(), $this->config->actionSuffix)
             );
         }
         $commands = [];

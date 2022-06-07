@@ -39,22 +39,22 @@ final class RouteCollection
                 } elseif ($route instanceof RouteGroup) {
                     $name = $route->getName();
                     $prefix = $route->getPrefix();
-                    $list = [];
-                    foreach ($route->getRoutes() as $item) {
-                        foreach ($fetch($item) as $r) {
-                            $r['rule'][1] = $prefix . $r['rule'][1];
-                            $list[] = [
-                                'name' => $name . $r['name'],
-                                'rule' => $r['rule']
+                    $result = [];
+                    foreach ($route->getRoutes() as $r) {
+                        foreach ($fetch($r) as $item) {
+                            $item['rule'][1] = $prefix . $item['rule'][1];
+                            $result[] = [
+                                'name' => $name . $item['name'],
+                                'rule' => $item['rule']
                             ];
                         }
                     }
-                    return $list;
+                    return $result;
                 }
             };
             foreach ($this->routes as $route) {
-                foreach ($fetch($route) as $r) {
-                    $this->names[$r['name']] = $r['rule'];
+                foreach ($fetch($route) as $item) {
+                    $this->names[$item['name']] = $item['rule'];
                 }
             }
         }

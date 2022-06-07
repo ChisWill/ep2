@@ -120,20 +120,18 @@ final class Router
 
     private function addCollectionRoute(FastRouteCollector $route): void
     {
-        $add = static function (string|int $group, array $rules) use (&$add, $route): void {
-            if (is_string($group)) {
-                $route->addGroup($group, static function () use ($add, $rules): void {
-                    foreach ($rules as $group => $rule) {
-                        $add($group, $rule);
-                    }
-                });
-            } else {
-                $route->addRoute(...$rules);
+        $add = static function (array $groupRules) use (&$add, $route): void {
+            foreach ($groupRules as $group => $rules) {
+                if (is_string($group)) {
+                    $route->addGroup($group, static function () use ($add, $rules): void {
+                        $add($rules);
+                    });
+                } else {
+                    $route->addRoute(...$rules);
+                }
             }
         };
-        foreach ($this->collectionRules as $group => $rule) {
-            $add($group, $rule);
-        };
+        $add($this->collectionRules);
     }
 
     private function initAttribute(): void
@@ -162,18 +160,16 @@ final class Router
 
     private function initCollection(): void
     {
-        $fetch = static function (RouteCollector|RouteGroup $route, array &$list) use (&$fetch): void {
-            if ($route instanceof RouteCollector) {
-                $list[] = $route->getRule();
-            } elseif ($route instanceof RouteGroup) {
-                $list[$route->getPrefix()] = [];
-                foreach ($route->getRoutes() as $r) {
-                    $fetch($r, $list[$route->getPrefix()]);
+        $fetch = static function (array $routes, array &$result) use (&$fetch): void {
+            foreach ($routes as $route) {
+                if ($route instanceof RouteCollector) {
+                    $result[] = $route->getRule();
+                } elseif ($route instanceof RouteGroup) {
+                    $result[$route->getPrefix()] = [];
+                    $fetch($route->getRoutes(), $result[$route->getPrefix()]);
                 }
             }
         };
-        foreach ($this->routeCollection->getRoutes() as $route) {
-            $fetch($route, $this->collectionRules);
-        }
+        $fetch($this->routeCollection->getRoutes(), $this->collectionRules);
     }
 }

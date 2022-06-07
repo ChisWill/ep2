@@ -30,7 +30,7 @@ trait QueryTrait
         }
 
         return $this
-            ->indexBy(strpos($key, '.') === false ? $key : explode('.', $key)[1])
+            ->indexBy(str_contains($key, '.') ? explode('.', $key)[1] : $key)
             ->column();
     }
 

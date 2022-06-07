@@ -9,8 +9,8 @@ use Ep\Base\Constant;
 use Ep\Base\Router;
 use Ep\Exception\NotFoundException;
 use Ep\Web\ControllerRunner;
-use Ep\Web\Service;
 use Yiisoft\Http\Status;
+use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -21,7 +21,7 @@ final class RouteMiddleware implements MiddlewareInterface
     public function __construct(
         private Router $router,
         private ControllerRunner $controllerRunner,
-        private Service $service,
+        private ResponseFactoryInterface $responseFactory,
         Config $config
     ) {
         $this->router = $router
@@ -41,7 +41,7 @@ final class RouteMiddleware implements MiddlewareInterface
             );
 
             if (!$allowed) {
-                return $this->service->status(Status::METHOD_NOT_ALLOWED);
+                return $this->responseFactory->createResponse(Status::METHOD_NOT_ALLOWED);
             }
 
             foreach ($params as $name => $value) {
@@ -50,7 +50,9 @@ final class RouteMiddleware implements MiddlewareInterface
 
             return $this->controllerRunner->run($result, $request);
         } catch (NotFoundException $e) {
-            return $handler->handle($request->withAttribute(Constant::REQUEST_ATTRIBUTE_EXCEPTION, $e));
+            return $handler->handle(
+                $request->withAttribute(Constant::REQUEST_ATTRIBUTE_EXCEPTION, $e)
+            );
         }
     }
 }

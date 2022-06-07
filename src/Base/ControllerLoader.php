@@ -129,7 +129,7 @@ final class ControllerLoader
             sprintf(
                 '%s\\%s\\%s',
                 $this->config->rootNamespace,
-                $prefix ? (strpos($prefix, '\\\\') === false ? $prefix . '\\' . $this->suffix : str_replace('\\\\', '\\' . $this->suffix . '\\', $prefix)) : $this->suffix,
+                $prefix ? (str_contains($prefix, '\\\\') ? str_replace('\\\\', '\\' . $this->suffix . '\\', $prefix) : ($prefix . '\\' . $this->suffix)) : $this->suffix,
                 Str::toPascalCase($controller) . $this->suffix
             ),
             lcfirst(Str::toPascalCase($action))

@@ -6,9 +6,9 @@ namespace Ep\Web;
 
 use Ep;
 use Ep\Contract\ConfigurableTrait;
-use Ep\Contract\ContextTrait;
 use Ep\Contract\ControllerInterface;
 use Ep\Contract\FilterTrait;
+use Ep\Traits\ViewTrait;
 use Yiisoft\Http\Status;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -16,7 +16,7 @@ use SplFileInfo;
 
 abstract class Controller implements ControllerInterface
 {
-    use ContextTrait, FilterTrait, ConfigurableTrait;
+    use ViewTrait, FilterTrait, ConfigurableTrait;
 
     /**
      * {@inheritDoc}
@@ -94,5 +94,10 @@ abstract class Controller implements ControllerInterface
     protected function getViewClass(): string
     {
         return View::class;
+    }
+
+    protected function getContextId(): ?string
+    {
+        return null;
     }
 }

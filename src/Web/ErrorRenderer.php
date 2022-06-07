@@ -6,10 +6,9 @@ namespace Ep\Web;
 
 use Ep\Base\Config;
 use Ep\Base\ErrorRenderer as BaseErrorRenderer;
-use Ep\Contract\ContextTrait;
-use Ep\Contract\ContextInterface;
 use Ep\Contract\WebErrorRendererInterface;
 use Ep\Helper\Date;
+use Ep\Traits\ViewTrait;
 use Yiisoft\Aliases\Aliases;
 use Yiisoft\Http\Method;
 use Psr\Container\ContainerInterface;
@@ -17,14 +16,9 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use Throwable;
 
-final class ErrorRenderer extends BaseErrorRenderer implements ContextInterface
+final class ErrorRenderer extends BaseErrorRenderer
 {
-    use ContextTrait;
-
-    /**
-     * {@inheritDoc}
-     */
-    public string $id = 'error';
+    use ViewTrait;
 
     public function __construct(
         private ContainerInterface $container,
@@ -137,7 +131,7 @@ final class ErrorRenderer extends BaseErrorRenderer implements ContextInterface
 
     public function isVendorFile(?string $file): bool
     {
-        return $file === null || strpos($file, $this->aliases->get('@vendor')) === 0;
+        return $file === null || str_starts_with($file, $this->aliases->get('@vendor'));
     }
 
     public function htmlEncode(string $text): string
@@ -193,5 +187,10 @@ final class ErrorRenderer extends BaseErrorRenderer implements ContextInterface
     protected function getViewPath(): string
     {
         return '@ep/views';
+    }
+
+    protected function getContextId(): string
+    {
+        return 'error';
     }
 }

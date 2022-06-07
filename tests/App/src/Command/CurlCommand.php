@@ -41,7 +41,7 @@ class CurlCommand extends Command
         for ($i = 0; $i < 5; $i++) {
             $ret = Curl::getMulti($url, [], 100);
             foreach ($ret as $row) {
-                if (strpos($row, 'true') !== false) {
+                if (str_contains($row, 'true')) {
                     $count++;
                 }
             }

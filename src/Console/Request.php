@@ -37,7 +37,7 @@ final class Request implements ConsoleRequestInterface
      */
     public function getArgument(string $name)
     {
-        if (strpos($name, '.') !== false) {
+        if (str_contains($name, '.')) {
             return ArrayHelper::getValueByPath($this->getArguments(), $name);
         }
         return $this->arguments[$name] ?? $this->input->getArgument($name);
@@ -84,7 +84,7 @@ final class Request implements ConsoleRequestInterface
      */
     public function getOption(string $name)
     {
-        if (strpos($name, '.') !== false) {
+        if (str_contains($name, '.')) {
             return ArrayHelper::getValueByPath($this->getOptions(), $name);
         }
         return $this->options[$name] ?? $this->input->getOption($name);

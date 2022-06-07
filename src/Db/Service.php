@@ -16,7 +16,7 @@ final class Service
     {
         $tables = $this->db->getSchema()->getTableNames();
         if ($prefix) {
-            $tables = array_filter($tables, static fn ($name): bool => strpos($name, $prefix) === 0);
+            $tables = array_filter($tables, static fn ($name): bool => str_starts_with($name, $prefix));
         }
         return $tables;
     }

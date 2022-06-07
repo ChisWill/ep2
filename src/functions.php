@@ -4,7 +4,7 @@ if (!function_exists('t')) {
     function t(mixed ...$args): void
     {
         $isCli = PHP_SAPI === 'cli';
-        if (!$isCli && !array_filter(headers_list(), fn ($value): bool => strpos(strtolower($value), 'content-type') === 0)) {
+        if (!$isCli && !array_filter(headers_list(), fn ($value): bool => str_starts_with(strtolower($value), 'content-type') === 0)) {
             header('Content-Type: text/html; charset=UTF-8');
         }
 

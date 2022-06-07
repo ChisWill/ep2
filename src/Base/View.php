@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Ep\Base;
 
 use Ep\Attribute\Inject;
-use Ep\Contract\ContextInterface;
 use Yiisoft\Aliases\Aliases;
 
 class View
@@ -33,22 +32,24 @@ class View
         return $new;
     }
 
-    private ?ContextInterface $context = null;
+    private ?object $context = null;
 
-    public function withContext(ContextInterface $context): self
+    public function withContext(object $context): self
     {
         $new = clone $this;
         $new->context = $context;
-        $new->prefix = $context->id;
         return $new;
     }
 
-    private ?string $prefix = null;
+    private ?string $contextId = null;
 
-    public function withPrefix(string $prefix): self
+    public function withContextId(?string $contextId): self
     {
+        if ($contextId === null) {
+            return $this;
+        }
         $new = clone $this;
-        $new->prefix = $prefix;
+        $new->contextId = $contextId;
         return $new;
     }
 
@@ -71,8 +72,8 @@ class View
 
     private function normalize(string $path): string
     {
-        if ($this->prefix !== null && strpos($path, '/') !== 0) {
-            $path = sprintf('/%s/%s', $this->prefix, $path);
+        if ($this->contextId !== null && !str_starts_with($path, '/')) {
+            $path = sprintf('/%s/%s', $this->contextId, $path);
         }
         return $path;
     }
@@ -87,11 +88,11 @@ class View
 
     private function renderLayout(string $layout, array $params = []): string
     {
-        if (strpos($layout, '/') !== 0) {
-            if ($this->prefix === null || ($pos = strrpos($this->prefix, '/')) === false) {
+        if (!str_starts_with($layout, '/')) {
+            if ($this->contextId === null || ($pos = strrpos($this->contextId, '/')) === false) {
                 $layout = sprintf('/%s/%s', $this->config->layoutDir, $layout);
             } else {
-                $layout = sprintf('/%s/%s/%s', substr($this->prefix, 0, $pos), $this->config->layoutDir, $layout);
+                $layout = sprintf('/%s/%s/%s', substr($this->contextId, 0, $pos), $this->config->layoutDir, $layout);
             }
         }
         return $this->renderPHPFile($this->findFilePath($layout), $params);
@@ -99,7 +100,7 @@ class View
 
     private function findFilePath(string $view, string $ext = '.php'): string
     {
-        return $this->aliases->get($this->getViewPath() . $view . $ext);
+        return $this->aliases->get($this->getViewPath() . '/' . ltrim($view, '/') . $ext);
     }
 
     private function renderPHPFile(): string

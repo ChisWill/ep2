@@ -75,7 +75,7 @@ final class Util
         /** @var ClassLoader */
         $classLoader = require($this->vendorPath('autoload.php'));
         foreach ($classLoader->getPrefixesPsr4() as $prefix => $paths) {
-            if (strpos($rootNamespace, $prefix) === 0) {
+            if (str_starts_with($rootNamespace, $prefix)) {
                 $path = rtrim(str_replace('\\', '/',  realpath(current($paths)) . str_replace($prefix, DIRECTORY_SEPARATOR, $rootNamespace)), '/');
                 break;
             }

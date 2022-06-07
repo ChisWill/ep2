@@ -7,9 +7,9 @@ namespace Ep\Web\Middleware;
 use Ep\Contract\FilterInterface;
 use Ep\Contract\InterceptorInterface;
 use Ep\Web\RequestHandlerFactory;
-use Ep\Web\Service;
 use Yiisoft\Http\Status;
 use Psr\Container\ContainerInterface;
+use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -23,7 +23,7 @@ final class InterceptorMiddleware implements MiddlewareInterface
     public function __construct(
         private ContainerInterface $container,
         private RequestHandlerFactory $requestHandlerFactory,
-        private Service $service,
+        private ResponseFactoryInterface $responseFactory,
         InterceptorInterface $interceptor = null
     ) {
         if ($interceptor === null) {
@@ -46,12 +46,12 @@ final class InterceptorMiddleware implements MiddlewareInterface
         $requestPath = $request->getUri()->getPath();
         $classList = [];
         foreach ($this->includePath as $path => $class) {
-            if (strpos($requestPath, $path) === 0) {
+            if (str_starts_with($requestPath, $path)) {
                 $classList = array_merge($classList, $class);
             }
         }
         foreach ($this->excludePath as $path => $class) {
-            if (strpos($requestPath, $path) !== 0) {
+            if (!str_starts_with($requestPath, $path)) {
                 $classList = array_merge($classList, $class);
             }
         }
@@ -68,7 +68,7 @@ final class InterceptorMiddleware implements MiddlewareInterface
             } elseif ($result instanceof ResponseInterface) {
                 return $result;
             } else {
-                return $this->service->status(Status::NOT_ACCEPTABLE);
+                return $this->responseFactory->createResponse(Status::NOT_ACCEPTABLE);
             }
         }
 

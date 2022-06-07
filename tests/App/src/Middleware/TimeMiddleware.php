@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Ep\Tests\App\Middleware;
 
-use Ep\Attribute\Inject;
-use Ep\Web\Service as WebService;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -13,9 +11,6 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 final class TimeMiddleware implements MiddlewareInterface
 {
-    #[Inject]
-    private WebService $service;
-
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $start = microtime(true);

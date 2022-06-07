@@ -26,7 +26,7 @@ final class GenerateService extends Service
     ) {
         $this->view = $view
             ->withViewPath('@ep/views')
-            ->withPrefix('generate');
+            ->withContextId('generate');
     }
 
     public function render(string $path, array $params): string
