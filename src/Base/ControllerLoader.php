@@ -6,7 +6,6 @@ namespace Ep\Base;
 
 use Ep\Base\ControllerLoaderResult;
 use Ep\Contract\ControllerInterface;
-use Ep\Contract\ModuleInterface;
 use Ep\Exception\NotFoundException;
 use Ep\Helper\Str;
 use Psr\Container\ContainerExceptionInterface;
@@ -40,10 +39,9 @@ final class ControllerLoader
      */
     public function parse(string|array $handler): ControllerLoaderResult
     {
-        [$prefix, $class, $actionId] = $this->parseHandler($handler);
+        [$class, $actionId] = $this->parseHandler($handler);
 
         return new ControllerLoaderResult(
-            $this->createModule($prefix),
             $this->createController($class, $actionId),
             $this->createAction($actionId)
         );
@@ -59,24 +57,6 @@ final class ControllerLoader
                 return $this->parseStringHandler($handler);
             case 'array':
                 return $this->parseArrayHandler($handler);
-        }
-    }
-
-    /**
-     * @throws NotFoundExceptionInterface
-     * @throws ContainerExceptionInterface
-     */
-    private function createModule(string $prefix): ?ModuleInterface
-    {
-        $prefix = str_replace('/', '\\', $prefix);
-        if (strpos($prefix, '\\\\') !== false) {
-            $prefix = explode('\\\\', trim($prefix, '\\'))[0];
-        }
-        $class = sprintf('%s\\%s%s\\%s', $this->config->rootNamespace, $prefix ? $prefix . '\\' : '', $this->suffix, $this->config->moduleName);
-        if (class_exists($class)) {
-            return $this->container->get($class);
-        } else {
-            return null;
         }
     }
 
@@ -119,8 +99,6 @@ final class ControllerLoader
                 }
                 array_unshift($handler, str_replace($this->config->rootNamespace . '\\', '', substr($handler[0], 0, $suffixPos)));
                 break;
-            case 3:
-                break;
             default:
                 throw new InvalidArgumentException('The route handler is not in the correct format.');
         }
@@ -147,15 +125,15 @@ final class ControllerLoader
                 break;
         }
 
-        $class = sprintf(
-            '%s\\%s\\%s',
-            $this->config->rootNamespace,
-            $prefix ? (strpos($prefix, '\\\\') === false ? $prefix . '\\' . $this->suffix : str_replace('\\\\', '\\' . $this->suffix . '\\', $prefix)) : $this->suffix,
-            Str::toPascalCase($controller) . $this->suffix
-        );
-        $action = lcfirst(Str::toPascalCase($action));
-
-        return [$prefix, $class, $action];
+        return [
+            sprintf(
+                '%s\\%s\\%s',
+                $this->config->rootNamespace,
+                $prefix ? (strpos($prefix, '\\\\') === false ? $prefix . '\\' . $this->suffix : str_replace('\\\\', '\\' . $this->suffix . '\\', $prefix)) : $this->suffix,
+                Str::toPascalCase($controller) . $this->suffix
+            ),
+            lcfirst(Str::toPascalCase($action))
+        ];
     }
 
     private function generateContextId(string $class): string

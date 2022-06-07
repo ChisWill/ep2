@@ -8,7 +8,6 @@ use Ep\Attribute\Inject;
 use Ep\Base\ControllerLoaderResult;
 use Ep\Contract\ControllerInterface;
 use Ep\Contract\InjectorInterface;
-use Ep\Contract\ModuleInterface;
 use Ep\Event\AfterRequest;
 use Ep\Event\BeforeRequest;
 use Ep\Exception\NotFoundException;
@@ -57,7 +56,7 @@ abstract class ControllerRunner
      */
     public function runResult(ControllerLoaderResult $result, $request, $response = null)
     {
-        return $this->runAll($result->getModule(), $result->getController(), $result->getAction(), $request, $response);
+        return $this->runAll($result->getController(), $result->getAction(), $request, $response);
     }
 
     /**
@@ -84,35 +83,14 @@ abstract class ControllerRunner
      * @return mixed
      * @throws NotFoundException
      */
-    public function runAll(?ModuleInterface $module, ControllerInterface $controller, string $action, $request, $response = null)
+    public function runAll(ControllerInterface $controller, string $action, $request, $response = null)
     {
         $request = $this->eventDispatcher->dispatch(new BeforeRequest($request, $response))->getRequest();
 
         try {
-            if ($module instanceof ModuleInterface) {
-                return $result = $this->runModule($module, $controller, $action, $request, $response);
-            } else {
-                return $result = $this->runAction($controller, $action, $request, $response);
-            }
+            return $result = $this->runAction($controller, $action, $request, $response);
         } finally {
             $this->eventDispatcher->dispatch(new AfterRequest($request, $result ?? null));
-        }
-    }
-
-    /**
-     * @param  mixed $request
-     * @param  mixed $response
-     * 
-     * @return mixed
-     * @throws NotFoundException
-     */
-    protected function runModule(ModuleInterface $module, ControllerInterface $controller, string $action, $request, $response = null)
-    {
-        $result = $module->before($request, $response);
-        if ($result === true) {
-            return $module->after($request, $this->runAction($controller, $action, $request, $response));
-        } else {
-            return $result;
         }
     }
 

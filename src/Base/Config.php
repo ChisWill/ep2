@@ -29,10 +29,6 @@ final class Config
      */
     public string $env = 'prod';
     /**
-     * Module class
-     */
-    public string $moduleName = 'Module';
-    /**
      * Web controller suffix
      */
     public string $controllerSuffix = 'Controller';
