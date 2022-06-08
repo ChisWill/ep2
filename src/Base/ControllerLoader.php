@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Ep\Base;
 
-use Ep\Base\ControllerLoaderResult;
-use Ep\Contract\ControllerInterface;
 use Ep\Exception\NotFoundException;
 use Ep\Helper\Str;
 use Psr\Container\ContainerExceptionInterface;
@@ -37,14 +35,14 @@ final class ControllerLoader
      * @throws NotFoundExceptionInterface
      * @throws ContainerExceptionInterface
      */
-    public function parse(string|array $handler): ControllerLoaderResult
+    public function parse(string|array $handler): array
     {
-        [$class, $actionId] = $this->parseHandler($handler);
+        [$class, $action] = $this->parseHandler($handler);
 
-        return new ControllerLoaderResult(
-            $this->createController($class, $actionId),
-            $this->createAction($actionId)
-        );
+        return [
+            $this->createController($class),
+            $this->createAction($action)
+        ];
     }
 
     /**
@@ -65,23 +63,18 @@ final class ControllerLoader
      * @throws NotFoundExceptionInterface
      * @throws ContainerExceptionInterface
      */
-    private function createController(string $class, string $actionId): ControllerInterface
+    private function createController(string $class): object
     {
         if (!class_exists($class)) {
             throw new NotFoundException("{$class} is not found.");
         }
 
-        return $this->container
-            ->get($class)
-            ->configure([
-                'id' => $this->generateContextId($class),
-                'actionId' => $actionId
-            ]);
+        return $this->container->get($class);
     }
 
-    private function createAction(string $actionId): string
+    private function createAction(string $action): string
     {
-        return $actionId . $this->config->actionSuffix;
+        return $action . $this->config->actionSuffix;
     }
 
     /**
@@ -134,15 +127,5 @@ final class ControllerLoader
             ),
             lcfirst(Str::toPascalCase($action))
         ];
-    }
-
-    private function generateContextId(string $class): string
-    {
-        return implode('/', array_filter(
-            array_map('lcfirst', explode(
-                '\\',
-                str_replace([$this->config->rootNamespace, $this->suffix], '', $class)
-            ))
-        ));
     }
 }

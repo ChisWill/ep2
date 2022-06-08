@@ -6,7 +6,6 @@ namespace Ep\Web;
 
 use Ep\Base\Config;
 use Ep\Base\ControllerRunner as BaseControllerRunner;
-use Ep\Contract\ControllerInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -28,15 +27,15 @@ final class ControllerRunner extends BaseControllerRunner
      * 
      * @return ResponseInterface
      */
-    protected function runAction(ControllerInterface $controller, string $action, $request, $response = null)
+    protected function runAction(object $controller, string $action, $request, $response = null)
     {
-        if ($middlewares = $controller->getMiddlewares()) {
-            return $this->requestHandlerFactory
-                ->wrap($middlewares, $this->requestHandlerFactory->create($this->wrapController($controller, $action)))
-                ->handle($request);
-        } else {
-            return parent::runAction($controller, $action, $request);
-        }
+        // if ($middlewares = $controller->getMiddlewares()) {
+        //     return $this->requestHandlerFactory
+        //         ->wrap($middlewares, $this->requestHandlerFactory->create($this->wrapController($controller, $action)))
+        //         ->handle($request);
+        // } else {
+        // }
+        return parent::runAction($controller, $action, $request);
     }
 
     private function wrapController(Controller $controller, string $action): Closure

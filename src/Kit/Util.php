@@ -103,4 +103,14 @@ final class Util
             'filter' => (new PathMatcher())->only('**.php')->except(...$exceptPatterns)
         ]);
     }
+
+    public function generateClassId(string $class, string $suffix = ''): string
+    {
+        return implode('/', array_filter(
+            array_map('lcfirst', explode(
+                '\\',
+                str_replace([$this->config->rootNamespace, $suffix], '', $class)
+            ))
+        ));
+    }
 }

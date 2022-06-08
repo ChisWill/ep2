@@ -72,6 +72,30 @@ final class Annotate
         }
     }
 
+    private ?array $cacheResult = null;
+
+    public function getCache(string $attributeClass, string $targetClass = null, int|array $position = null): array
+    {
+        if ($this->cacheResult === null) {
+            $this->cacheResult = $this->cache->get(Constant::CACHE_ATTRIBUTE_DATA) ?: [];
+        }
+        $classList = $this->cacheResult[$attributeClass] ?? [];
+        if ($targetClass === null) {
+            return $classList;
+        }
+
+        $posList = $classList[$targetClass] ?? [];
+        if ($position === null) {
+            return $posList;
+        }
+
+        $result = [];
+        foreach ((array) $position as $pos) {
+            $result = array_merge($result, $posList[$pos] ?? []);
+        }
+        return $result;
+    }
+
     public function cache(array $classList, callable $callback = null): void
     {
         $data = [];

@@ -7,6 +7,7 @@ namespace Ep\Base;
 use Ep\Attribute\Route;
 use Ep\Exception\NotFoundException;
 use Ep\Helper\Str;
+use Ep\Kit\Annotate;
 use FastRoute\Dispatcher;
 use FastRoute\RouteCollector as FastRouteCollector;
 use Yiisoft\Aliases\Aliases;
@@ -26,7 +27,8 @@ final class Router
         private Config $config,
         private Aliases $aliases,
         private CacheInterface $cache,
-        private RouteCollection $routeCollection
+        private RouteCollection $routeCollection,
+        private Annotate $annotate
     ) {
         $this->initCollection();
         $this->initAttribute();
@@ -136,7 +138,7 @@ final class Router
 
     private function initAttribute(): void
     {
-        foreach ($this->cache->get(Constant::CACHE_ATTRIBUTE_DATA)[Route::class] ?? [] as $class => $value) {
+        foreach ($this->annotate->getCache(Route::class) as $class => $value) {
             if (!isset($value[Attribute::TARGET_METHOD])) {
                 continue;
             }

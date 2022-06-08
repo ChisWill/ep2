@@ -8,6 +8,7 @@ use Ep\Contract\EnvInterface;
 use Ep\Contract\InjectorInterface;
 use Ep\Kit\Annotate;
 use Ep\Kit\Util;
+use Ep\Web\WebProvider;
 use Yiisoft\Db\Connection\Connection;
 use Yiisoft\Di\Container as YiiContainer;
 use Yiisoft\Di\ContainerConfig;
@@ -50,6 +51,7 @@ final class Ep
     public static function createContainerConfig(array $definitions): ContainerConfigInterface
     {
         return ContainerConfig::create()
+            ->withProviders([WebProvider::class])
             ->withDefinitions($definitions)
             ->withValidate(self::$config->debug);
     }

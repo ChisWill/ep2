@@ -6,7 +6,6 @@ namespace Ep\Console;
 
 use Ep\Base\Config;
 use Ep\Base\ControllerLoader;
-use Ep\Base\ControllerLoaderResult;
 use Ep\Base\Router;
 use Ep\Contract\ConsoleFactoryInterface;
 use Ep\Exception\NotFoundException;
@@ -49,10 +48,12 @@ final class CommandLoader implements CommandLoaderInterface
     private function wrapCommand(string $name): SymfonyCommand
     {
         $commandName = $this->parse($name);
-        return new class($this->controllerLoader->parse($commandName), $this->controllerRunner, $this->factory, $commandName, $name) extends SymfonyCommand
+        [$controller, $action] = $this->controllerLoader->parse($commandName);
+        return new class($controller, $action, $this->controllerRunner, $this->factory, $commandName, $name) extends SymfonyCommand
         {
             public function __construct(
-                private ControllerLoaderResult $result,
+                private object $controller,
+                private string $action,
                 private ControllerRunner $runner,
                 private ConsoleFactoryInterface $factory,
                 string $name,
@@ -71,14 +72,15 @@ final class CommandLoader implements CommandLoaderInterface
             protected function configure(): void
             {
                 /** @var Command */
-                $command = $this->result->getController();
+                $command = $this->controller;
+                $actionId = str_replace('Action', '', $this->action);
                 $definitions = $command->getDefinitions();
-                if (isset($definitions[$command->actionId])) {
+                if (isset($definitions[$actionId])) {
                     $this
-                        ->setDefinition($definitions[$command->actionId]->getDefinitions())
-                        ->setDescription($definitions[$command->actionId]->getDescription())
-                        ->setHelp($definitions[$command->actionId]->getHelp());
-                    foreach ($definitions[$command->actionId]->getUsages() as $usage) {
+                        ->setDefinition($definitions[$actionId]->getDefinitions())
+                        ->setDescription($definitions[$actionId]->getDescription())
+                        ->setHelp($definitions[$actionId]->getHelp());
+                    foreach ($definitions[$actionId]->getUsages() as $usage) {
                         $this->addUsage($usage);
                     }
                 }
@@ -90,8 +92,9 @@ final class CommandLoader implements CommandLoaderInterface
             protected function execute(InputInterface $input, OutputInterface $output): int
             {
                 return $this->runner
-                    ->runResult(
-                        $this->result,
+                    ->runAll(
+                        $this->controller,
+                        $this->action,
                         $this->factory->createRequest($input),
                         $this->factory->createResponse($output)
                     )
@@ -119,7 +122,7 @@ final class CommandLoader implements CommandLoaderInterface
         if (!isset($this->commandNames[$name])) {
             [, $handler] = $this->router->match('/' . $name);
 
-            [, $class, $actionId] = $this->controllerLoader->parseHandler($handler);
+            [$class, $actionId] = $this->controllerLoader->parseHandler($handler);
 
             $this->commandNames[$name] = $this->getCommandName(
                 preg_replace('~' . str_replace('\\', '/', $this->config->rootNamespace) . '/~', '', str_replace('\\', '/', $class), 1),
