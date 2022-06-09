@@ -5,44 +5,45 @@ declare(strict_types=1);
 namespace Ep\Base;
 
 use Ep;
-use InvalidArgumentException;
 
 abstract class Facade
 {
-    private static array $instances = [];
+    protected static array $instances = [];
 
     public static function __callStatic(string $name, array $arguments): mixed
     {
-        return self::getInstance()->$name(...$arguments);
-    }
-
-    public static function swap(object $new): object
-    {
-        $old = self::getInstance();
-
-        self::$instances[static::getFacadeAccessor()] = $new;
-
-        return $old;
-    }
-
-    public static function clear(): void
-    {
-        unset(self::$instances[static::getFacadeAccessor()]);
-    }
-
-    protected static function getFacadeAccessor(): string
-    {
-        throw new InvalidArgumentException(sprintf('%s does not implement method %s().', static::class, __FUNCTION__));
+        return static::getInstance()->$name(...$arguments);
     }
 
     public static function getInstance(): object
     {
         $id = static::getFacadeAccessor();
 
-        if (isset(self::$instances[$id])) {
-            return self::$instances[$id];
+        if (isset(static::$instances[$id])) {
+            return static::$instances[$id];
         }
 
-        return self::$instances[$id] = Ep::getDi()->get($id);
+        return static::$instances[$id] = static::create();
     }
+
+    public static function swap(object $new): object
+    {
+        $old = static::getInstance();
+
+        static::$instances[static::getFacadeAccessor()] = $new;
+
+        return $old;
+    }
+
+    public static function clear(): void
+    {
+        unset(static::$instances[static::getFacadeAccessor()]);
+    }
+
+    protected static function create(): object
+    {
+        return Ep::getDi()->get(static::getFacadeAccessor());
+    }
+
+    abstract protected static function getFacadeAccessor(): string;
 }

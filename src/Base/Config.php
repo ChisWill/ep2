@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Ep\Base;
 
-use Closure;
 use InvalidArgumentException;
 
 /**
@@ -85,21 +84,13 @@ final class Config
      */
     public ?string $secretKey = null;
     /**
+     * The classname of instance what implements interface "Yiisoft\Di\ServiceProviderInterface"
+     */
+    public ?string $di = null;
+    /**
      * The custom parameters
      */
     public array $params = [];
-    /**
-     * The custom DI configuration
-     * 
-     * ```php
-     * 
-     * return static fn (\Ep\Base\Config $config, array $params): array => [
-     *     FooInterface::class => Foo::class
-     * ];
-     * 
-     * ```
-     */
-    private ?Closure $di = null;
 
     public function __construct(array $config)
     {
@@ -124,10 +115,5 @@ final class Config
             $this->$key = $value;
         }
         return $result;
-    }
-
-    public function getDi(): array
-    {
-        return $this->di ? call_user_func($this->di, $this, $this->params) : [];
     }
 }

@@ -23,6 +23,10 @@ final class WebProvider implements ServiceProviderInterface
             CarInterface::class => [
                 'class' => BMW::class,
                 '$model' => 'X5'
+            ],
+            Garage::class => [
+                'class' => Garage::class,
+                '$area' => 'South'
             ]
         ];
     }

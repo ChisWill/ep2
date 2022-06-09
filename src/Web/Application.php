@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ep\Web;
 
 use Ep\Base\ErrorHandler;
+use Ep\Contract\ApplicationInterface;
 use Ep\Web\Middleware\InterceptorMiddleware;
 use Ep\Web\Middleware\RouteMiddleware;
 use HttpSoft\Emitter\Exception\HeadersAlreadySentException;
@@ -17,7 +18,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-final class Application
+final class Application implements ApplicationInterface
 {
     public function __construct(
         private ServerRequestCreator $serverRequestCreator,
@@ -77,5 +78,10 @@ final class Application
             $response,
             $request->getMethod() === Method::HEAD
         );
+    }
+
+    public static function getDiProviderClass(): string
+    {
+        return ServiceProvider::class;
     }
 }

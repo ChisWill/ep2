@@ -13,9 +13,12 @@ final class Env implements EnvInterface
 {
     private RepositoryInterface $repository;
 
-    public function __construct(private string $rootPath)
-    {
+    public function __construct(
+        private string $rootPath,
+        private string $configPath
+    ) {
         $this->repository = $this->createRepository();
+        $this->configPath = '/' . ltrim($configPath, './');
 
         Dotenv::create($this->repository, $rootPath)->safeLoad();
     }
@@ -36,7 +39,7 @@ final class Env implements EnvInterface
     public function getConfig(): Config
     {
         if ($this->config === null) {
-            $this->config = new Config(require($this->rootPath . '/config/main.php'));
+            $this->config = new Config(require($this->rootPath . $this->configPath));
         }
         return $this->config;
     }

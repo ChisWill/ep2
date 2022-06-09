@@ -12,13 +12,10 @@ use Ep\Console\EventDispatcher;
 use Ep\Console\Factory as ConsoleFactory;
 use Ep\Contract\ConsoleFactoryInterface;
 use Ep\Contract\InjectorInterface;
+use Ep\Tests\Support\Car\Wheel;
+use Ep\Tests\Support\Car\WheelInterface;
 use Ep\Web\Application;
 use Ep\Web\NotFoundHandler;
-use HttpSoft\Message\ResponseFactory;
-use HttpSoft\Message\ServerRequestFactory;
-use HttpSoft\Message\StreamFactory;
-use HttpSoft\Message\UploadedFileFactory;
-use HttpSoft\Message\UriFactory;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\Console\CommandLoader\CommandLoaderInterface;
 use Symfony\Component\Console\Input\ArgvInput;
@@ -50,11 +47,6 @@ use Psr\Cache\CacheItemPoolInterface;
 use Psr\Container\ContainerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\EventDispatcher\ListenerProviderInterface;
-use Psr\Http\Message\UriFactoryInterface;
-use Psr\Http\Message\UploadedFileFactoryInterface;
-use Psr\Http\Message\StreamFactoryInterface;
-use Psr\Http\Message\ResponseFactoryInterface;
-use Psr\Http\Message\ServerRequestFactoryInterface;
 use Psr\Log\LoggerInterface;
 use Psr\SimpleCache\CacheInterface;
 
@@ -110,13 +102,6 @@ return [
             ['cookie_secure' => 0]
         ]
     ],
-    // ServerRequest
-    ServerRequestFactoryInterface::class => ServerRequestFactory::class,
-    UriFactoryInterface::class => UriFactory::class,
-    UploadedFileFactoryInterface::class => UploadedFileFactory::class,
-    StreamFactoryInterface::class => StreamFactory::class,
-    // Response
-    ResponseFactoryInterface::class => ResponseFactory::class,
     // Logger
     LoggerInterface::class => [
         'class' => Logger::class,
@@ -131,5 +116,13 @@ return [
     // Event
     ListenerCollection::class => static fn (ListenerCollectionFactory $listenerCollectionFactory): ListenerCollection => $listenerCollectionFactory->create($config->events),
     ListenerProviderInterface::class => Provider::class,
-    EventDispatcherInterface::class => Dispatcher::class
+    EventDispatcherInterface::class => Dispatcher::class,
+
+
+    WheelInterface::class => Wheel::class,
+
+    // CarInterface::class => [
+    //     'class' => BMW::class,
+    //     '$model' => 'X5'
+    // ],
 ];

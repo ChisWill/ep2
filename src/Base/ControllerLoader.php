@@ -39,8 +39,10 @@ final class ControllerLoader
     {
         [$class, $action] = $this->parseHandler($handler);
 
+        $c = $this->createController($class);
+        $c->actionId = $action;
         return [
-            $this->createController($class),
+            $c,
             $this->createAction($action)
         ];
     }

@@ -14,6 +14,8 @@ use Ep\Tests\App\Component\ConsoleRenderer;
 use Ep\Tests\App\Component\WebErrorRenderer;
 use Ep\Tests\App\Component\Interceptor;
 use Ep\Tests\App\Component\UserRepository;
+use Ep\Tests\Support\Car\Car;
+use Ep\Tests\Support\Car\CarInterface;
 use Ep\Tests\Support\Object\Engine\EngineInterface;
 use Ep\Tests\Support\Object\Engine\SteamEngine;
 use Ep\Tests\Support\Object\Wing\AngelWing;
@@ -71,5 +73,6 @@ return static fn (Config $config, array $params): array => [
             20
         ]
     ],
-    EngineInterface::class => SteamEngine::class
+    EngineInterface::class => SteamEngine::class,
+    CarInterface::class => Car::class,
 ];

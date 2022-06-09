@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ep\Traits;
 
 use Ep\Attribute\Inject;
+use Ep\Kit\Util;
 use Ep\Web\Service;
 use Ep\Web\View;
 use Yiisoft\Http\Status;
@@ -18,6 +19,8 @@ trait WebServiceTrait
 
     #[Inject]
     private Service $service;
+    #[Inject]
+    private Util $util;
 
     public string $id;
 
@@ -79,6 +82,6 @@ trait WebServiceTrait
 
     protected function getContextId(): string
     {
-        return $this->id;
+        return $this->util->generateClassId(self::class, 'Controller');
     }
 }
