@@ -29,9 +29,9 @@ final class ErrorRenderer extends BaseErrorRenderer
     }
 
     /**
-     * @param  ServerRequestInterface $request
+     * {@inheritDoc}
      * 
-     * @return string
+     * @param  ServerRequestInterface $request
      */
     public function render(Throwable $t, $request): string
     {
@@ -57,10 +57,7 @@ final class ErrorRenderer extends BaseErrorRenderer
         }
     }
 
-    /**
-     * @param ServerRequestInterface $request
-     */
-    private function log(Throwable $t, $request): void
+    private function log(Throwable $t, ServerRequestInterface $request): void
     {
         $context = [
             'category' => get_class($t)
@@ -184,11 +181,17 @@ final class ErrorRenderer extends BaseErrorRenderer
         ];
     }
 
+    /**
+     * {@inheritDoc}
+     */
     protected function getViewPath(): string
     {
         return '@ep/views';
     }
 
+    /**
+     * {@inheritDoc}
+     */
     protected function getContextId(): string
     {
         return 'error';

@@ -15,8 +15,6 @@ use Ep\Console\Factory as ConsoleFactory;
 use Ep\Contract\ConsoleFactoryInterface;
 use Ep\Contract\EnvInterface;
 use Ep\Contract\InjectorInterface;
-use Ep\Tests\Support\Car\Car;
-use Ep\Tests\Support\Car\CarInterface;
 use Ep\Web\Application;
 use Ep\Web\NotFoundHandler;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
@@ -74,7 +72,7 @@ final class ServiceProvider implements ServiceProviderInterface
             Aliases::class => new Aliases([
                 '@root' => $this->env->getRootPath(),
                 '@vendor' => $this->config->vendorPath,
-                '@ep' => dirname(__DIR__)
+                '@ep' => dirname(__DIR__, 2)
             ] + $this->config->aliases),
             // Web Application
             Application::class => [

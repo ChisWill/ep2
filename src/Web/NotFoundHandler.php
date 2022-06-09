@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Ep\Web;
 
 use Ep\Base\Constant;
-use Ep\Tests\Support\Car\CarInterface;
 use Ep\Traits\ViewTrait;
 use Yiisoft\Http\Status;
 use Psr\Http\Message\ServerRequestInterface;
@@ -17,11 +16,13 @@ final class NotFoundHandler implements RequestHandlerInterface
     use ViewTrait;
 
     public function __construct(
-        private Service $service,
-        private CarInterface $car
+        private Service $service
     ) {
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         return $this->service->string(
@@ -33,11 +34,17 @@ final class NotFoundHandler implements RequestHandlerInterface
         );
     }
 
+    /**
+     * {@inheritDoc}
+     */
     protected function getViewPath(): string
     {
         return '@ep/views';
     }
 
+    /**
+     * {@inheritDoc}
+     */
     protected function getContextId(): string
     {
         return 'error';

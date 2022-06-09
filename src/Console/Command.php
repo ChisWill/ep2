@@ -6,17 +6,17 @@ namespace Ep\Console;
 
 use Ep;
 use Ep\Contract\ConfigurableTrait;
-use Ep\Contract\ContextTrait;
 use Ep\Contract\ConsoleRequestInterface;
 use Ep\Contract\ConsoleResponseInterface;
 use Ep\Contract\ControllerInterface;
 use Ep\Contract\FilterTrait;
+use Ep\Traits\ViewTrait;
 use Symfony\Component\Console\Command\Command as SymfonyCommand;
 use LogicException;
 
 abstract class Command implements ControllerInterface
 {
-    use ContextTrait, FilterTrait, ConfigurableTrait;
+    use ViewTrait, FilterTrait, ConfigurableTrait;
 
     /**
      * {@inheritDoc}

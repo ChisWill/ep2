@@ -33,11 +33,11 @@ final class Core
     private ContainerConfig $containerConfig;
     private ContainerInterface $container;
 
-    public function app(string $appClass): object
+    public function ready(string $application): object
     {
-        $this->containerConfig = $this->createContainerConfig($appClass::getDiProviderClass());
+        $this->containerConfig = $this->createContainerConfig($application::getDiProviderName());
         $this->container = (new Container($this->containerConfig))->get(ContainerInterface::class);
-        return $this->container->get($appClass);
+        return $this->container->get($application);
     }
 
     public function getContainerConfig(): ContainerConfig
@@ -103,12 +103,15 @@ final class Core
 
     private function createContainerConfig(string $appProvider): ContainerConfigInterface
     {
+        $providers = [
+            new ServiceProvider($this->env),
+            new $appProvider($this->config),
+        ];
+        if ($this->config->diProvider) {
+            $providers[] = new $this->config->diProvider($this->config);
+        }
         return ContainerConfig::create()
-            ->withProviders([
-                new ServiceProvider($this->env),
-                new $appProvider($this->config),
-                new $this->config->di($this->config)
-            ])
+            ->withProviders($providers)
             ->withValidate($this->config->debug);
     }
 }

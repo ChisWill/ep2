@@ -8,7 +8,7 @@ namespace PHPSTORM_META {
     use Psr\EventDispatcher\EventDispatcherInterface;
 
     override(
-        Core::app(0),
+        Core::ready(0),
         map([
             '' => '@'
         ])

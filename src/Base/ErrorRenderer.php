@@ -32,6 +32,9 @@ class ErrorRenderer implements ErrorRendererInterface
         return self::ERRORS[$severity] ?? 'Error';
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function render(Throwable $t, mixed $request): string
     {
         return get_class($t) . " '{$t->getMessage()}' in "

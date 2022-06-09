@@ -86,7 +86,7 @@ final class Config
     /**
      * The classname of instance what implements interface "Yiisoft\Di\ServiceProviderInterface"
      */
-    public ?string $di = null;
+    public ?string $diProvider = null;
     /**
      * The custom parameters
      */

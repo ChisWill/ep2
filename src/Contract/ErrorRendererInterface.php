@@ -8,5 +8,5 @@ use Throwable;
 
 interface ErrorRendererInterface
 {
-    public function render(Throwable $t, $request): string;
+    public function render(Throwable $t, mixed $request): string;
 }
