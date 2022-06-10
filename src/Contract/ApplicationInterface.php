@@ -6,5 +6,5 @@ namespace Ep\Contract;
 
 interface ApplicationInterface
 {
-    public static function getDiProviderName(): string;
+    public static function getDiProviderName(): ?string;
 }

@@ -16,7 +16,7 @@ use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ServerRequestFactoryInterface;
 use Yiisoft\Di\ServiceProviderInterface;
 
-final class ServiceProvider implements ServiceProviderInterface
+final class DiProvider implements ServiceProviderInterface
 {
     public function getDefinitions(): array
     {

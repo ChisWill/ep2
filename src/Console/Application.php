@@ -6,12 +6,13 @@ namespace Ep\Console;
 
 use Ep;
 use Ep\Base\ErrorHandler;
+use Ep\Contract\ApplicationInterface;
 use Ep\Contract\ConsoleFactoryInterface;
 use Symfony\Component\Console\Application as SymfonyApplication;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-final class Application extends SymfonyApplication
+final class Application extends SymfonyApplication implements ApplicationInterface
 {
     public function __construct(
         private InputInterface $input,
@@ -45,5 +46,13 @@ final class Application extends SymfonyApplication
         $parts = explode('/', $name, -1);
 
         return ucfirst(implode('/', $limit === null ? $parts : array_slice($parts, 0, $limit)));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public static function getDiProviderName(): ?string
+    {
+        return DiProvider::class;
     }
 }

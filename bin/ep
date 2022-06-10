@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 use Ep\Console\Application;
 use Ep\Console\Input;
+use Ep\Helper\Arr;
 
 (static function (): void {
     $cwd = getcwd();
@@ -19,27 +20,30 @@ use Ep\Console\Input;
     require($options['bootstrap'] ?? './vendor/autoload.php');
     unset($options['bootstrap']);
 
-    $container = Ep::create(realpath($options['rootPath'] ?? './'));
-    unset($options['rootPath']);
+    $rootPath = realpath($options['rootPath'] ?? './');
+    $configPath = $rootPath . '/' . ltrim($options['configPath'], './');
+    unset($options['rootPath'], $options['configPath']);
+
+    $core = Ep::create($rootPath);
+
+    $config = Arr::getValues(require($configPath), [
+        'rootNamespace',
+        'env',
+        'debug',
+        'diProvider',
+        'params'
+    ]);
 
     $options['common'] ??= [];
-    $options['common']['userRootNamespace'] = Ep::getConfig()->switch([
-        'rootNamespace' => 'Ep',
-        'commandSuffix' => 'Command',
-        'actionSuffix' => 'Action',
-        'defaultAction' => 'index',
-        'enableDefaultRouteRule' => true,
-        'defaultRouteRule' => null
-    ])['rootNamespace'];
+    $options['common']['userRootNamespace'] = $config['rootNamespace'];
+    $config['rootNamespace'] = 'Ep';
 
-    $input = $container->get(Input::class);
+    $app = $core->config($config)->ready(Application::class);
+
+    $input = Ep::getDi()->get(Input::class);
     foreach ($options as $name => $value) {
         $input->setOption($name, $value);
     }
 
-    $exitCode = $container
-        ->get(Application::class)
-        ->run($input);
-
-    exit($exitCode);
+    exit($app->run($input));
 })();

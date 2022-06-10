@@ -1,6 +1,7 @@
 {
     "bootstrap": "vendor/autoload.php",
     "rootPath": "tests/App",
+    "configPath": "config/main.php",
     "common": {
         "db": null
     },

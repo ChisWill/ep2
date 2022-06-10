@@ -80,8 +80,11 @@ final class Application implements ApplicationInterface
         );
     }
 
-    public static function getDiProviderName(): string
+    /**
+     * {@inheritDoc}
+     */
+    public static function getDiProviderName(): ?string
     {
-        return ServiceProvider::class;
+        return DiProvider::class;
     }
 }

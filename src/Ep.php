@@ -6,7 +6,7 @@ use Ep\Base\Core;
 use Ep\Base\Facade;
 
 /**
- * @method static Core create(string $rootPath, string $configPath)
+ * @method static Core create(string $rootPath)
  * @method static \Yiisoft\Di\ContainerConfig getContainerConfig()
  * @method static \Ep\Contract\EnvInterface getEnv()
  * @method static \Ep\Base\Config getConfig()

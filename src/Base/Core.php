@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Ep\Base;
 
+use Ep\Contract\ApplicationInterface;
 use Ep\Contract\EnvInterface;
 use Ep\Contract\InjectorInterface;
 use Ep\Kit\Annotate;
@@ -16,27 +17,40 @@ use Yiisoft\Factory\Factory;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Psr\SimpleCache\CacheInterface;
+use LogicException;
 
 final class Core
 {
+    private string $rootPath;
     private EnvInterface $env;
-    private Config $config;
 
-    public function create(string $rootPath, string $configPath): self
+    public function create(string $rootPath): self
     {
-        $this->env = new Env($rootPath, $configPath);
-        $this->config = $this->env->getConfig();
-
+        $this->rootPath ??= $rootPath;
+        $this->env ??= new Env($this->rootPath);
         return $this;
     }
 
+    private string|array $configValue = 'config/main.php';
+
+    public function config(string|array $value): self
+    {
+        $this->configValue = $value;
+        return $this;
+    }
+
+    private Config $config;
     private ContainerConfig $containerConfig;
     private ContainerInterface $container;
 
     public function ready(string $application): object
     {
-        $this->containerConfig = $this->createContainerConfig($application::getDiProviderName());
-        $this->container = (new Container($this->containerConfig))->get(ContainerInterface::class);
+        if (!is_callable([$application, 'getDiProviderName'])) {
+            throw new LogicException(sprintf('The application "%s" must implements %s', $application, ApplicationInterface::class));
+        }
+        $this->config ??= $this->createConfig();
+        $this->containerConfig ??= $this->createContainerConfig($application::getDiProviderName());
+        $this->container ??= (new Container($this->containerConfig))->get(ContainerInterface::class);
         return $this->container->get($application);
     }
 
@@ -101,12 +115,26 @@ final class Core
         return ($rootNamespace ?? $this->config->rootNamespace) === 'Ep';
     }
 
-    private function createContainerConfig(string $appProvider): ContainerConfigInterface
+    private function createConfig(): Config
+    {
+        if (is_string($this->configValue)) {
+            $value = require($this->rootPath . '/' . ltrim($this->configValue, './'));
+        } elseif (is_array($this->configValue)) {
+            $value = $this->configValue;
+        } else {
+            $value = [];
+        }
+        return new Config($value);
+    }
+
+    private function createContainerConfig(?string $appDiProvider): ContainerConfigInterface
     {
         $providers = [
-            new ServiceProvider($this->env),
-            new $appProvider($this->config),
+            new DiProvider($this->env, $this->config)
         ];
+        if ($appDiProvider) {
+            $providers[] = new $appDiProvider($this->config);
+        }
         if ($this->config->diProvider) {
             $providers[] = new $this->config->diProvider($this->config);
         }
