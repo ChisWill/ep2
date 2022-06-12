@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Ep\Tests\App\Component;
 
+use Ep\Traits\WebService;
 use Psr\Http\Message\ResponseInterface;
 
-class Controller extends \Ep\Web\Controller
+class Controller
 {
-    /**
-     * @param array|string $body
-     */
-    protected function success($body = []): ResponseInterface
+    use WebService;
+
+    protected function success(array|string $body = []): ResponseInterface
     {
         return $this->json([
             'errno' => 0,
@@ -20,11 +20,7 @@ class Controller extends \Ep\Web\Controller
         ]);
     }
 
-    /**
-     * @param array|string $error
-     * @param array|string $body
-     */
-    protected function error($error, int $errno = 500, $body = []): ResponseInterface
+    protected function error(array|string $error, int $errno = 500, array|string $body = []): ResponseInterface
     {
         return $this->json([
             'errno' => $errno,

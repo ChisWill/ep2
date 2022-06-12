@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Ep\Db;
 
 use Ep;
-use Ep\Exception\NotFoundException;
 use Ep\Helper\Date;
 use Ep\Helper\Str;
 use Ep\Helper\System;
@@ -18,6 +17,7 @@ use Yiisoft\Http\Method;
 use Yiisoft\Validator\DataSetInterface;
 use Yiisoft\Strings\StringHelper;
 use Psr\Http\Message\ServerRequestInterface;
+use RuntimeException;
 
 abstract class ActiveRecord extends YiiActiveRecord implements DataSetInterface
 {
@@ -56,7 +56,7 @@ abstract class ActiveRecord extends YiiActiveRecord implements DataSetInterface
     }
 
     /**
-     * @throws NotFoundException
+     * @throws RuntimeException
      */
     public static function findModel(int|string|array|ExpressionInterface $condition, ConnectionInterface $db = null): static
     {
@@ -71,7 +71,7 @@ abstract class ActiveRecord extends YiiActiveRecord implements DataSetInterface
                 ->where($condition)
                 ->one();
             if ($model === null) {
-                throw new NotFoundException('Data does not exists.');
+                throw new RuntimeException('Data does not exists.');
             }
 
             return $model;

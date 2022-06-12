@@ -12,14 +12,11 @@ use Yiisoft\Auth\Middleware\Authentication;
 
 class UserController extends Controller
 {
-    public function __construct(AuthRepository $authRepository)
+    public function __construct(private AuthRepository $authRepository)
     {
-        $this->setMiddlewares([
-            $authRepository->findMiddleware('frontend')
-        ]);
     }
 
-    public function infoAction(ServerRequestInterface $request)
+    public function info(ServerRequestInterface $request)
     {
         /** @var Student */
         $student = $request->getAttribute(Authentication::class);

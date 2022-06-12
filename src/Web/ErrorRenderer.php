@@ -8,7 +8,6 @@ use Ep\Base\Config;
 use Ep\Base\ErrorRenderer as BaseErrorRenderer;
 use Ep\Contract\WebErrorRendererInterface;
 use Ep\Helper\Date;
-use Ep\Traits\ViewTrait;
 use Yiisoft\Aliases\Aliases;
 use Yiisoft\Http\Method;
 use Psr\Container\ContainerInterface;
@@ -18,14 +17,17 @@ use Throwable;
 
 final class ErrorRenderer extends BaseErrorRenderer
 {
-    use ViewTrait;
-
     public function __construct(
         private ContainerInterface $container,
         private Config $config,
         private LoggerInterface $logger,
-        private Aliases $aliases
+        private Aliases $aliases,
+        private View $view
     ) {
+        $this->view = $view
+            ->withViewPath('@ep/views')
+            ->withContext($this)
+            ->withContextId('error');
     }
 
     /**
@@ -39,7 +41,7 @@ final class ErrorRenderer extends BaseErrorRenderer
             $this->log($t, $request);
 
             return $this
-                ->getView()
+                ->view
                 ->renderPartial('development', [
                     'exception' => $t,
                     'request' => $request
@@ -52,7 +54,7 @@ final class ErrorRenderer extends BaseErrorRenderer
             } else {
                 $this->log($t, $request);
 
-                return $this->getView()->renderPartial('production');
+                return $this->view->renderPartial('production');
             }
         }
     }
@@ -60,12 +62,12 @@ final class ErrorRenderer extends BaseErrorRenderer
     private function log(Throwable $t, ServerRequestInterface $request): void
     {
         $context = [
-            'category' => get_class($t)
+            'category' => get_class($t),
+            'host' => $request->getUri()->getHost(),
+            'path' => $request->getRequestTarget(),
+            'method' => $request->getMethod()
         ];
 
-        $context['host'] = $request->getUri()->getHost();
-        $context['path'] = $request->getRequestTarget();
-        $context['method'] = $request->getMethod();
         if ($request->getMethod() === Method::POST) {
             $context['post'] = $request->getBody()->getContents() ?: $request->getParsedBody();
         }
@@ -76,7 +78,7 @@ final class ErrorRenderer extends BaseErrorRenderer
     public function renderPreviousException(Throwable $t): string
     {
         if (($previous = $t->getPrevious()) !== null) {
-            return $this->getView()->renderPartial('_previous', ['exception' => $previous]);
+            return $this->view->renderPartial('_previous', ['exception' => $previous]);
         } else {
             return '';
         }
@@ -97,7 +99,7 @@ final class ErrorRenderer extends BaseErrorRenderer
             $end = $line + $half < $lineCount ? $line + $half : $lineCount - 1;
         }
 
-        return $this->getView()->renderPartial('_stack', [
+        return $this->view->renderPartial('_stack', [
             'file' => $file,
             'line' => $line,
             'class' => $class,
@@ -179,21 +181,5 @@ final class ErrorRenderer extends BaseErrorRenderer
             'Post Max Size' => @ini_get('post_max_size') ?: 'Unknown',
             'Upload Max Filesize' => @ini_get('upload_max_filesize') ?: 'Unknown',
         ];
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    protected function getViewPath(): string
-    {
-        return '@ep/views';
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    protected function getContextId(): string
-    {
-        return 'error';
     }
 }

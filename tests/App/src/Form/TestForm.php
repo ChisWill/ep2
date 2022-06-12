@@ -26,4 +26,9 @@ class TestForm extends Form
             'title' => [(HasLength::rule())->max(5)->min(1)]
         ];
     }
+
+    public function getData(): mixed
+    {
+        return [];
+    }
 }

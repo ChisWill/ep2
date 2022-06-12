@@ -28,8 +28,7 @@ $this->beginPage();
 
     <header>
         <h3>头部</h3>
-        <h2>Controller: <?= $this->context->id ?></h2>
-        <h3>Action: <?= $this->context->actionId ?></h3>
+        <h2>Controller: <?= get_class($this->context) ?></h2>
     </header>
 
     <?= $content ?>

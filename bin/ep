@@ -18,21 +18,24 @@ use Ep\Helper\Arr;
     }
 
     require($options['bootstrap'] ?? './vendor/autoload.php');
-    unset($options['bootstrap']);
-
     $rootPath = realpath($options['rootPath'] ?? './');
     $configPath = $rootPath . '/' . ltrim($options['configPath'], './');
-    unset($options['rootPath'], $options['configPath']);
+    unset($options['bootstrap'], $options['rootPath'], $options['configPath']);
 
     $core = Ep::create($rootPath);
 
-    $config = Arr::getValues(require($configPath), [
-        'rootNamespace',
-        'env',
-        'debug',
-        'diProvider',
-        'params'
-    ]);
+    $config = array_filter(
+        Arr::getValues(require($configPath), [
+            'rootNamespace',
+            'env',
+            'vendorPath',
+            'runtimeDir',
+            'migrationTableName',
+            'viewPath',
+            'diProvider',
+            'params'
+        ])
+    );
 
     $options['common'] ??= [];
     $options['common']['userRootNamespace'] = $config['rootNamespace'];

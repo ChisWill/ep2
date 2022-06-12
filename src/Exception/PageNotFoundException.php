@@ -6,6 +6,6 @@ namespace Ep\Exception;
 
 use RuntimeException;
 
-final class NotFoundException extends RuntimeException
+final class PageNotFoundException extends RuntimeException
 {
 }

@@ -16,8 +16,11 @@ class View
 
     private string $layout = 'main';
 
-    public function withLayout(string $layout): self
+    public function withLayout(?string $layout): self
     {
+        if ($layout === null) {
+            return $this;
+        }
         $new = clone $this;
         $new->layout = $layout;
         return $new;

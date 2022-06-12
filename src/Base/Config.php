@@ -36,14 +36,6 @@ final class Config
      */
     public string $commandSuffix = 'Command';
     /**
-     * Database migration table name
-     */
-    public string $migrationTableName = 'migration';
-    /**
-     * Action suffix
-     */
-    public string $actionSuffix = 'Action';
-    /**
      * Default Controller
      */
     public string $defaultController = 'index';
@@ -51,6 +43,10 @@ final class Config
      * Default action
      */
     public string $defaultAction = 'index';
+    /**
+     * Database migration table name
+     */
+    public string $migrationTableName = 'migration';
     /**
      * Whether enable the default route rule
      */
@@ -92,28 +88,15 @@ final class Config
      */
     public array $params = [];
 
-    public function __construct(array $config)
+    public function __construct(array $values)
     {
-        foreach ($config as $key => $val) {
-            $this->$key = $val;
+        foreach ($values as $key => $value) {
+            $this->$key = $value;
         }
     }
 
     public function __set(string $name, mixed $value): void
     {
         throw new InvalidArgumentException("The configuration \"{$name}\" can't be set.");
-    }
-
-    /**
-     * Call before the application runs
-     */
-    public function switch(array $properties): array
-    {
-        $result = [];
-        foreach ($properties as $key => $value) {
-            $result[$key] = $this->$key;
-            $this->$key = $value;
-        }
-        return $result;
     }
 }

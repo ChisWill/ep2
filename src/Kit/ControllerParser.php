@@ -2,16 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Ep\Base;
+namespace Ep\Kit;
 
-use Ep\Exception\NotFoundException;
+use Ep\Base\Config;
+use Ep\Exception\PageNotFoundException;
 use Ep\Helper\Str;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use InvalidArgumentException;
 
-final class ControllerLoader
+final class ControllerParser
 {
     private string $suffix;
 
@@ -19,7 +20,7 @@ final class ControllerLoader
         private ContainerInterface $container,
         private Config $config
     ) {
-        $this->suffix = PHP_SAPI === 'cli' ? $config->commandSuffix : $config->controllerSuffix;
+        $this->suffix = $config->controllerSuffix;
     }
 
     public function withSuffix(string $suffix): self
@@ -31,7 +32,7 @@ final class ControllerLoader
 
     /**
      * @throws InvalidArgumentException
-     * @throws NotFoundException
+     * @throws PageNotFoundException
      * @throws NotFoundExceptionInterface
      * @throws ContainerExceptionInterface
      */
@@ -39,11 +40,9 @@ final class ControllerLoader
     {
         [$class, $action] = $this->parseHandler($handler);
 
-        $c = $this->createController($class);
-        $c->actionId = $action;
         return [
-            $c,
-            $this->createAction($action)
+            $this->createController($class),
+            $action
         ];
     }
 
@@ -52,31 +51,25 @@ final class ControllerLoader
      */
     public function parseHandler(string|array $handler): array
     {
-        switch (gettype($handler)) {
-            case 'string':
-                return $this->parseStringHandler($handler);
-            case 'array':
-                return $this->parseArrayHandler($handler);
+        if (is_string($handler)) {
+            return $this->parseStringHandler($handler);
+        } else {
+            return $this->parseArrayHandler($handler);
         }
     }
 
     /**
-     * @throws NotFoundException
+     * @throws PageNotFoundException
      * @throws NotFoundExceptionInterface
      * @throws ContainerExceptionInterface
      */
     private function createController(string $class): object
     {
         if (!class_exists($class)) {
-            throw new NotFoundException("{$class} is not found.");
+            throw new PageNotFoundException("{$class} is not found.");
         }
 
         return $this->container->get($class);
-    }
-
-    private function createAction(string $action): string
-    {
-        return $action . $this->config->actionSuffix;
     }
 
     /**

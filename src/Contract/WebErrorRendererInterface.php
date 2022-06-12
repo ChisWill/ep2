@@ -7,7 +7,7 @@ namespace Ep\Contract;
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;
 
-interface WebErrorRendererInterface extends ContextInterface
+interface WebErrorRendererInterface
 {
     public function render(Throwable $t, ServerRequestInterface $request): string;
 }

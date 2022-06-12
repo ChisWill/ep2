@@ -6,14 +6,14 @@ namespace Ep\Tests\App\Component;
 
 use Ep\Attribute\Inject;
 use Ep\Contract\WebErrorRendererInterface;
-use Ep\Traits\ViewTrait;
+use Ep\Traits\ContextView;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use Throwable;
 
-class WebErrorRenderer implements WebErrorRendererInterface
+final class WebErrorRenderer implements WebErrorRendererInterface
 {
-    use ViewTrait;
+    use ContextView;
 
     #[Inject]
     private LoggerInterface $log;

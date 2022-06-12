@@ -4,21 +4,22 @@ declare(strict_types=1);
 
 namespace Ep\Tests\App\Command;
 
-use Ep\Console\Command;
 use Ep\Contract\ConsoleRequestInterface;
 use Ep\Helper\Curl;
+use Ep\Traits\ConsoleService;
 use Symfony\Component\Console\Input\InputArgument;
 
-class CurlCommand extends Command
+class CurlCommand
 {
+    use ConsoleService;
+
     public function __construct()
     {
-        $this
-            ->createDefinition('single')
+        $this->define('single')
             ->addArgument('action', InputArgument::REQUIRED, 'target url');
     }
 
-    public function multiLockAction()
+    public function multiLock()
     {
         $url = 'http://ep.cc/test/lock';
 
@@ -31,7 +32,7 @@ class CurlCommand extends Command
         return $this->success();
     }
 
-    public function multiTestAction()
+    public function multiTest()
     {
         $url = 'http://ep.cc/test/lock';
 
@@ -57,7 +58,7 @@ class CurlCommand extends Command
         return $this->success();
     }
 
-    public function singleAction(ConsoleRequestInterface $request)
+    public function single(ConsoleRequestInterface $request)
     {
         $r = Curl::get('http://ep.cc/test/' . $request->getArgument('action'));
 

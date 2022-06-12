@@ -7,6 +7,7 @@ namespace Ep\Command\Service;
 use Ep\Console\Service as ConsoleService;
 use Ep\Kit\Annotate;
 use Ep\Kit\Util;
+use Symfony\Component\Console\Helper\ProgressBar;
 
 final class ScanService extends Service
 {
@@ -31,8 +32,12 @@ final class ScanService extends Service
             $classList = array_merge($classList, $this->util->getClassList($rootNamespace, $this->request->getOption('ignore')));
         }
 
-        $this->consoleService->progress(fn ($progressBar) => $this->annotate->cache($classList, static fn () => $progressBar->advance()), count($classList));
-
-        $this->consoleService->writeln();
+        $this->consoleService->progress(
+            fn (ProgressBar $progressBar) => $this->annotate->scan(
+                $classList,
+                static fn () => $progressBar->advance()
+            ),
+            count($classList)
+        );
     }
 }

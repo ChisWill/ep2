@@ -7,8 +7,6 @@ namespace Ep\Base;
 use Ep\Contract\ApplicationInterface;
 use Ep\Contract\EnvInterface;
 use Ep\Contract\InjectorInterface;
-use Ep\Kit\Annotate;
-use Ep\Kit\Util;
 use Yiisoft\Db\Connection\Connection;
 use Yiisoft\Di\Container;
 use Yiisoft\Di\ContainerConfig;
@@ -43,6 +41,9 @@ final class Core
     private ContainerConfig $containerConfig;
     private ContainerInterface $container;
 
+    /**
+     * @throws LogicException
+     */
     public function ready(string $application): object
     {
         if (!is_callable([$application, 'getDiProviderName'])) {
@@ -99,32 +100,13 @@ final class Core
         return $this->container->get($id ?? LoggerInterface::class);
     }
 
-    public function scan(): void
-    {
-        $this->container
-            ->get(Annotate::class)
-            ->cache(
-                $this->container
-                    ->get(Util::class)
-                    ->getClassList($this->config->rootNamespace)
-            );
-    }
-
-    public function isSelf(string $rootNamespace = null): bool
-    {
-        return ($rootNamespace ?? $this->config->rootNamespace) === 'Ep';
-    }
-
     private function createConfig(): Config
     {
         if (is_string($this->configValue)) {
-            $value = require($this->rootPath . '/' . ltrim($this->configValue, './'));
-        } elseif (is_array($this->configValue)) {
-            $value = $this->configValue;
+            return new Config(require($this->rootPath . '/' . ltrim($this->configValue, './')));
         } else {
-            $value = [];
+            return new Config($this->configValue);
         }
-        return new Config($value);
     }
 
     private function createContainerConfig(?string $appDiProvider): ContainerConfigInterface

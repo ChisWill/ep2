@@ -8,18 +8,12 @@ use Ep\Base\Config;
 use Ep\Base\Container;
 use Ep\Base\Env;
 use Ep\Base\Injector;
-use Ep\Console\Application as ConsoleApplication;
 use Ep\Contract\EnvInterface;
 use Ep\Contract\InjectorInterface;
-use Ep\Web\Application as WebApplication;
-use Ep\Web\NotFoundHandler;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
-use Symfony\Component\Console\CommandLoader\CommandLoaderInterface;
-use Symfony\Contracts\EventDispatcher\EventDispatcherInterface as SymfonyEventDispatcherInterface;
 use Yiisoft\Aliases\Aliases;
 use Yiisoft\Assets\AssetLoader;
 use Yiisoft\Assets\AssetLoaderInterface;
-use Yiisoft\Assets\AssetManager;
 use Yiisoft\Assets\AssetPublisher;
 use Yiisoft\Assets\AssetPublisherInterface;
 use Yiisoft\Cache\Cache;
@@ -34,8 +28,6 @@ use Yiisoft\Log\Logger;
 use Yiisoft\Log\Target;
 use Yiisoft\Profiler\Profiler;
 use Yiisoft\Profiler\ProfilerInterface;
-use Yiisoft\Session\Session;
-use Yiisoft\Session\SessionInterface;
 use Yiisoft\Yii\Event\ListenerCollectionFactory;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\Container\ContainerInterface;
@@ -65,37 +57,6 @@ final class DiProvider implements ServiceProviderInterface
                 '@vendor' => $this->config->vendorPath,
                 '@ep' => dirname(__DIR__, 2)
             ] + $this->config->aliases),
-            // Web Application
-            WebApplication::class => [
-                '__construct()' => [
-                    'notFoundHandler' => Reference::to(NotFoundHandler::class)
-                ]
-            ],
-            // Console
-            ConsoleApplication::class => [
-                'setAutoExit()' => [false],
-                'setCommandLoader()' => [Reference::to(CommandLoaderInterface::class)],
-                'setDispatcher()' => [Reference::to(SymfonyEventDispatcherInterface::class)]
-            ],
-            // View
-            AssetLoaderInterface::class => AssetLoader::class,
-            AssetPublisherInterface::class => AssetPublisher::class,
-            AssetManager::class => [
-                '__construct()' => [
-                    Reference::to(Aliases::class),
-                    Reference::to(AssetLoaderInterface::class)
-                ],
-                'withPublisher()' => [
-                    Reference::to(AssetPublisherInterface::class)
-                ]
-            ],
-            // Session
-            SessionInterface::class => [
-                'class' => Session::class,
-                '__construct()' => [
-                    ['cookie_secure' => 0]
-                ]
-            ],
             // Logger
             LoggerInterface::class => [
                 'class' => Logger::class,
@@ -105,6 +66,9 @@ final class DiProvider implements ServiceProviderInterface
             CacheItemPoolInterface::class => fn (Aliases $aliases): CacheItemPoolInterface => new FilesystemAdapter('item-caches', 0, $aliases->get($this->config->runtimeDir)),
             CacheInterface::class => fn (Aliases $aliases): CacheInterface => new FileCache($aliases->get($this->config->runtimeDir . '/simple-caches')),
             YiiCacheInterface::class => Cache::class,
+            // View
+            AssetLoaderInterface::class => AssetLoader::class,
+            AssetPublisherInterface::class => AssetPublisher::class,
             // Profiler
             ProfilerInterface::class => Profiler::class,
             // Event

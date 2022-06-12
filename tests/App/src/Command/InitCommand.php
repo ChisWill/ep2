@@ -4,16 +4,17 @@ declare(strict_types=1);
 
 namespace Ep\Tests\App\Command;
 
-use Ep\Console\Command;
 use Ep\Console\Service;
 use Ep\Contract\ConsoleRequestInterface;
-use Ep\Contract\ConsoleResponseInterface;
+use Ep\Traits\ConsoleService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputOption;
 
-class InitCommand extends Command
+class InitCommand
 {
+    use ConsoleService;
+
     private Service $service;
 
     public function __construct(Service $service)
@@ -21,24 +22,12 @@ class InitCommand extends Command
         $this->service = $service;
 
         $this
-            ->createDefinition('index')
+            ->define('index')
             ->addArgument('name', null, 'your name')
             ->addOption('type', 't', InputOption::VALUE_NONE);
     }
 
-    public function before(ConsoleRequestInterface $request, ConsoleResponseInterface $response): bool|ConsoleResponseInterface
-    {
-        $this->getService()->writeln('command before');
-        return true;
-    }
-
-    public function after(ConsoleRequestInterface $request, ConsoleResponseInterface $response): ConsoleResponseInterface
-    {
-        $this->getService()->writeln('command after');
-        return $response;
-    }
-
-    public function indexAction(ConsoleRequestInterface $request)
+    public function index(ConsoleRequestInterface $request)
     {
         $message = 'Welcome Basic, ' . $request->getArgument('name');
 
@@ -47,14 +36,14 @@ class InitCommand extends Command
         return $this->success($message);
     }
 
-    public function logAction(LoggerInterface $logger)
+    public function log(LoggerInterface $logger)
     {
         $logger->info('log info', ['act' => self::class]);
 
         return $this->success();
     }
 
-    public function requestAction(ConsoleRequestInterface $request)
+    public function request(ConsoleRequestInterface $request)
     {
         t([
             'route' => $request->getRoute(),
@@ -65,14 +54,14 @@ class InitCommand extends Command
         return $this->success();
     }
 
-    public function callAction(ConsoleRequestInterface $request)
+    public function call(ConsoleRequestInterface $request)
     {
         $this->service->call('init/table');
 
         return $this->success('call over');
     }
 
-    public function tableAction()
+    public function table()
     {
         $this->service->renderTable([
             'name', 'id', 'age'
@@ -85,7 +74,7 @@ class InitCommand extends Command
         return $this->success('table over');
     }
 
-    public function progressAction()
+    public function progress()
     {
         $this->service->progress(function (ProgressBar $bar): void {
             $i = 0;
@@ -98,7 +87,7 @@ class InitCommand extends Command
         return $this->success();
     }
 
-    public function echoArrAction()
+    public function echoArr()
     {
         $message = 'con';
         return $this->success(json_encode(compact('message')));

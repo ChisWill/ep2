@@ -39,35 +39,12 @@ class DemoController extends Controller
         $this->db = Ep::getDb('sqlite');
     }
 
-    public function indexAction()
+    public function index()
     {
         return $this->string('<h1>hello world</h1>');
     }
 
-    public function jsonAction(ServerRequestInterface $request)
-    {
-        if ($request->getMethod() === Method::POST) {
-            $post = $request->getParsedBody();
-            $get = $request->getQueryParams();
-            $return = compact('post', 'get');
-        } else {
-            $body = $request->getBody()->getContents();
-            $get = $request->getQueryParams();
-            if ($body) {
-                $return = [
-                    'body' => $body,
-                    'get' => $get
-                ];
-            } elseif ($get) {
-                $return = $get;
-            } else {
-                $return = [];
-            }
-        }
-        return $this->json($return);
-    }
-
-    public function downloadAction(ServerRequestInterface $request, Aliases $aliases)
+    public function downloadFile(ServerRequestInterface $request, Aliases $aliases)
     {
         // $name = 'eye.png';
         $name = 'face.jpg';
@@ -76,13 +53,10 @@ class DemoController extends Controller
         $newName = null;
         // $newName = '0!§ $&()=`´{}  []²³@€µ^°_+\' # - _ . , ; ü ä ö ß 9.jpg';
 
-        return $this
-            ->getService()
-            ->withRequest($request)
-            ->download($file, $newName);
+        return $this->download($request, $file, $newName);
     }
 
-    public function requestAction(ServerRequestInterface $request)
+    public function request(ServerRequestInterface $request)
     {
         $result = [
             'method' => $request->getMethod(),
@@ -97,27 +71,27 @@ class DemoController extends Controller
         return $this->json($result);
     }
 
-    public function redirectAction(ServerRequestInterface $request)
+    public function redirectUrl(ServerRequestInterface $request)
     {
         $id = Student::find($this->db)->orderBy('id DESC')->select('id')->scalar();
 
         return $this->redirect('arform?id=' . $id);
     }
 
-    public function logAction(LoggerInterface $logger)
+    public function log(LoggerInterface $logger)
     {
         $logger->info(sprintf('%s logged', __METHOD__));
         return $this->string('logged');
     }
 
-    public function cacheAction(Cache $cache)
+    public function cache(Cache $cache)
     {
         $r = $cache->getOrSet('name', fn (): int => mt_rand(0, 100), 5);
 
         return $this->string((string) $r);
     }
 
-    public function saveAction()
+    public function save()
     {
         $user = new Student($this->db);
         $user->username = '路人甲' . mt_rand(0, 100);
@@ -133,7 +107,7 @@ class DemoController extends Controller
         return $this->json(compact('r1', 'r2'));
     }
 
-    public function queryAction()
+    public function query()
     {
         $result = [];
         $query = Student::find($this->db)
@@ -152,7 +126,7 @@ class DemoController extends Controller
         return $this->json($result);
     }
 
-    public function curdAction()
+    public function curd()
     {
         $insert = 0;
         $update = 0;
@@ -180,14 +154,14 @@ class DemoController extends Controller
         return compact('insert', 'update', 'batchInsert', 'upsert', 'delete', 'increment');
     }
 
-    public function eventAction(EventDispatcherInterface $dipatcher)
+    public function event(EventDispatcherInterface $dipatcher)
     {
         $dipatcher->dispatch($this);
 
         return $this->string();
     }
 
-    public function redisAction(RedisConnection $redis)
+    public function redis(RedisConnection $redis)
     {
         $result = [];
         $r = $redis->set('a', mt_rand(0, 100), 'ex', 5, 'nx');
@@ -198,7 +172,7 @@ class DemoController extends Controller
         return $this->json($result);
     }
 
-    public function cryptAction(Crypt $crypt)
+    public function crypt(Crypt $crypt)
     {
         $text = Str::random();
         $pwd = $crypt->encrypt($text);
@@ -207,7 +181,7 @@ class DemoController extends Controller
         return $this->json(compact('text', 'pwd', 'parse'));
     }
 
-    public function validateAction()
+    public function validate()
     {
         $user = Student::findModel(1, $this->db);
         $r = $user->validate();
@@ -218,7 +192,7 @@ class DemoController extends Controller
         }
     }
 
-    public function getUserAction()
+    public function getUser()
     {
         $data = Student::find($this->db)
             ->joinWith('class')
@@ -228,7 +202,7 @@ class DemoController extends Controller
         return $this->success($data);
     }
 
-    public function formAction(ServerRequestInterface $request, TestForm $form)
+    public function form(ServerRequestInterface $request, TestForm $form)
     {
         if ($form->load($request->getParsedBody())) {
             if ($form->validate()) {
@@ -241,7 +215,7 @@ class DemoController extends Controller
         return $this->render('form');
     }
 
-    public function arformAction(ServerRequestInterface $request)
+    public function arform(ServerRequestInterface $request)
     {
         $student = Student::findModel($request->getQueryParams()['id'] ?? 0, $this->db);
         if ($student->load($request)) {
@@ -261,12 +235,12 @@ class DemoController extends Controller
         return $this->render('arform', compact('student'));
     }
 
-    public function wsAction()
+    public function ws()
     {
         return $this->render('ws');
     }
 
-    public function getCookieAction(ServerRequestInterface $request)
+    public function getCookie(ServerRequestInterface $request)
     {
         $cookies = CookieCollection::fromArray($request->getCookieParams());
 
@@ -275,7 +249,7 @@ class DemoController extends Controller
         ]);
     }
 
-    public function setCookieAction()
+    public function setCookie()
     {
         $cookie = new Cookie('testcookie', 'testcookie' . mt_rand());
         $cookie = $cookie->withMaxAge(new DateInterval('PT10S'))->withSecure(false);
@@ -295,7 +269,7 @@ class DemoController extends Controller
         return $cookie->addToResponse($cookie2->addToResponse($response));
     }
 
-    public function sessionAction(SessionInterface $session)
+    public function session(SessionInterface $session)
     {
         $session->set('title', 'sessionTest');
 
@@ -304,7 +278,7 @@ class DemoController extends Controller
         return $this->json($r);
     }
 
-    public function paginateAction(ServerRequestInterface $request)
+    public function paginate(ServerRequestInterface $request)
     {
         $page = (int) ($request->getQueryParams()['page'] ?? 1);
         $query = Student::find($this->db)->asArray();
@@ -318,7 +292,7 @@ class DemoController extends Controller
         ]);
     }
 
-    public function facadeAction()
+    public function facade()
     {
         FacadeCache::set('a', 123);
         $r = FacadeCache::get('a');
@@ -332,7 +306,7 @@ class DemoController extends Controller
         return $this->string($r);
     }
 
-    public function loginAction(ServerRequestInterface $request, SessionInterface $session, AuthRepository $auth)
+    public function login(ServerRequestInterface $request, SessionInterface $session, AuthRepository $auth)
     {
         $p = $request->getQueryParams();
         $username = $p['u'] ?? '';
@@ -358,7 +332,7 @@ class DemoController extends Controller
         return $this->string('Logined');
     }
 
-    public function factoryAction(Factory $factory)
+    public function factory(Factory $factory)
     {
         $bird1 = $factory->create(Bird::class);
 
@@ -371,7 +345,7 @@ class DemoController extends Controller
         ]);
     }
 
-    public function testAction()
+    public function test()
     {
         return $this->string();
     }

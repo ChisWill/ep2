@@ -19,6 +19,10 @@ final class UrlGenerator
         $this->routeParser = new RouteParser\Std();
     }
 
+    /**
+     * @throws LogicException
+     * @throws RuntimeException
+     */
     public function generate(string $name, array $arguments = []): string
     {
         $rule = $this->routeCollection->getNames()[$name] ?? null;
@@ -51,6 +55,9 @@ final class UrlGenerator
         );
     }
 
+    /**
+     * @throws RuntimeException
+     */
     private function generateParsedRoute(array $routeParts, array $arguments): string
     {
         $result = '';

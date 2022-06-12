@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Ep\Web;
 
 use Ep\Base\Constant;
-use Ep\Traits\ViewTrait;
 use Yiisoft\Http\Status;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -13,11 +12,14 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 final class NotFoundHandler implements RequestHandlerInterface
 {
-    use ViewTrait;
-
     public function __construct(
-        private Service $service
+        private Service $service,
+        private View $view
     ) {
+        $this->view = $view
+            ->withViewPath('@ep/views')
+            ->withContext($this)
+            ->withContextId('error');
     }
 
     /**
@@ -26,27 +28,11 @@ final class NotFoundHandler implements RequestHandlerInterface
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         return $this->service->string(
-            $this->getView()->renderPartial('notFound', [
+            $this->view->renderPartial('notFound', [
                 'path' => $request->getUri()->getPath(),
                 'exception' => $request->getAttribute(Constant::REQUEST_ATTRIBUTE_EXCEPTION)
             ]),
             Status::NOT_FOUND
         );
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    protected function getViewPath(): string
-    {
-        return '@ep/views';
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    protected function getContextId(): string
-    {
-        return 'error';
     }
 }

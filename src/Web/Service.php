@@ -20,15 +20,6 @@ final class Service
     {
     }
 
-    private ?ServerRequestInterface $request = null;
-
-    public function withRequest(ServerRequestInterface $request): self
-    {
-        $new = clone $this;
-        $new->request = $request;
-        return $new;
-    }
-
     public function string(string $data = '', int $statusCode = Status::OK): ResponseInterface
     {
         $response = $this->responseFactory
@@ -57,7 +48,7 @@ final class Service
             ->withHeader(Header::LOCATION, $url);
     }
 
-    public function download(SplFileInfo|string $file, string $name = null): ResponseInterface
+    public function download(ServerRequestInterface $request, SplFileInfo|string $file, string $name = null): ResponseInterface
     {
         if (is_string($file)) {
             $file = new SplFileInfo($file);
@@ -66,7 +57,7 @@ final class Service
         $etag = $this->getEtagValue(hash_file('sha256', $file->getPathname(), true));
         $lastModified = Date::toGMT($file->getMTime());
 
-        if ($this->compareHeaders([
+        if ($this->compareHeaders($request, [
             Header::IF_NONE_MATCH => $etag,
             Header::IF_MODIFIED_SINCE => $lastModified
         ])) {
@@ -94,14 +85,10 @@ final class Service
         return $this->responseFactory->createResponse($statusCode);
     }
 
-    private function compareHeaders(array $pairs): bool
+    private function compareHeaders(ServerRequestInterface $request, array $pairs): bool
     {
-        if (!$this->request) {
-            return false;
-        }
-
         foreach ($pairs as $name => $value) {
-            if (!in_array($value, $this->request->getHeader($name))) {
+            if (!in_array($value, $request->getHeader($name))) {
                 return false;
             }
         }

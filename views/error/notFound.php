@@ -1,10 +1,10 @@
 <?php
 
-use Ep\Exception\NotFoundException;
+use Ep\Exception\PageNotFoundException;
 
 /**
  * @var string            $path
- * @var NotFoundException $exception
+ * @var PageNotFoundException $exception
  */
 ?>
 <!DOCTYPE html>

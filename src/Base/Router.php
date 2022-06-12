@@ -5,8 +5,7 @@ declare(strict_types=1);
 namespace Ep\Base;
 
 use Ep\Attribute\Route;
-use Ep\Exception\NotFoundException;
-use Ep\Helper\Str;
+use Ep\Exception\PageNotFoundException;
 use Ep\Kit\Annotate;
 use FastRoute\Dispatcher;
 use FastRoute\RouteCollector as FastRouteCollector;
@@ -60,7 +59,7 @@ final class Router
     }
 
     /**
-     * @throws NotFoundException
+     * @throws PageNotFoundException
      */
     public function match(string $path, string $method = Method::GET): array
     {
@@ -82,7 +81,7 @@ final class Router
     }
 
     /**
-     * @throws NotFoundException
+     * @throws PageNotFoundException
      */
     private function solveRouteResult(array $routeResult): array
     {
@@ -92,7 +91,7 @@ final class Router
             case Dispatcher::METHOD_NOT_ALLOWED:
                 return [false, null, null];
             default:
-                throw new NotFoundException('Page is not found.');
+                throw new PageNotFoundException('Page is not found.');
         }
     }
 
@@ -154,7 +153,7 @@ final class Router
             foreach ($value[Attribute::TARGET_METHOD] as $item) {
                 $this->attributeRules[sprintf('%s/%s', $path, trim($item['path'], '/'))] = [
                     (array) ($item['method'] ?? $method),
-                    [$class, Str::rtrim($item['target'], $this->config->actionSuffix)]
+                    [$class, $item[Constant::ATTRIBUTE_TARGET]]
                 ];
             }
         }

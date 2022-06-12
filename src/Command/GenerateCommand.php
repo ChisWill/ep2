@@ -5,20 +5,22 @@ declare(strict_types=1);
 namespace Ep\Command;
 
 use Ep\Command\Service\GenerateService;
-use Ep\Console\Command;
 use Ep\Contract\ConsoleRequestInterface;
 use Ep\Contract\ConsoleResponseInterface;
+use Ep\Traits\ConsoleService;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
-final class GenerateCommand extends Command
+final class GenerateCommand
 {
+    use ConsoleService;
+
     public function __construct(private GenerateService $service)
     {
-        $this->createDefinition('key')->setDescription('Generate secret key');
+        $this->define('key')->setDescription('Generate secret key');
 
         $this
-            ->createDefinition('model')
+            ->define('model')
             ->addArgument('table', InputArgument::REQUIRED | InputArgument::IS_ARRAY, 'Table name')
             ->addOption('app', null, InputOption::VALUE_REQUIRED, 'App name')
             ->addOption('db', null, InputOption::VALUE_REQUIRED, 'Db name')
@@ -27,7 +29,7 @@ final class GenerateCommand extends Command
             ->setDescription('Generate model');
     }
 
-    public function keyAction(ConsoleRequestInterface $request): ConsoleResponseInterface
+    public function key(ConsoleRequestInterface $request): ConsoleResponseInterface
     {
         $this->service
             ->load($request)
@@ -36,7 +38,7 @@ final class GenerateCommand extends Command
         return $this->success();
     }
 
-    public function modelAction(ConsoleRequestInterface $request): ConsoleResponseInterface
+    public function model(ConsoleRequestInterface $request): ConsoleResponseInterface
     {
         foreach ($request->getArgument('table') as $table) {
             $request->setOption('table', $table);

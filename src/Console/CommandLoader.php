@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace Ep\Console;
 
 use Ep\Base\Config;
-use Ep\Base\ControllerLoader;
 use Ep\Base\Router;
 use Ep\Contract\ConsoleFactoryInterface;
-use Ep\Exception\NotFoundException;
+use Ep\Exception\PageNotFoundException;
 use Ep\Helper\Str;
+use Ep\Kit\ControllerParser;
+use Ep\Kit\ControllerRunner;
 use Ep\Kit\Util;
-use Symfony\Component\Console\Command\Command as SymfonyCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\CommandLoader\CommandLoaderInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -26,15 +27,15 @@ final class CommandLoader implements CommandLoaderInterface
     public function __construct(
         private Config $config,
         private Router $router,
-        private ControllerLoader $controllerLoader,
-        private ControllerRunner $controllerRunner,
+        private ControllerParser $parser,
+        private ControllerRunner $runner,
         private ConsoleFactoryInterface $factory,
         private Util $util
     ) {
         $this->router = $router
             ->withEnableDefaultRule($config->enableDefaultRouteRule)
             ->withDefaultRule($config->defaultRouteRule);
-        $this->controllerLoader = $controllerLoader->withSuffix($controllerRunner->getControllerSuffix());
+        $this->parser = $parser->withSuffix($config->commandSuffix);
     }
 
     /**
@@ -45,11 +46,12 @@ final class CommandLoader implements CommandLoaderInterface
         return $this->wrapCommand($name);
     }
 
-    private function wrapCommand(string $name): SymfonyCommand
+    private function wrapCommand(string $name): Command
     {
         $commandName = $this->parse($name);
-        [$controller, $action] = $this->controllerLoader->parse($commandName);
-        return new class($controller, $action, $this->controllerRunner, $this->factory, $commandName, $name) extends SymfonyCommand
+
+        [$controller, $action] = $this->parser->parse($commandName);
+        return new class($controller, $action, $this->runner, $this->factory, $commandName, $name) extends Command
         {
             public function __construct(
                 private object $controller,
@@ -71,16 +73,13 @@ final class CommandLoader implements CommandLoaderInterface
              */
             protected function configure(): void
             {
-                /** @var Command */
-                $command = $this->controller;
-                $actionId = str_replace('Action', '', $this->action);
-                $definitions = $command->getDefinitions();
-                if (isset($definitions[$actionId])) {
+                $definitions = method_exists($this->controller, '__getDefinitions') ? $this->controller->__getDefinitions() : [];
+                if (isset($definitions[$this->action])) {
                     $this
-                        ->setDefinition($definitions[$actionId]->getDefinitions())
-                        ->setDescription($definitions[$actionId]->getDescription())
-                        ->setHelp($definitions[$actionId]->getHelp());
-                    foreach ($definitions[$actionId]->getUsages() as $usage) {
+                        ->setDefinition($definitions[$this->action]->getDefinitions())
+                        ->setDescription($definitions[$this->action]->getDescription())
+                        ->setHelp($definitions[$this->action]->getHelp());
+                    foreach ($definitions[$this->action]->getUsages() as $usage) {
                         $this->addUsage($usage);
                     }
                 }
@@ -92,7 +91,7 @@ final class CommandLoader implements CommandLoaderInterface
             protected function execute(InputInterface $input, OutputInterface $output): int
             {
                 return $this->runner
-                    ->runAll(
+                    ->runAction(
                         $this->controller,
                         $this->action,
                         $this->factory->createRequest($input),
@@ -115,14 +114,13 @@ final class CommandLoader implements CommandLoaderInterface
 
     /**
      * @throws InvalidArgumentException
-     * @throws NotFoundException
+     * @throws PageNotFoundException
      */
     private function parse(string $name): string
     {
         if (!isset($this->commandNames[$name])) {
             [, $handler] = $this->router->match('/' . $name);
-
-            [$class, $actionId] = $this->controllerLoader->parseHandler($handler);
+            [$class, $actionId] = $this->parser->parseHandler($handler);
 
             $this->commandNames[$name] = $this->getCommandName(
                 preg_replace('~' . str_replace('\\', '/', $this->config->rootNamespace) . '/~', '', str_replace('\\', '/', $class), 1),
@@ -165,7 +163,7 @@ final class CommandLoader implements CommandLoaderInterface
         foreach ($files as $className) {
             $map[$className] = array_filter(
                 (new ReflectionClass($this->config->rootNamespace . '\\' . str_replace('/', '\\', $className)))->getMethods(ReflectionMethod::IS_PUBLIC),
-                fn (ReflectionMethod $ref): bool => str_ends_with($ref->getName(), $this->config->actionSuffix)
+                fn (ReflectionMethod $ref): bool => !str_starts_with($ref->getName(), '__')
             );
         }
         $commands = [];
@@ -173,7 +171,7 @@ final class CommandLoader implements CommandLoaderInterface
             foreach ($actions as $ref) {
                 $commands[] = $this->getCommandName(
                     $className,
-                    Str::camelToId(Str::rtrim($ref->getName(), $this->config->actionSuffix), '-', true)
+                    Str::camelToId($ref->getName(), '-', true)
                 );
             }
         }

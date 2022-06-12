@@ -10,7 +10,7 @@ class IndexController extends Controller
 {
     public string $title = '首页';
 
-    public function indexAction()
+    public function index()
     {
         $message = 'Default Page';
 

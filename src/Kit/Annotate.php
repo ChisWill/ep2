@@ -24,8 +24,8 @@ final class Annotate
     private Injector $injector;
 
     public function __construct(
-        private ContainerInterface $container,
-        private CacheInterface $cache
+        private CacheInterface $cache,
+        ContainerInterface $container
     ) {
         $this->injector = new Injector($container);
     }
@@ -96,7 +96,7 @@ final class Annotate
         return $result;
     }
 
-    public function cache(array $classList, callable $callback = null): void
+    public function scan(array $classList, callable $callback = null): void
     {
         $data = [];
         $setData = static function (array $attributes, string $class, int $type, string $name = null) use (&$data): void {
@@ -110,7 +110,7 @@ final class Annotate
                             break;
                         case Attribute::TARGET_PROPERTY:
                         case Attribute::TARGET_METHOD:
-                            $data[$attribute->getName()][$class][$type][] = ['target' => $name] + $instance->getValues();
+                            $data[$attribute->getName()][$class][$type][] = [Constant::ATTRIBUTE_TARGET => $name] + $instance->getValues();
                             break;
                     }
                 }

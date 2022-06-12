@@ -13,7 +13,7 @@ use Ep\Tests\Support\Car\CarInterface;
 use Ep\Tests\Support\Car\Garage;
 use Ep\Tests\Support\Car\Wheel;
 use Ep\Tests\Support\Car\WheelInterface;
-use Ep\Traits\WebServiceTrait;
+use Ep\Traits\WebService;
 use Ep\Web\Service;
 use Psr\Http\Message\ServerRequestInterface;
 use Yiisoft\Di\CompositeContainer;
@@ -24,45 +24,28 @@ use Yiisoft\Profiler\ProfilerInterface;
 #[Route('at')]
 class TestAppController
 {
-    use WebServiceTrait;
+    use WebService;
 
     #[Inject]
     private Service $service;
 
+    public function __construct()
+    {
+    }
+
     #[Route('tr')]
-    public function testRouteAction()
+    public function testRoute()
     {
         tt(str_starts_with('ab', ''));
         return $this->string((string) mt_rand(100, 200));
     }
 
-    #[BeforeAction]
-    public function before()
+    private function before()
     {
-        tt(self::class, 'ok');
-        $parent = new CompositeContainer;
-        $parent->attach(Ep::getDi());
-        $new = new Container(ContainerConfig::create()
-            ->withDefinitions([
-                CarFactory::class => [
-                    'class' => CarFactory::class,
-                    '$carType' => BMW::class
-                ],
-                CarInterface::class => [
-                    'class' => BMW::class,
-                    '$model' => 'X5'
-                ]
-            ]));
-
-        $parent->attach($new);
-
-        $r = $parent->get(ProfilerInterface::class);
-        tt($r);
-
         return true;
     }
 
-    public function viewAction(ServerRequestInterface $req)
+    public function view(ServerRequestInterface $req)
     {
         return $this->render('view');
     }

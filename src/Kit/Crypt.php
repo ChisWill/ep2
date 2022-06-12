@@ -63,6 +63,7 @@ final class Crypt
 
     /**
      * @throws CryptException
+     * @throws InvalidArgumentException
      */
     public function encrypt(string $value): string
     {
@@ -81,6 +82,7 @@ final class Crypt
 
     /**
      * @throws CryptException
+     * @throws InvalidArgumentException
      */
     public function decrypt(string $payload): string
     {

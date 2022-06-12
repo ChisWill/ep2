@@ -25,7 +25,7 @@ final class Application implements ApplicationInterface
         private RequestHandlerFactory $requestHandlerFactory,
         private SapiEmitter $sapiEmitter,
         private ErrorRenderer $errorRenderer,
-        private RequestHandlerInterface $notFoundHandler
+        private RequestHandlerInterface $fallbackHandler
     ) {
     }
 
@@ -64,7 +64,7 @@ final class Application implements ApplicationInterface
     public function handleRequest(ServerRequestInterface $request): ResponseInterface
     {
         return $this->requestHandlerFactory
-            ->wrap($this->middlewares, $this->notFoundHandler)
+            ->wrap($this->middlewares, $this->fallbackHandler)
             ->handle($request);
     }
 

@@ -57,7 +57,7 @@ final class Util
     {
         $rootNamespace ??= $this->config->rootNamespace;
         if (!isset($this->appPath[$rootNamespace])) {
-            if (Ep::isSelf($rootNamespace)) {
+            if ($this->isRunEp($rootNamespace)) {
                 $this->appPath[$rootNamespace] = $this->aliases->get('@ep/src');
             } else {
                 $this->appPath[$rootNamespace] = $this->getAppPathByComposer($rootNamespace);
@@ -81,7 +81,7 @@ final class Util
             }
         }
         if (!isset($path)) {
-            throw new InvalidArgumentException('You should set the "autoload[psr-4]" configuration in your composer.json first.');
+            throw new InvalidArgumentException('You should set the configuration "autoload[psr-4]" in your composer.json first.');
         }
         return $path;
     }
@@ -112,5 +112,10 @@ final class Util
                 str_replace([$this->config->rootNamespace, $suffix], '', $class)
             ))
         ));
+    }
+
+    public function isRunEp(string $rootNamespace = null): bool
+    {
+        return ($rootNamespace ?? $this->config->rootNamespace) === 'Ep';
     }
 }

@@ -16,8 +16,6 @@ use Ep\Base\Facade;
  * @method static \Yiisoft\Db\Connection\Connection getDb(string $id = null)
  * @method static \Psr\SimpleCache\CacheInterface getCache(string $id = null)
  * @method static \Psr\Log\LoggerInterface getLogger(string $id = null)
- * @method static void scan()
- * @method static bool isSelf(string $rootNamespace = null)
  */
 final class Ep extends Facade
 {

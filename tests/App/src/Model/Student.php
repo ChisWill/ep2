@@ -93,4 +93,9 @@ class Student extends ActiveRecord implements IdentityInterface
     {
         return (string) $this->id ?: null;
     }
+
+    public function getData(): mixed
+    {
+        return [];
+    }
 }

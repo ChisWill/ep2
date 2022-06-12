@@ -7,8 +7,8 @@ namespace Ep\Web\Middleware;
 use Ep\Base\Config;
 use Ep\Base\Constant;
 use Ep\Base\Router;
-use Ep\Exception\NotFoundException;
-use Ep\Web\ControllerRunner;
+use Ep\Exception\PageNotFoundException;
+use Ep\Web\Runner;
 use Yiisoft\Http\Status;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -20,7 +20,7 @@ final class RouteMiddleware implements MiddlewareInterface
 {
     public function __construct(
         private Router $router,
-        private ControllerRunner $controllerRunner,
+        private Runner $runner,
         private ResponseFactoryInterface $responseFactory,
         Config $config
     ) {
@@ -32,10 +32,10 @@ final class RouteMiddleware implements MiddlewareInterface
     /**
      * {@inheritDoc}
      */
-    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $fallback): ResponseInterface
     {
         try {
-            [$allowed, $result, $params] = $this->router->match(
+            [$allowed, $handler, $params] = $this->router->match(
                 $request->getUri()->getPath(),
                 $request->getMethod()
             );
@@ -48,9 +48,9 @@ final class RouteMiddleware implements MiddlewareInterface
                 $request = $request->withAttribute($name, $value);
             }
 
-            return $this->controllerRunner->run($result, $request);
-        } catch (NotFoundException $e) {
-            return $handler->handle(
+            return $this->runner->run($handler, $request);
+        } catch (PageNotFoundException $e) {
+            return $fallback->handle(
                 $request->withAttribute(Constant::REQUEST_ATTRIBUTE_EXCEPTION, $e)
             );
         }

@@ -39,4 +39,9 @@ class School extends ActiveRecord
     {
         return $this->hasMany(Classes::class, ['school_id' => 'id']);
     }
+
+    public function getData(): mixed
+    {
+        return [];
+    }
 }

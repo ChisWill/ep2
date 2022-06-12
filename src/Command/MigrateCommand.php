@@ -5,25 +5,26 @@ declare(strict_types=1);
 namespace Ep\Command;
 
 use Ep\Command\Service\MigrateService;
-use Ep\Console\Command;
 use Ep\Contract\ConsoleRequestInterface;
 use Ep\Contract\ConsoleResponseInterface;
+use Ep\Traits\ConsoleService;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
-final class MigrateCommand extends Command
+final class MigrateCommand
 {
+    use ConsoleService;
+
     public function __construct(private MigrateService $service)
     {
-        $this
-            ->createDefinition('create')
+        $this->define('create')
             ->addArgument('name', InputArgument::REQUIRED, 'Migration name')
             ->addOption('path', null, InputOption::VALUE_REQUIRED, 'Save path')
             ->addOption('app', null, InputOption::VALUE_REQUIRED, 'App name')
             ->setDescription('Create an empty migration');
 
         $this
-            ->createDefinition('init')
+            ->define('init')
             ->addOption('path', null, InputOption::VALUE_REQUIRED, 'Save path')
             ->addOption('app', null, InputOption::VALUE_REQUIRED, 'App name')
             ->addOption('db', null, InputOption::VALUE_REQUIRED, 'Db name')
@@ -32,14 +33,14 @@ final class MigrateCommand extends Command
             ->setDescription('Initialize all tables');
 
         $this
-            ->createDefinition('list')
+            ->define('list')
             ->addOption('path', null, InputOption::VALUE_REQUIRED, 'Save path')
             ->addOption('app', null, InputOption::VALUE_REQUIRED, 'App name')
             ->addOption('db', null, InputOption::VALUE_REQUIRED, 'Db name')
             ->setDescription('Print list of all migrations');
 
         $this
-            ->createDefinition('up')
+            ->define('up')
             ->addOption('path', null, InputOption::VALUE_REQUIRED, 'Save path')
             ->addOption('app', null, InputOption::VALUE_REQUIRED, 'App name')
             ->addOption('db', null, InputOption::VALUE_REQUIRED, 'Db name')
@@ -47,7 +48,7 @@ final class MigrateCommand extends Command
             ->setDescription('Execute all new migrations');
 
         $this
-            ->createDefinition('down')
+            ->define('down')
             ->addOption('path', null, InputOption::VALUE_REQUIRED, 'Save path')
             ->addOption('app', null, InputOption::VALUE_REQUIRED, 'App name')
             ->addOption('db', null, InputOption::VALUE_REQUIRED, 'Db name')
@@ -56,7 +57,7 @@ final class MigrateCommand extends Command
             ->setDescription('Rollback last migration');
     }
 
-    public function createAction(ConsoleRequestInterface $request): ConsoleResponseInterface
+    public function create(ConsoleRequestInterface $request): ConsoleResponseInterface
     {
         $this->service
             ->load($request)
@@ -65,7 +66,7 @@ final class MigrateCommand extends Command
         return $this->success();
     }
 
-    public function initAction(ConsoleRequestInterface $request): ConsoleResponseInterface
+    public function init(ConsoleRequestInterface $request): ConsoleResponseInterface
     {
         $this->service
             ->load($request)
@@ -74,7 +75,7 @@ final class MigrateCommand extends Command
         return $this->success();
     }
 
-    public function listAction(ConsoleRequestInterface $request): ConsoleResponseInterface
+    public function list(ConsoleRequestInterface $request): ConsoleResponseInterface
     {
         $this->service
             ->load($request)
@@ -83,7 +84,7 @@ final class MigrateCommand extends Command
         return $this->success();
     }
 
-    public function upAction(ConsoleRequestInterface $request): ConsoleResponseInterface
+    public function up(ConsoleRequestInterface $request): ConsoleResponseInterface
     {
         $this->service
             ->load($request)
@@ -92,7 +93,7 @@ final class MigrateCommand extends Command
         return $this->success();
     }
 
-    public function downAction(ConsoleRequestInterface $request): ConsoleResponseInterface
+    public function down(ConsoleRequestInterface $request): ConsoleResponseInterface
     {
         $this->service
             ->load($request)

@@ -11,11 +11,13 @@ use Ep\Web\Event\EndBody;
 use Ep\Web\Event\EndPage;
 use Ep\Web\Event\Head;
 use Yiisoft\Assets\AssetManager;
+use Yiisoft\Assets\AssetPublisherInterface;
 use Yiisoft\Factory\Factory;
 use Yiisoft\Html\Html;
 use Yiisoft\Html\Tag\Script;
 use Yiisoft\Html\Tag\Style;
 use Yiisoft\Json\Json;
+use Psr\Container\ContainerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use InvalidArgumentException;
 
@@ -29,24 +31,23 @@ final class View extends BaseView
     private const PLACEHOLDER_BODY_BEGIN = '<![CDATA[EP-BLOCK-BODY-BEGIN]]>';
     private const PLACEHOLDER_BODY_END = '<![CDATA[EP-BLOCK-BODY-END]]>';
 
-    private AssetManager $assetManager;
-
     public function __construct(
+        private ContainerInterface $container,
         private EventDispatcherInterface $eventDispatcher,
-        Factory $factory
+        private Factory $factory,
     ) {
-        $this->assetManager = $factory->create(AssetManager::class);
     }
 
     public function register(array $bundles = []): void
     {
-        $this->assetManager->registerMany($bundles, self::POSITION_END, self::POSITION_HEAD);
+        $assetManager = $this->createAssetManager();
+        $assetManager->registerMany($bundles, self::POSITION_END, self::POSITION_HEAD);
 
-        $this->registerFiles('JS', $this->assetManager->getJsFiles());
-        $this->registerFiles('CSS', $this->assetManager->getCssFiles());
-        $this->registerStrings('JS', $this->assetManager->getJsStrings());
-        $this->registerStrings('CSS', $this->assetManager->getCssStrings());
-        $this->registerJsVars($this->assetManager->getJsVars());
+        $this->registerFiles('JS', $assetManager->getJsFiles());
+        $this->registerFiles('CSS', $assetManager->getCssFiles());
+        $this->registerStrings('JS', $assetManager->getJsStrings());
+        $this->registerStrings('CSS', $assetManager->getCssStrings());
+        $this->registerJsVars($assetManager->getJsVars());
     }
 
     private array $jsFiles = [];
@@ -246,5 +247,12 @@ final class View extends BaseView
 
             $this->js[$position][$name] = Html::script($js)->render();
         }
+    }
+
+    private function createAssetManager(): AssetManager
+    {
+        return $this->factory
+            ->create(AssetManager::class)
+            ->withPublisher($this->container->get(AssetPublisherInterface::class));
     }
 }

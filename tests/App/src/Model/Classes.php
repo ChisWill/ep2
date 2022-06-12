@@ -49,4 +49,9 @@ class Classes extends ActiveRecord
     {
         return $this->hasOne(School::class, ['id' => 'school_id']);
     }
+
+    public function getData(): mixed
+    {
+        return [];
+    }
 }
