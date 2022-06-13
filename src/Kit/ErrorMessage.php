@@ -2,12 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Ep\Base;
+namespace Ep\Kit;
 
-use Ep\Contract\ErrorRendererInterface;
 use Throwable;
 
-class ErrorRenderer implements ErrorRendererInterface
+final class ErrorMessage
 {
     private const ERRORS = [
         E_ERROR => 'PHP Fatal Error',
@@ -32,10 +31,7 @@ class ErrorRenderer implements ErrorRendererInterface
         return self::ERRORS[$severity] ?? 'Error';
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function render(Throwable $t, mixed $request): string
+    public function getMessage(Throwable $t): string
     {
         return get_class($t) . " '{$t->getMessage()}' in "
             . $t->getFile() . ':' . $t->getLine() . "\n\n"

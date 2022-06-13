@@ -4,25 +4,29 @@ declare(strict_types=1);
 
 namespace Ep\Console;
 
-use Ep\Base\ErrorRenderer as BaseErrorRenderer;
 use Ep\Contract\ConsoleErrorRendererInterface;
 use Ep\Contract\ConsoleRequestInterface;
+use Ep\Contract\ErrorRendererInterface;
+use Ep\Kit\ErrorMessage;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Throwable;
 
-final class ErrorRenderer extends BaseErrorRenderer
+final class ErrorRenderer implements ErrorRendererInterface
 {
     public function __construct(
         private ContainerInterface $container,
-        private LoggerInterface $logger
+        private LoggerInterface $logger,
+        private ErrorMessage $errorMessage
     ) {
     }
 
     /**
+     * {@inheritDoc}
+     * 
      * @param ConsoleRequestInterface $request
      */
-    public function render(Throwable $t, $request): string
+    public function render(Throwable $t, mixed $request): string
     {
         if ($this->container->has(ConsoleErrorRendererInterface::class)) {
             return $this->container
@@ -31,23 +35,17 @@ final class ErrorRenderer extends BaseErrorRenderer
         } else {
             $this->log($t, $request);
 
-            return parent::render($t, $request);
+            return $this->errorMessage->getMessage($t);
         }
     }
 
-    /**
-     * @param ConsoleRequestInterface $request
-     */
-    private function log(Throwable $t, $request): void
+    private function log(Throwable $t, ConsoleRequestInterface $request): void
     {
-        $context = [
-            'category' => get_class($t)
-        ];
-
-        $context['route'] = $request->getRoute();
-        $context['arguments'] = $request->getArguments();
-        $context['options'] = $request->getOptions();
-
-        $this->logger->error(parent::render($t, $request), $context);
+        $this->logger->error($this->errorMessage->getMessage($t), [
+            'category' => get_class($t),
+            'route' => $request->getRoute(),
+            'arguments' => $request->getArguments(),
+            'options' => $request->getOptions()
+        ]);
     }
 }

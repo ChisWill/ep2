@@ -76,7 +76,7 @@ final class Config
      */
     public array $events = [];
     /**
-     * Application secretKey
+     * The application secretKey what should be generate by command "./ep generate/key"
      */
     public ?string $secretKey = null;
     /**
@@ -84,7 +84,7 @@ final class Config
      */
     public ?string $diProvider = null;
     /**
-     * The custom parameters
+     * User parameters
      */
     public array $params = [];
 

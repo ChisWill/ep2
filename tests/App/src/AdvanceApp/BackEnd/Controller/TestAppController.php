@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Ep\Tests\App\AdvanceApp\BackEnd\Controller;
 
 use Ep;
-use Ep\Attribute\BeforeAction;
 use Ep\Attribute\Inject;
 use Ep\Attribute\Route;
 use Ep\Tests\Support\Car\BMW;

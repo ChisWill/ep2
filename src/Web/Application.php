@@ -42,6 +42,10 @@ final class Application implements ApplicationInterface
         return $new;
     }
 
+    /**
+     * @throws HeadersAlreadySentException
+     * @throws OutputAlreadySentException
+     */
     public function run(): void
     {
         $request = $this->createRequest();

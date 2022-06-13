@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace Ep\Web;
 
 use Ep\Base\Config;
-use Ep\Base\ErrorRenderer as BaseErrorRenderer;
+use Ep\Contract\ErrorRendererInterface;
 use Ep\Contract\WebErrorRendererInterface;
 use Ep\Helper\Date;
+use Ep\Kit\ErrorMessage;
 use Yiisoft\Aliases\Aliases;
 use Yiisoft\Http\Method;
 use Psr\Container\ContainerInterface;
@@ -15,11 +16,12 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use Throwable;
 
-final class ErrorRenderer extends BaseErrorRenderer
+final class ErrorRenderer implements ErrorRendererInterface
 {
     public function __construct(
         private ContainerInterface $container,
         private Config $config,
+        private ErrorMessage $errorMessage,
         private LoggerInterface $logger,
         private Aliases $aliases,
         private View $view
@@ -35,17 +37,15 @@ final class ErrorRenderer extends BaseErrorRenderer
      * 
      * @param  ServerRequestInterface $request
      */
-    public function render(Throwable $t, $request): string
+    public function render(Throwable $t, mixed $request): string
     {
         if ($this->config->debug) {
             $this->log($t, $request);
 
-            return $this
-                ->view
-                ->renderPartial('development', [
-                    'exception' => $t,
-                    'request' => $request
-                ]);
+            return $this->view->renderPartial('development', [
+                'exception' => $t,
+                'request' => $request
+            ]);
         } else {
             if ($this->container->has(WebErrorRendererInterface::class)) {
                 return $this->container
@@ -72,7 +72,7 @@ final class ErrorRenderer extends BaseErrorRenderer
             $context['post'] = $request->getBody()->getContents() ?: $request->getParsedBody();
         }
 
-        $this->logger->error(parent::render($t, $request), $context);
+        $this->logger->error($this->errorMessage->getMessage($t), $context);
     }
 
     public function renderPreviousException(Throwable $t): string
