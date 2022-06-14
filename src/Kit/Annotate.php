@@ -59,7 +59,10 @@ final class Annotate
         $handler = fn (): mixed => $this->injector->invoke([$instance, $method], $arguments);
 
         $aspects = [];
-        foreach ((new ReflectionMethod($instance, $method))->getAttributes() as $reflectionAttribute) {
+        foreach (array_merge(
+            (new ReflectionClass($instance))->getAttributes(),
+            (new ReflectionMethod($instance, $method))->getAttributes()
+        )  as $reflectionAttribute) {
             $attribute = $reflectionAttribute->newInstance();
             if ($attribute instanceof AspectInterface) {
                 $aspects[] = $attribute;

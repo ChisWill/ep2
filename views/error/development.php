@@ -24,7 +24,7 @@ $renderer = $this->context;
 
 <body>
     <div class="header">
-        <h1><?= ($exception instanceof ErrorException ? '<span>' . $renderer->getErrorName($exception->getSeverity()) . '</span> &ndash; ' : '') . get_class($exception) ?></h1>
+        <h1><?= ($errorName ? '<span>' . $errorName . '</span> &ndash; ' : '') . get_class($exception) ?></h1>
         <h2><?= nl2br($renderer->htmlEncode($exception->getMessage())) ?></h2>
         <?= $renderer->renderPreviousException($exception) ?>
     </div>

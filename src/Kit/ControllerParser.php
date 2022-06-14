@@ -81,16 +81,10 @@ final class ControllerParser
             case 1:
                 array_push($handler, $this->config->defaultAction);
             case 2:
-                $suffixPos = strpos($handler[0], '\\' . $this->suffix . '\\');
-                if ($suffixPos === false) {
-                    throw new InvalidArgumentException('The route handler is not in the correct directory.');
-                }
-                array_unshift($handler, str_replace($this->config->rootNamespace . '\\', '', substr($handler[0], 0, $suffixPos)));
-                break;
+                return $handler;
             default:
                 throw new InvalidArgumentException('The route handler is not in the correct format.');
         }
-        return $handler;
     }
 
     private function parseStringHandler(string $handler): array

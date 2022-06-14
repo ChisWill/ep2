@@ -8,12 +8,11 @@ use Attribute;
 use Ep\Contract\Attribute\AspectInterface;
 use Ep\Contract\HandlerInterface;
 
-#[Attribute(Attribute::TARGET_METHOD)]
-final class TestAspect1 implements AspectInterface
+#[Attribute(Attribute::TARGET_CLASS)]
+final class TestAspectClass implements AspectInterface
 {
-	public function __construct(
-		private string $name
-	) {
+	public function __construct(private string $name)
+	{
 	}
 
 	public function handle(HandlerInterface $handler): mixed
@@ -22,7 +21,7 @@ final class TestAspect1 implements AspectInterface
 
 		$result = $handler->handle();
 
-		t($this->name);
+		tt($this->name);
 
 		return $result;
 	}

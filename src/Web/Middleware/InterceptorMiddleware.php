@@ -4,12 +4,8 @@ declare(strict_types=1);
 
 namespace Ep\Web\Middleware;
 
-use Ep\Contract\FilterInterface;
 use Ep\Contract\InterceptorInterface;
 use Ep\Web\RequestHandlerFactory;
-use Yiisoft\Http\Status;
-use Psr\Container\ContainerInterface;
-use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -21,9 +17,7 @@ final class InterceptorMiddleware implements MiddlewareInterface
     private array $excludePath = [];
 
     public function __construct(
-        private ContainerInterface $container,
         private RequestHandlerFactory $requestHandlerFactory,
-        private ResponseFactoryInterface $responseFactory,
         InterceptorInterface $interceptor = null
     ) {
         if ($interceptor === null) {
@@ -44,47 +38,24 @@ final class InterceptorMiddleware implements MiddlewareInterface
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $requestPath = $request->getUri()->getPath();
-        $classList = [];
+        $middlewares = [];
         foreach ($this->includePath as $path => $class) {
             if (str_starts_with($requestPath, $path)) {
-                $classList = array_merge($classList, $class);
+                $middlewares = array_merge($middlewares, $class);
             }
         }
         foreach ($this->excludePath as $path => $class) {
             if (!str_starts_with($requestPath, $path)) {
-                $classList = array_merge($classList, $class);
-            }
-        }
-
-        $stack = [];
-        $middlewares = [];
-        foreach ($classList as $class) {
-            /** @var FilterInterface */
-            $filter = $this->container->get($class);
-            $result = $filter->before($request);
-            if ($result === true) {
-                $stack[] = $filter;
-                $middlewares = array_merge($middlewares, $filter->getMiddlewares());
-            } elseif ($result instanceof ResponseInterface) {
-                return $result;
-            } else {
-                return $this->responseFactory->createResponse(Status::NOT_ACCEPTABLE);
+                $middlewares = array_merge($middlewares, $class);
             }
         }
 
         if ($middlewares) {
-            $response = $this->requestHandlerFactory
+            return $this->requestHandlerFactory
                 ->wrap($middlewares, $handler)
                 ->handle($request);
         } else {
-            $response = $handler->handle($request);
+            return $handler->handle($request);
         }
-
-        while ($filter = array_pop($stack)) {
-            /** @var FilterInterface $filter */
-            $response = $filter->after($request, $response);
-        }
-
-        return $response;
     }
 }

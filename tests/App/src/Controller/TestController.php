@@ -6,6 +6,7 @@ namespace Ep\Tests\App\Controller;
 
 use Ep;
 use Ep\Attribute\Inject;
+use Ep\Attribute\Middleware;
 use Ep\Attribute\Route;
 use Ep\Base\RouteCollection;
 use Ep\Kit\UrlGenerator;
@@ -13,7 +14,9 @@ use Ep\Tests\App\Annotation\ClassAttribute;
 use Ep\Tests\App\Annotation\MethodAttribute;
 use Ep\Tests\App\Annotation\TestAspect1;
 use Ep\Tests\App\Annotation\TestAspect2;
+use Ep\Tests\App\Annotation\TestAspectClass;
 use Ep\Tests\App\Component\Controller;
+use Ep\Tests\App\Middleware\TimeMiddleware;
 use Ep\Tests\App\Objects\Human\Child;
 use Ep\Tests\App\Service\TestService;
 use Ep\Tests\App\Traits\TestTrait;
@@ -22,6 +25,8 @@ use ReflectionMethod;
 use Yiisoft\Db\Connection\Connection;
 
 #[Route('t', method: 'GET'), ClassAttribute(name: 'Test')]
+#[TestAspectClass(TestAspectClass::class)]
+#[Middleware([TimeMiddleware::class])]
 class TestController extends Controller
 {
     use TestTrait;

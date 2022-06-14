@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Ep\Kit;
 
-use Ep;
 use Ep\Base\Config;
 use Yiisoft\Aliases\Aliases;
 use Yiisoft\Files\FileHelper;

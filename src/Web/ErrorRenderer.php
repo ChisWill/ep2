@@ -14,6 +14,7 @@ use Yiisoft\Http\Method;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
+use ErrorException;
 use Throwable;
 
 final class ErrorRenderer implements ErrorRendererInterface
@@ -44,7 +45,8 @@ final class ErrorRenderer implements ErrorRendererInterface
 
             return $this->view->renderPartial('development', [
                 'exception' => $t,
-                'request' => $request
+                'request' => $request,
+                'errorName' => $t instanceof ErrorException ? $this->errorMessage->getErrorName($t->getSeverity()) : null
             ]);
         } else {
             if ($this->container->has(WebErrorRendererInterface::class)) {
@@ -99,17 +101,7 @@ final class ErrorRenderer implements ErrorRendererInterface
             $end = $line + $half < $lineCount ? $line + $half : $lineCount - 1;
         }
 
-        return $this->view->renderPartial('_stack', [
-            'file' => $file,
-            'line' => $line,
-            'class' => $class,
-            'method' => $method,
-            'index' => $index,
-            'lines' => $lines,
-            'begin' => $begin,
-            'end' => $end,
-            'args' => $args,
-        ]);
+        return $this->view->renderPartial('_stack', compact('file', 'line', 'class', 'method', 'index', 'lines', 'begin', 'end', 'args'));
     }
 
     public function renderRequest(ServerRequestInterface $request): string
