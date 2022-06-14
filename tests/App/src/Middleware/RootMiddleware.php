@@ -13,6 +13,12 @@ final class RootMiddleware implements MiddlewareInterface
 {
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        return $handler->handle($request);
+        t(self::class);
+
+        $response = $handler->handle($request);
+
+        tt(self::class);
+
+        return $response;
     }
 }

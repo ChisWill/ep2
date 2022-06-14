@@ -63,7 +63,7 @@ final class Router
      */
     public function match(string $path, string $method = Method::GET): array
     {
-        return $this->solveRouteResult(
+        return $this->solve(
             cachedDispatcher(function (FastRouteCollector $route): void {
                 $this->addCollectionRoute($route);
 
@@ -83,11 +83,11 @@ final class Router
     /**
      * @throws PageNotFoundException
      */
-    private function solveRouteResult(array $routeResult): array
+    private function solve(array $result): array
     {
-        switch ($routeResult[0]) {
+        switch ($result[0]) {
             case Dispatcher::FOUND:
-                return $this->replaceHandler($routeResult[1], $routeResult[2]);
+                return $this->replaceHandler($result[1], $result[2]);
             case Dispatcher::METHOD_NOT_ALLOWED:
                 return [false, null, null];
             default:
@@ -138,16 +138,12 @@ final class Router
     private function initAttribute(): void
     {
         foreach ($this->annotate->getCache(Route::class) as $class => $value) {
-            if (!isset($value[Attribute::TARGET_METHOD])) {
-                continue;
-            }
-
             if (isset($value[Attribute::TARGET_CLASS])) {
                 $path = '/' . trim($value[Attribute::TARGET_CLASS]['path'], '/');
-                $method = $value[Attribute::TARGET_CLASS]['method'] ?? Method::GET;
+                $method = $value[Attribute::TARGET_CLASS]['method'] ?? Method::ALL;
             } else {
                 $path = '';
-                $method = Method::GET;
+                $method = Method::ALL;
             }
 
             foreach ($value[Attribute::TARGET_METHOD] as $item) {
@@ -155,6 +151,12 @@ final class Router
                     (array) ($item['method'] ?? $method),
                     [$class, $item[Constant::ATTRIBUTE_TARGET]]
                 ];
+            }
+
+            if ($path) {
+                [$path, $handler] = $this->generateRuleByClass($path, $class);
+                tt($path, $handler);
+                $this->attributeRules[$path] = [$method, $handler];
             }
         }
     }
@@ -172,5 +174,10 @@ final class Router
             }
         };
         $fetch($this->routeCollection->getRoutes(), $this->collectionRules);
+    }
+
+    private function generateRuleByClass($path, string $class): array
+    {
+        return [rtrim($path, '/') . '/{action:[a-zA-Z][\w-]*}', 'advance-app/back-end/test-app/<action>'];
     }
 }

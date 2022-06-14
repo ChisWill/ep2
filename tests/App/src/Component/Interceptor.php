@@ -12,7 +12,7 @@ class Interceptor implements InterceptorInterface
     public function includePath(): array
     {
         return [
-            '/' => RootMiddleware::class,
+            '/a/p' => RootMiddleware::class,
         ];
     }
 

@@ -9,19 +9,19 @@ use Ep\Contract\Attribute\AspectInterface;
 use Ep\Contract\HandlerInterface;
 
 #[Attribute(Attribute::TARGET_CLASS)]
-final class TestAspectClass implements AspectInterface
+final class BeforeAfterAspect implements AspectInterface
 {
-	public function __construct(private string $name)
+	public function __construct()
 	{
 	}
 
 	public function handle(HandlerInterface $handler): mixed
 	{
-		t($this->name);
+		t(self::class);
 
 		$result = $handler->handle();
 
-		tt($this->name);
+		t(self::class);
 
 		return $result;
 	}

@@ -27,7 +27,6 @@ use Yiisoft\Cookies\CookieCollection;
 use Yiisoft\Db\Connection\Connection;
 use Yiisoft\Db\Redis\Connection as RedisConnection;
 use Yiisoft\Factory\Factory;
-use Yiisoft\Http\Method;
 use Yiisoft\Session\SessionInterface;
 
 class DemoController extends Controller

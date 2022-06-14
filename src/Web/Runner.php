@@ -4,23 +4,24 @@ declare(strict_types=1);
 
 namespace Ep\Web;
 
-use Attribute;
+use Ep\Attribute\Middleware;
 use Ep\Base\Config;
+use Ep\Kit\Annotate;
 use Ep\Kit\ControllerParser;
 use Ep\Kit\ControllerRunner;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Attribute;
 use Closure;
-use Ep\Attribute\Middleware;
-use Ep\Kit\Annotate;
 
 final class runner
 {
     public function __construct(
-        private Config $config,
         private ControllerParser $parser,
         private ControllerRunner $runner,
-        private Annotate $annotate
+        private RequestHandlerFactory $requestHandlerFactory,
+        private Annotate $annotate,
+        Config $config
     ) {
         $this->parser = $parser->withSuffix($config->controllerSuffix);
     }
@@ -46,8 +47,8 @@ final class runner
         }
     }
 
-    // private function wrapController(Controller $controller, string $action): Closure
-    // {
-    //     return fn (ServerRequestInterface $request) => parent::runAction($controller, $action, $request);
-    // }
+    private function wrapController(object $controller, string $action): Closure
+    {
+        return fn (ServerRequestInterface $request) => $this->runner->runAction($controller, $action, $request);
+    }
 }

@@ -22,7 +22,7 @@ final class TestAspect2 implements AspectInterface
 
 		$result = $handler->handle();
 
-		t($this->name);
+		tt($this->name);
 
 		return $result;
 	}
