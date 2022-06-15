@@ -5,15 +5,15 @@ declare(strict_types=1);
 namespace Ep\Tests\App\Command;
 
 use Ep\Console\Service;
-use Ep\Console\Contract\ConsoleRequestInterface;
-use Ep\Console\Trait\ConsoleService;
+use Ep\Console\Contract\RequestInterface;
+use Ep\Console\Trait\Renderer;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputOption;
 
 class InitCommand
 {
-    use ConsoleService;
+    use Renderer;
 
     private Service $service;
 
@@ -27,7 +27,7 @@ class InitCommand
             ->addOption('type', 't', InputOption::VALUE_NONE);
     }
 
-    public function index(ConsoleRequestInterface $request)
+    public function index(RequestInterface $request)
     {
         $message = 'Welcome Basic, ' . $request->getArgument('name');
 
@@ -43,7 +43,7 @@ class InitCommand
         return $this->success();
     }
 
-    public function request(ConsoleRequestInterface $request)
+    public function request(RequestInterface $request)
     {
         t([
             'route' => $request->getRoute(),
@@ -54,7 +54,7 @@ class InitCommand
         return $this->success();
     }
 
-    public function call(ConsoleRequestInterface $request)
+    public function call(RequestInterface $request)
     {
         $this->service->call('init/table');
 

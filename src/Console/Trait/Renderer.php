@@ -7,10 +7,10 @@ namespace Ep\Console\Trait;
 use Ep\Attribute\Inject;
 use Ep\Console\CommandDefinition;
 use Ep\Console\Service;
-use Ep\Console\Contract\ConsoleResponseInterface;
+use Ep\Console\Contract\ResponseInterface;
 use Symfony\Component\Console\Command\Command;
 
-trait ConsoleService
+trait Renderer
 {
     #[Inject]
     private Service $__service;
@@ -30,14 +30,14 @@ trait ConsoleService
         return $this->__definitions[$action] ??= new CommandDefinition();
     }
 
-    private function success(string $message = ''): ConsoleResponseInterface
+    private function success(string $message = ''): ResponseInterface
     {
         $this->__service->writeln($message);
 
         return $this->__service->status(Command::SUCCESS);
     }
 
-    private function error(string $message = ''): ConsoleResponseInterface
+    private function error(string $message = ''): ResponseInterface
     {
         $this->__service->writeln($message);
 

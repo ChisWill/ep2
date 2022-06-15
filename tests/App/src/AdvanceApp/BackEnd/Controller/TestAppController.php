@@ -6,14 +6,14 @@ namespace Ep\Tests\App\AdvanceApp\BackEnd\Controller;
 
 use Ep\Attribute\Inject;
 use Ep\Attribute\Route;
-use Ep\Web\Trait\WebService;
+use Ep\Web\Trait\Renderer;
 use Ep\Web\Service;
 use Psr\Http\Message\ServerRequestInterface;
 
 #[Route('ta')]
 class TestAppController
 {
-    use WebService;
+    use Renderer;
 
     #[Inject]
     private Service $service;

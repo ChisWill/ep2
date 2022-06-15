@@ -156,9 +156,6 @@ final class Annotate
         return array_merge($properties, $reflectionClass->getProperties());
     }
 
-    /**
-     * @param AspectInterface[] $aspects
-     */
     private function wrapAspects(array $aspects, Closure $callback): HandlerInterface
     {
         krsort($aspects);

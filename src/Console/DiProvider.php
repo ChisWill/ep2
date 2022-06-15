@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Ep\Console;
 
-use Ep\Console\Contract\ConsoleFactoryInterface;
+use Ep\Console\Contract\FactoryInterface;
 use Symfony\Component\Console\CommandLoader\CommandLoaderInterface;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\InputInterface;
@@ -25,7 +25,7 @@ final class DiProvider implements ServiceProviderInterface
                 'setCommandLoader()' => [Reference::to(CommandLoaderInterface::class)],
                 'setDispatcher()' => [Reference::to(EventDispatcherInterface::class)]
             ],
-            ConsoleFactoryInterface::class => Factory::class,
+            FactoryInterface::class => Factory::class,
             CommandLoaderInterface::class => CommandLoader::class,
             EventDispatcherInterface::class => EventDispatcher::class,
             // Input

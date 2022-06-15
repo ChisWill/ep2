@@ -9,7 +9,7 @@ use Ep\Attribute\Route;
 use Ep\Tests\App\Annotation\BeforeAfterAspect;
 use Ep\Tests\App\Annotation\MethodAspect;
 use Ep\Tests\App\Middleware\ModuleMiddleware;
-use Ep\Web\Trait\WebService;
+use Ep\Web\Trait\Renderer;
 use Psr\Http\Message\ServerRequestInterface;
 
 #[Route('a')]
@@ -17,7 +17,7 @@ use Psr\Http\Message\ServerRequestInterface;
 #[BeforeAfterAspect]
 class AspectController
 {
-    use WebService;
+    use Renderer;
 
     #[Route('p')]
     #[MethodAspect]

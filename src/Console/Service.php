@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace Ep\Console;
 
-use Ep\Console\Contract\ConsoleFactoryInterface;
-use Ep\Console\Contract\ConsoleResponseInterface;
+use Ep\Console\Contract\FactoryInterface;
+use Ep\Console\Contract\ResponseInterface;
+use Symfony\Component\Console\Exception\CommandNotFoundException;
 use Symfony\Component\Console\Helper\HelperInterface;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Helper\QuestionHelper;
@@ -15,6 +16,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
+use Exception;
 
 final class Service
 {
@@ -22,7 +24,7 @@ final class Service
         private Application $application,
         private InputInterface $input,
         private OutputInterface $output,
-        private ConsoleFactoryInterface $factory
+        private FactoryInterface $factory
     ) {
     }
 
@@ -40,7 +42,7 @@ final class Service
         return $new;
     }
 
-    public function status(int $code): ConsoleResponseInterface
+    public function status(int $code): ResponseInterface
     {
         return $this->factory
             ->createResponse($this->output)
@@ -57,6 +59,9 @@ final class Service
         $this->output->writeln($message, $options);
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public function confirm(string $message, bool $default = false): bool
     {
         /** @var QuestionHelper */
@@ -65,6 +70,9 @@ final class Service
         return $helper->ask($this->input, $this->output, $question);
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public function prompt(string $message, string $default = '', bool $hidden = false): string
     {
         /** @var QuestionHelper */
@@ -93,6 +101,9 @@ final class Service
         $progress->finish();
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public function getHelper(string $name): HelperInterface
     {
         return $this->application
@@ -100,6 +111,10 @@ final class Service
             ->get($name);
     }
 
+    /**
+     * @throws CommandNotFoundException
+     * @throws Exception
+     */
     public function call(string $command, array $arguments = []): int
     {
         return $this->application

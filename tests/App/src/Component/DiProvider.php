@@ -9,13 +9,13 @@ namespace Ep\Tests\App\Component;
 use Ep\Base\Config;
 use Ep\Auth\AuthRepository;
 use Ep\Auth\Method\HttpSession;
-use Ep\Console\Contract\ConsoleErrorRendererInterface;
+use Ep\Console\Contract\ErrorRendererInterface as ConsoleErrorRendererInterface;
 use Ep\Base\Contract\InjectorInterface;
-use Ep\Base\Contract\InterceptorInterface;
-use Ep\Web\Contract\WebErrorRendererInterface;
+use Ep\Web\Contract\InterceptorInterface;
+use Ep\Web\Contract\ErrorRendererInterface as WebErrorRendererInterface;
 use Ep\Tests\App\Component\AuthFailHandler;
-use Ep\Tests\App\Component\ConsoleRenderer;
-use Ep\Tests\App\Component\WebErrorRenderer;
+use Ep\Tests\App\Component\Renderer;
+use Ep\Tests\App\Component\ErrorRenderer;
 use Ep\Tests\App\Component\Interceptor;
 use Ep\Tests\App\Component\UserRepository;
 use Ep\Tests\Support\Car\Car;
@@ -49,7 +49,7 @@ final class DiProvider implements ServiceProviderInterface
     public function getDefinitions(): array
     {
         return [
-            WebErrorRendererInterface::class => WebErrorRenderer::class,
+            WebErrorRendererInterface::class => ErrorRenderer::class,
             ConsoleErrorRendererInterface::class => ConsoleRenderer::class,
             InterceptorInterface::class => Interceptor::class,
             AuthRepository::class => static function (InjectorInterface $injector): AuthRepository {

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Ep\Console;
 
-use Ep\Console\Contract\ConsoleErrorRendererInterface;
-use Ep\Console\Contract\ConsoleRequestInterface;
 use Ep\Base\Contract\ErrorRendererInterface;
+use Ep\Console\Contract\ErrorRendererInterface as ConsoleErrorRendererInterface;
+use Ep\Console\Contract\RequestInterface;
 use Ep\Kit\ErrorMessage;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
@@ -23,8 +23,6 @@ final class ErrorRenderer implements ErrorRendererInterface
 
     /**
      * {@inheritDoc}
-     * 
-     * @param ConsoleRequestInterface $request
      */
     public function render(Throwable $t, mixed $request): string
     {
@@ -39,7 +37,7 @@ final class ErrorRenderer implements ErrorRendererInterface
         }
     }
 
-    private function log(Throwable $t, ConsoleRequestInterface $request): void
+    private function log(Throwable $t, RequestInterface $request): void
     {
         $this->logger->error($this->errorMessage->getMessage($t), [
             'category' => get_class($t),

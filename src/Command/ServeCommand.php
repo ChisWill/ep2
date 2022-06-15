@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace Ep\Command;
 
 use Ep\Command\Service\ServeService;
-use Ep\Console\Contract\ConsoleRequestInterface;
-use Ep\Console\Contract\ConsoleResponseInterface;
-use Ep\Console\Trait\ConsoleService;
+use Ep\Console\Contract\RequestInterface;
+use Ep\Console\Contract\ResponseInterface;
+use Ep\Console\Trait\Renderer;
 use Symfony\Component\Console\Input\InputOption;
 
 final class ServeCommand
 {
-    use ConsoleService;
+    use Renderer;
 
     public function __construct(private ServeService $service)
     {
@@ -24,7 +24,7 @@ final class ServeCommand
             ->setDescription('Runs PHP built-in web server');
     }
 
-    public function index(ConsoleRequestInterface $request): ConsoleResponseInterface
+    public function index(RequestInterface $request): ResponseInterface
     {
         $this->service
             ->load($request)

@@ -5,15 +5,15 @@ declare(strict_types=1);
 namespace Ep\Command;
 
 use Ep\Command\Service\GenerateService;
-use Ep\Console\Contract\ConsoleRequestInterface;
-use Ep\Console\Contract\ConsoleResponseInterface;
-use Ep\Console\Trait\ConsoleService;
+use Ep\Console\Contract\RequestInterface;
+use Ep\Console\Contract\ResponseInterface;
+use Ep\Console\Trait\Renderer;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
 final class GenerateCommand
 {
-    use ConsoleService;
+    use Renderer;
 
     public function __construct(private GenerateService $service)
     {
@@ -29,7 +29,7 @@ final class GenerateCommand
             ->setDescription('Generate model');
     }
 
-    public function key(ConsoleRequestInterface $request): ConsoleResponseInterface
+    public function key(RequestInterface $request): ResponseInterface
     {
         $this->service
             ->load($request)
@@ -38,7 +38,7 @@ final class GenerateCommand
         return $this->success();
     }
 
-    public function model(ConsoleRequestInterface $request): ConsoleResponseInterface
+    public function model(RequestInterface $request): ResponseInterface
     {
         foreach ($request->getArgument('table') as $table) {
             $request->setOption('table', $table);
@@ -47,7 +47,7 @@ final class GenerateCommand
         return $this->success();
     }
 
-    private function generateModel(ConsoleRequestInterface $request): void
+    private function generateModel(RequestInterface $request): void
     {
         $service = $this->service->load($request);
 

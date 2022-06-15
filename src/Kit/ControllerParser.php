@@ -31,10 +31,10 @@ final class ControllerParser
     }
 
     /**
-     * @throws InvalidArgumentException
      * @throws ContainerExceptionInterface
-     * @throws PageNotFoundException
+     * @throws InvalidArgumentException
      * @throws NotFoundExceptionInterface
+     * @throws PageNotFoundException
      */
     public function parse(string|array $handler): array
     {
@@ -61,9 +61,9 @@ final class ControllerParser
     }
 
     /**
-     * @throws PageNotFoundException
-     * @throws NotFoundExceptionInterface
      * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     * @throws PageNotFoundException
      */
     private function createController(string $class): object
     {

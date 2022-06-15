@@ -5,15 +5,15 @@ declare(strict_types=1);
 namespace Ep\Command;
 
 use Ep\Command\Service\MigrateService;
-use Ep\Console\Contract\ConsoleRequestInterface;
-use Ep\Console\Contract\ConsoleResponseInterface;
-use Ep\Console\Trait\ConsoleService;
+use Ep\Console\Contract\RequestInterface;
+use Ep\Console\Contract\ResponseInterface;
+use Ep\Console\Trait\Renderer;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
 final class MigrateCommand
 {
-    use ConsoleService;
+    use Renderer;
 
     public function __construct(private MigrateService $service)
     {
@@ -57,7 +57,7 @@ final class MigrateCommand
             ->setDescription('Rollback last migration');
     }
 
-    public function create(ConsoleRequestInterface $request): ConsoleResponseInterface
+    public function create(RequestInterface $request): ResponseInterface
     {
         $this->service
             ->load($request)
@@ -66,7 +66,7 @@ final class MigrateCommand
         return $this->success();
     }
 
-    public function init(ConsoleRequestInterface $request): ConsoleResponseInterface
+    public function init(RequestInterface $request): ResponseInterface
     {
         $this->service
             ->load($request)
@@ -75,7 +75,7 @@ final class MigrateCommand
         return $this->success();
     }
 
-    public function list(ConsoleRequestInterface $request): ConsoleResponseInterface
+    public function list(RequestInterface $request): ResponseInterface
     {
         $this->service
             ->load($request)
@@ -84,7 +84,7 @@ final class MigrateCommand
         return $this->success();
     }
 
-    public function up(ConsoleRequestInterface $request): ConsoleResponseInterface
+    public function up(RequestInterface $request): ResponseInterface
     {
         $this->service
             ->load($request)
@@ -93,7 +93,7 @@ final class MigrateCommand
         return $this->success();
     }
 
-    public function down(ConsoleRequestInterface $request): ConsoleResponseInterface
+    public function down(RequestInterface $request): ResponseInterface
     {
         $this->service
             ->load($request)

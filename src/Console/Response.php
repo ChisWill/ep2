@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Ep\Console;
 
-use Ep\Console\Contract\ConsoleResponseInterface;
+use Ep\Console\Contract\ResponseInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Output\OutputInterface;
 
-final class Response implements ConsoleResponseInterface
+final class Response implements ResponseInterface
 {
     public function __construct(private OutputInterface $output)
     {
@@ -16,7 +16,7 @@ final class Response implements ConsoleResponseInterface
 
     private int $code = Command::SUCCESS;
 
-    public function setCode(int $code): ConsoleResponseInterface
+    public function setCode(int $code): ResponseInterface
     {
         $this->code = $code;
         return $this;
@@ -30,7 +30,7 @@ final class Response implements ConsoleResponseInterface
     /**
      * {@inheritDoc}
      */
-    public function write($messages, int $level = 0): void
+    public function write(string|iterable $messages, int $level = 0): void
     {
         $this->output->write($messages, false, $level);
     }
@@ -38,7 +38,7 @@ final class Response implements ConsoleResponseInterface
     /**
      * {@inheritDoc}
      */
-    public function writeln($messages, int $level = 0): void
+    public function writeln(string|iterable $messages, int $level = 0): void
     {
         $this->output->write($messages, true, $level);
     }

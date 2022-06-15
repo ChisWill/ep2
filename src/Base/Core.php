@@ -46,7 +46,7 @@ final class Core
      */
     public function ready(string $application): object
     {
-        if (!is_callable([$application, 'getDiProviderName'])) {
+        if (!is_subclass_of($application, ApplicationInterface::class)) {
             throw new LogicException(sprintf('The application "%s" must implements %s', $application, ApplicationInterface::class));
         }
         $this->config ??= $this->createConfig();
@@ -120,6 +120,7 @@ final class Core
         if ($this->config->diProvider) {
             $providers[] = new $this->config->diProvider($this->config);
         }
+
         return ContainerConfig::create()
             ->withProviders($providers)
             ->withValidate($this->config->debug);

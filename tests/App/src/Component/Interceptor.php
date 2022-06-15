@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Ep\Tests\App\Component;
 
-use Ep\Base\Contract\InterceptorInterface;
+use Ep\Web\Contract\InterceptorInterface;
 use Ep\Tests\App\Middleware\RootMiddleware;
 
 class Interceptor implements InterceptorInterface

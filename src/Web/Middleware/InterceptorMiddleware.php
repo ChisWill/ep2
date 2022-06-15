@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Ep\Web\Middleware;
 
-use Ep\Base\Contract\InterceptorInterface;
+use Ep\Web\Contract\InterceptorInterface;
 use Ep\Web\RequestHandlerFactory;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;

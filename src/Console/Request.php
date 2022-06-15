@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Ep\Console;
 
-use Ep\Console\Contract\ConsoleRequestInterface;
+use Ep\Console\Contract\RequestInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Yiisoft\Arrays\ArrayHelper;
 
-final class Request implements ConsoleRequestInterface
+final class Request implements RequestInterface
 {
     public function __construct(private InputInterface $input)
     {
@@ -35,7 +35,7 @@ final class Request implements ConsoleRequestInterface
     /**
      * {@inheritDoc}
      */
-    public function getArgument(string $name)
+    public function getArgument(string $name): string|array|null
     {
         if (str_contains($name, '.')) {
             return ArrayHelper::getValueByPath($this->getArguments(), $name);
@@ -46,7 +46,7 @@ final class Request implements ConsoleRequestInterface
     /**
      * {@inheritDoc}
      */
-    public function setArgument(string $name, $value): void
+    public function setArgument(string $name, string|array|null $value): void
     {
         $this->arguments[$name] = $value;
     }
@@ -82,7 +82,7 @@ final class Request implements ConsoleRequestInterface
     /**
      * {@inheritDoc}
      */
-    public function getOption(string $name)
+    public function getOption(string $name): string|array|bool|null
     {
         if (str_contains($name, '.')) {
             return ArrayHelper::getValueByPath($this->getOptions(), $name);
@@ -93,7 +93,7 @@ final class Request implements ConsoleRequestInterface
     /**
      * {@inheritDoc}
      */
-    public function setOption(string $name, $value): void
+    public function setOption(string $name, string|array|bool|null $value): void
     {
         $this->options[$name] = $value;
     }

@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Ep\Tests\App\Component;
 
-use Ep\Web\Trait\WebService;
+use Ep\Web\Trait\Renderer;
 use Psr\Http\Message\ResponseInterface;
 
 class Controller
 {
-    use WebService;
+    use Renderer;
 
     protected function success(array|string $body = []): ResponseInterface
     {

@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Ep\Tests\App\Command;
 
-use Ep\Console\Contract\ConsoleRequestInterface;
+use Ep\Console\Contract\RequestInterface;
 use Ep\Helper\Curl;
-use Ep\Console\Trait\ConsoleService;
+use Ep\Console\Trait\Renderer;
 use Symfony\Component\Console\Input\InputArgument;
 
 class CurlCommand
 {
-    use ConsoleService;
+    use Renderer;
 
     public function __construct()
     {
@@ -58,7 +58,7 @@ class CurlCommand
         return $this->success();
     }
 
-    public function single(ConsoleRequestInterface $request)
+    public function single(RequestInterface $request)
     {
         $r = Curl::get('http://ep.cc/test/' . $request->getArgument('action'));
 

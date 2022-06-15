@@ -6,7 +6,7 @@ namespace Ep\Web;
 
 use Ep\Base\Config;
 use Ep\Base\Contract\ErrorRendererInterface;
-use Ep\Web\Contract\WebErrorRendererInterface;
+use Ep\Web\Contract\ErrorRendererInterface as WebErrorRendererInterface;
 use Ep\Helper\Date;
 use Ep\Kit\ErrorMessage;
 use Yiisoft\Aliases\Aliases;
@@ -35,8 +35,6 @@ final class ErrorRenderer implements ErrorRendererInterface
 
     /**
      * {@inheritDoc}
-     * 
-     * @param  ServerRequestInterface $request
      */
     public function render(Throwable $t, mixed $request): string
     {

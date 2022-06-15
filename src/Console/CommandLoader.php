@@ -6,7 +6,7 @@ namespace Ep\Console;
 
 use Ep\Base\Config;
 use Ep\Base\Router;
-use Ep\Console\Contract\ConsoleFactoryInterface;
+use Ep\Console\Contract\FactoryInterface;
 use Ep\Exception\PageNotFoundException;
 use Ep\Helper\Str;
 use Ep\Kit\ControllerParser;
@@ -29,7 +29,7 @@ final class CommandLoader implements CommandLoaderInterface
         private Router $router,
         private ControllerParser $parser,
         private ControllerRunner $runner,
-        private ConsoleFactoryInterface $factory,
+        private FactoryInterface $factory,
         private Util $util
     ) {
         $this->router = $router
@@ -58,7 +58,7 @@ final class CommandLoader implements CommandLoaderInterface
                 private object $controller,
                 private string $action,
                 private ControllerRunner $runner,
-                private ConsoleFactoryInterface $factory,
+                private FactoryInterface $factory,
                 string $name,
                 string $alias
             ) {
@@ -144,11 +144,17 @@ final class CommandLoader implements CommandLoaderInterface
         return $this->commands;
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     private function getCommandFiles(): array
     {
         return $this->getFiles(str_replace('\\', '/', $this->util->getAppPath()), $this->config->commandSuffix);
     }
 
+    /**
+     * @throws InvalidArgumentException
+     */
     private function getFiles(string $directory, string $suffix): array
     {
         return array_map(static function ($filePath) use ($directory): string {

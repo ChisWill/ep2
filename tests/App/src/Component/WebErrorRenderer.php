@@ -6,12 +6,12 @@ namespace Ep\Tests\App\Component;
 
 use Ep\Attribute\Inject;
 use Ep\Base\Trait\ContextView;
-use Ep\Web\Contract\WebErrorRendererInterface;
+use Ep\Web\Contract\ErrorRendererInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use Throwable;
 
-final class WebErrorRenderer implements WebErrorRendererInterface
+final class WebErrorRenderer implements ErrorRendererInterface
 {
     use ContextView;
 

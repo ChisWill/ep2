@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Ep\Console;
 
 use Ep;
-use Ep\Base\ErrorHandler;
 use Ep\Base\Contract\ApplicationInterface;
-use Ep\Console\Contract\ConsoleFactoryInterface;
+use Ep\Base\ErrorHandler;
+use Ep\Console\Contract\FactoryInterface;
 use Symfony\Component\Console\Application as SymfonyApplication;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -17,7 +17,7 @@ final class Application extends SymfonyApplication implements ApplicationInterfa
     public function __construct(
         private InputInterface $input,
         private OutputInterface $output,
-        private ConsoleFactoryInterface $factory,
+        private FactoryInterface $factory,
         private ErrorRenderer $errorRenderer
     ) {
         parent::__construct('Ep', Ep::VERSION);

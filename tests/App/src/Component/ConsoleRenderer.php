@@ -5,24 +5,24 @@ declare(strict_types=1);
 namespace Ep\Tests\App\Component;
 
 use Ep\Attribute\Inject;
-use Ep\Console\Contract\ConsoleErrorRendererInterface;
+use Ep\Console\Contract\ErrorRendererInterface;
 use Throwable;
-use Ep\Console\Contract\ConsoleRequestInterface;
+use Ep\Console\Contract\RequestInterface;
 use Psr\Log\LoggerInterface;
 
-class ConsoleRenderer implements ConsoleErrorRendererInterface
+class ConsoleRenderer implements ErrorRendererInterface
 {
     #[Inject]
     private LoggerInterface $log;
 
-    public function render(Throwable $t, ConsoleRequestInterface $request): string
+    public function render(Throwable $t, RequestInterface $request): string
     {
         $this->log($t, $request);
 
         return $this->renderContent($t, $request);
     }
 
-    private function renderContent(Throwable $t, ConsoleRequestInterface $request): string
+    private function renderContent(Throwable $t, RequestInterface $request): string
     {
         return sprintf(
             "%s: %s, File: %s\n",
@@ -32,7 +32,7 @@ class ConsoleRenderer implements ConsoleErrorRendererInterface
         );
     }
 
-    private function log(Throwable $t, ConsoleRequestInterface $request): void
+    private function log(Throwable $t, RequestInterface $request): void
     {
         $context = [
             'category' => get_class($t)

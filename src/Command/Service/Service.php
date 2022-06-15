@@ -6,7 +6,7 @@ namespace Ep\Command\Service;
 
 use Ep;
 use Ep\Attribute\Inject;
-use Ep\Console\Contract\ConsoleRequestInterface;
+use Ep\Console\Contract\RequestInterface;
 use Ep\Kit\Util;
 use Yiisoft\Db\Connection\Connection;
 use Yiisoft\Db\Connection\ConnectionInterface;
@@ -18,9 +18,9 @@ abstract class Service
     #[Inject]
     private Util $util;
 
-    protected ConsoleRequestInterface $request;
+    protected RequestInterface $request;
 
-    final public function load(ConsoleRequestInterface $request): static
+    final public function load(RequestInterface $request): static
     {
         $new = clone $this;
         $new->request = $request;

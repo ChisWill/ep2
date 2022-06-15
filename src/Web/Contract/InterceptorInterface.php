@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ep\Base\Contract;
+namespace Ep\Web\Contract;
 
 interface InterceptorInterface
 {

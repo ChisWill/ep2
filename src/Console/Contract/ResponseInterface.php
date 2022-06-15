@@ -4,21 +4,15 @@ declare(strict_types=1);
 
 namespace Ep\Console\Contract;
 
-interface ConsoleResponseInterface
+interface ResponseInterface
 {
     public function setCode(int $code): self;
 
     public function getCode(): int;
 
-    /**
-     * @param string|iterable $messages
-     */
-    public function write($messages, int $level = 0): void;
+    public function write(string|iterable $messages, int $level = 0): void;
 
-    /**
-     * @param string|iterable $messages
-     */
-    public function writeln($messages, int $level = 0): void;
+    public function writeln(string|iterable $messages, int $level = 0): void;
 
     public function setVerbosity(int $level): void;
 

@@ -39,6 +39,9 @@ final class RequestHandlerFactory
             ) {
             }
 
+            /**
+             * {@inheritDoc}
+             */
             public function handle(ServerRequestInterface $request): ResponseInterface
             {
                 return $this->injector->invoke($this->callback, [$request]);
@@ -72,6 +75,9 @@ final class RequestHandlerFactory
                 $this->callback = $callback;
             }
 
+            /**
+             * {@inheritDoc}
+             */
             public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
             {
                 return $this->injector->invoke($this->callback, [$request, $handler]);
@@ -89,6 +95,9 @@ final class RequestHandlerFactory
             ) {
             }
 
+            /**
+             * {@inheritDoc}
+             */
             public function handle(ServerRequestInterface $request): ResponseInterface
             {
                 return $this->middleware->process($request, $this->handler);
