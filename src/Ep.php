@@ -8,11 +8,11 @@ use Ep\Base\Facade;
 /**
  * @method static Core create(string $rootPath)
  * @method static \Yiisoft\Di\ContainerConfig getContainerConfig()
- * @method static \Ep\Contract\EnvInterface getEnv()
+ * @method static \Ep\Base\Contract\EnvInterface getEnv()
  * @method static \Ep\Base\Config getConfig()
  * @method static \Psr\Container\ContainerInterface getDi()
  * @method static \Yiisoft\Factory\Factory getFactory()
- * @method static \Ep\Contract\InjectorInterface getInjector()
+ * @method static \Ep\Base\Contract\InjectorInterface getInjector()
  * @method static \Yiisoft\Db\Connection\Connection getDb(string $id = null)
  * @method static \Psr\SimpleCache\CacheInterface getCache(string $id = null)
  * @method static \Psr\Log\LoggerInterface getLogger(string $id = null)

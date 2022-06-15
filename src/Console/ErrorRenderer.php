@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Ep\Console;
 
-use Ep\Contract\ConsoleErrorRendererInterface;
-use Ep\Contract\ConsoleRequestInterface;
-use Ep\Contract\ErrorRendererInterface;
+use Ep\Console\Contract\ConsoleErrorRendererInterface;
+use Ep\Console\Contract\ConsoleRequestInterface;
+use Ep\Base\Contract\ErrorRendererInterface;
 use Ep\Kit\ErrorMessage;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;

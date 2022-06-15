@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Ep\Web;
 
 use Ep\Base\ErrorHandler;
-use Ep\Contract\ApplicationInterface;
+use Ep\Base\Contract\ApplicationInterface;
 use Ep\Web\Middleware\InterceptorMiddleware;
 use Ep\Web\Middleware\RouteMiddleware;
 use HttpSoft\Emitter\Exception\HeadersAlreadySentException;

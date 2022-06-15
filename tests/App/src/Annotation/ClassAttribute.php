@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Ep\Tests\App\Annotation;
 
 use Attribute;
-use Ep\Contract\Attribute\ProcessInterface;
+use Ep\Attribute\Contract\ProcessInterface;
 use Reflector;
 
 #[Attribute(Attribute::TARGET_CLASS)]

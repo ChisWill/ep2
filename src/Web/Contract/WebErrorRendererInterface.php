@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ep\Contract;
+namespace Ep\Web\Contract;
 
 use Psr\Http\Message\ServerRequestInterface;
 use Throwable;

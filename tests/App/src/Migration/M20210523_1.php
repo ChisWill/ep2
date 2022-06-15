@@ -6,7 +6,7 @@ namespace Ep\Tests\App\Migration;
 
 use Ep\Helper\Str;
 use Ep\Command\Helper\MigrateBuilder;
-use Ep\Contract\MigrateInterface;
+use Ep\Base\Contract\MigrateInterface;
 
 final class M20210523_1 implements MigrateInterface
 {

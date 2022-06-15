@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ep\Contract;
+namespace Ep\Base\Contract;
 
 use Ep\Command\Helper\MigrateBuilder;
 

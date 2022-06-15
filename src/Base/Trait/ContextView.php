@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ep\Traits;
+namespace Ep\Base\Trait;
 
 use Ep;
 use Ep\Base\View;

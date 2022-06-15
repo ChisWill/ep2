@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Ep\Attribute;
 
 use Ep;
-use Ep\Contract\Attribute\ProcessInterface;
+use Ep\Attribute\Contract\ProcessInterface;
 use Attribute;
 use Reflector;
 use ReflectionProperty;

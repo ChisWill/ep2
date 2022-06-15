@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Ep\Command;
 
 use Ep\Command\Service\ServeService;
-use Ep\Contract\ConsoleRequestInterface;
-use Ep\Contract\ConsoleResponseInterface;
-use Ep\Traits\ConsoleService;
+use Ep\Console\Contract\ConsoleRequestInterface;
+use Ep\Console\Contract\ConsoleResponseInterface;
+use Ep\Console\Trait\ConsoleService;
 use Symfony\Component\Console\Input\InputOption;
 
 final class ServeCommand

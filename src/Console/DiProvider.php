@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Ep\Console;
 
-use Ep\Contract\ConsoleFactoryInterface;
+use Ep\Console\Contract\ConsoleFactoryInterface;
 use Symfony\Component\Console\CommandLoader\CommandLoaderInterface;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\InputInterface;

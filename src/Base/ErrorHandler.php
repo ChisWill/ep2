@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Ep\Base;
 
-use Ep\Contract\ErrorRendererInterface;
+use Ep\Base\Contract\ErrorRendererInterface;
 use ErrorException;
 use Throwable;
 

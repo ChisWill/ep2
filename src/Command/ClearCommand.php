@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Ep\Command;
 
 use Ep\Base\Config;
-use Ep\Contract\ConsoleResponseInterface;
+use Ep\Console\Contract\ConsoleResponseInterface;
 use Ep\Helper\File;
-use Ep\Traits\ConsoleService;
+use Ep\Console\Trait\ConsoleService;
 use Yiisoft\Aliases\Aliases;
 
 final class ClearCommand

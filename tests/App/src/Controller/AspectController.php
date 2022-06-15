@@ -9,7 +9,8 @@ use Ep\Attribute\Route;
 use Ep\Tests\App\Annotation\BeforeAfterAspect;
 use Ep\Tests\App\Annotation\MethodAspect;
 use Ep\Tests\App\Middleware\ModuleMiddleware;
-use Ep\Traits\WebService;
+use Ep\Web\Trait\WebService;
+use Psr\Http\Message\ServerRequestInterface;
 
 #[Route('a')]
 #[Middleware([ModuleMiddleware::class])]
@@ -20,9 +21,9 @@ class AspectController
 
     #[Route('p')]
     #[MethodAspect]
-    public function ping()
+    public function ping(ServerRequestInterface $request)
     {
-        t('pong');
+        t('pong' . $request->getUri()->getPath());
         return $this->string('pong');
     }
 }

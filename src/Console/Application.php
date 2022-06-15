@@ -6,8 +6,8 @@ namespace Ep\Console;
 
 use Ep;
 use Ep\Base\ErrorHandler;
-use Ep\Contract\ApplicationInterface;
-use Ep\Contract\ConsoleFactoryInterface;
+use Ep\Base\Contract\ApplicationInterface;
+use Ep\Console\Contract\ConsoleFactoryInterface;
 use Symfony\Component\Console\Application as SymfonyApplication;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;

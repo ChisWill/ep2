@@ -6,7 +6,7 @@ namespace Ep\Console;
 
 use Ep\Base\Config;
 use Ep\Base\Router;
-use Ep\Contract\ConsoleFactoryInterface;
+use Ep\Console\Contract\ConsoleFactoryInterface;
 use Ep\Exception\PageNotFoundException;
 use Ep\Helper\Str;
 use Ep\Kit\ControllerParser;

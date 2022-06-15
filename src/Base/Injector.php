@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Ep\Base;
 
-use Ep\Contract\InjectorInterface;
+use Ep\Base\Contract\InjectorInterface;
 use Ep\Kit\Annotate;
 use Yiisoft\Injector\Injector as YiiInjector;
 use Psr\Container\ContainerInterface;

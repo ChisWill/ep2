@@ -6,7 +6,7 @@ namespace Ep\Tests\App\AdvanceApp\BackEnd\Controller;
 
 use Ep\Attribute\Inject;
 use Ep\Attribute\Route;
-use Ep\Traits\WebService;
+use Ep\Web\Trait\WebService;
 use Ep\Web\Service;
 use Psr\Http\Message\ServerRequestInterface;
 

@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Ep\Web;
 
 use Ep\Base\Config;
-use Ep\Contract\ErrorRendererInterface;
-use Ep\Contract\WebErrorRendererInterface;
+use Ep\Base\Contract\ErrorRendererInterface;
+use Ep\Web\Contract\WebErrorRendererInterface;
 use Ep\Helper\Date;
 use Ep\Kit\ErrorMessage;
 use Yiisoft\Aliases\Aliases;

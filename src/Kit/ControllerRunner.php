@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace Ep\Kit;
 
-use Ep\Contract\InjectorInterface;
-use Ep\Event\AfterRequest;
-use Ep\Event\BeforeRequest;
-use Ep\Exception\PageNotFoundException;
+use Ep\Base\Contract\InjectorInterface;
+use Ep\Base\Event\AfterRequest;
+use Ep\Base\Event\BeforeRequest;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Closure;
 
@@ -19,15 +18,8 @@ final class ControllerRunner
     ) {
     }
 
-    /**
-     * @throws PageNotFoundException
-     */
     public function runAction(object $controller, string $action, mixed $request, mixed $response = null): mixed
     {
-        if (!is_callable([$controller, $action])) {
-            throw new PageNotFoundException(sprintf('%s::%s() is not exists.', get_class($controller), $action));
-        }
-
         $request = $this->eventDispatcher->dispatch(new BeforeRequest($request, $response))->getRequest();
 
         try {

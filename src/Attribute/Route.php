@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Ep\Attribute;
 
-use Ep\Contract\Attribute\ConfigureInterface;
+use Ep\Attribute\Contract\ConfigureInterface;
 use Attribute;
 
 #[Attribute(Attribute::TARGET_CLASS | Attribute::TARGET_METHOD)]

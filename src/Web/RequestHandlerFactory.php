@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Ep\Web;
 
-use Ep\Contract\InjectorInterface;
+use Ep\Base\Contract\InjectorInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

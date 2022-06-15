@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Ep\Tests\App\Component;
 
-use Ep\Event\AfterRequest;
-use Ep\Event\BeforeRequest;
+use Ep\Base\Event\AfterRequest;
+use Ep\Base\Event\BeforeRequest;
 use Ep\Web\Event\EndBody;
 use Psr\Http\Message\ServerRequestInterface;
 

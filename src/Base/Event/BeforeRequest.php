@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ep\Event;
+namespace Ep\Base\Event;
 
 final class BeforeRequest
 {

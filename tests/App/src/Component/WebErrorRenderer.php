@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Ep\Tests\App\Component;
 
 use Ep\Attribute\Inject;
-use Ep\Contract\WebErrorRendererInterface;
-use Ep\Traits\ContextView;
+use Ep\Base\Trait\ContextView;
+use Ep\Web\Contract\WebErrorRendererInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use Throwable;

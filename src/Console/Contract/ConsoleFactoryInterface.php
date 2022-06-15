@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Ep\Contract;
+namespace Ep\Console\Contract;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;

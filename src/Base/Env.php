@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Ep\Base;
 
-use Ep\Contract\EnvInterface;
+use Ep\Base\Contract\EnvInterface;
 use Dotenv\Dotenv;
 use Dotenv\Repository\RepositoryBuilder;
 use Dotenv\Repository\RepositoryInterface;

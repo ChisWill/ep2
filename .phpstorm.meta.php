@@ -4,7 +4,7 @@
 namespace PHPSTORM_META {
 
     use Ep\Base\Core;
-    use Ep\Contract\InjectorInterface;
+    use Ep\Base\Contract\InjectorInterface;
     use Psr\EventDispatcher\EventDispatcherInterface;
 
     override(

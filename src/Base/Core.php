@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Ep\Base;
 
-use Ep\Contract\ApplicationInterface;
-use Ep\Contract\EnvInterface;
-use Ep\Contract\InjectorInterface;
+use Ep\Base\Contract\ApplicationInterface;
+use Ep\Base\Contract\EnvInterface;
+use Ep\Base\Contract\InjectorInterface;
 use Yiisoft\Db\Connection\Connection;
 use Yiisoft\Di\Container;
 use Yiisoft\Di\ContainerConfig;

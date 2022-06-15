@@ -6,7 +6,7 @@ namespace Ep\Command\Service;
 
 use Ep;
 use Ep\Attribute\Inject;
-use Ep\Contract\ConsoleRequestInterface;
+use Ep\Console\Contract\ConsoleRequestInterface;
 use Ep\Kit\Util;
 use Yiisoft\Db\Connection\Connection;
 use Yiisoft\Db\Connection\ConnectionInterface;

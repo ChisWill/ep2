@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Ep\Contract\Attribute;
+namespace Ep\Attribute\Contract;
 
-use Ep\Contract\HandlerInterface;
+use Ep\Base\Contract\HandlerInterface;
 
 interface AspectInterface
 {

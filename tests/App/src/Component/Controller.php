@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Ep\Tests\App\Component;
 
-use Ep\Traits\WebService;
+use Ep\Web\Trait\WebService;
 use Psr\Http\Message\ResponseInterface;
 
 class Controller

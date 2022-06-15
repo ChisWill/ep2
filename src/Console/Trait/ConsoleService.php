@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Ep\Traits;
+namespace Ep\Console\Trait;
 
 use Ep\Attribute\Inject;
 use Ep\Console\CommandDefinition;
 use Ep\Console\Service;
-use Ep\Contract\ConsoleResponseInterface;
+use Ep\Console\Contract\ConsoleResponseInterface;
 use Symfony\Component\Console\Command\Command;
 
 trait ConsoleService

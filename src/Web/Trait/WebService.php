@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Ep\Traits;
+namespace Ep\Web\Trait;
 
 use Ep\Attribute\Inject;
 use Ep\Base\Config;
+use Ep\Base\Trait\ContextView;
 use Ep\Kit\Util;
 use Ep\Web\Service;
 use Ep\Web\View;

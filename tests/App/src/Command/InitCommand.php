@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Ep\Tests\App\Command;
 
 use Ep\Console\Service;
-use Ep\Contract\ConsoleRequestInterface;
-use Ep\Traits\ConsoleService;
+use Ep\Console\Contract\ConsoleRequestInterface;
+use Ep\Console\Trait\ConsoleService;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Input\InputOption;

@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Ep\Tests\App\Annotation;
 
 use Attribute;
-use Ep\Contract\Attribute\AspectInterface;
-use Ep\Contract\HandlerInterface;
+use Ep\Attribute\Contract\AspectInterface;
+use Ep\Base\Contract\HandlerInterface;
 
 #[Attribute(Attribute::TARGET_CLASS)]
 final class BeforeAfterAspect implements AspectInterface

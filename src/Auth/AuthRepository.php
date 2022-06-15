@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Ep\Auth;
 
-use Ep\Contract\InjectorInterface;
+use Ep\Base\Contract\InjectorInterface;
 use Yiisoft\Auth\AuthenticationMethodInterface;
 use Yiisoft\Auth\Middleware\Authentication;
 use Psr\Container\ContainerInterface;

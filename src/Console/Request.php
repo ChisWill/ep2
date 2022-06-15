@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Ep\Console;
 
-use Ep\Contract\ConsoleRequestInterface;
+use Ep\Console\Contract\ConsoleRequestInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Yiisoft\Arrays\ArrayHelper;
 

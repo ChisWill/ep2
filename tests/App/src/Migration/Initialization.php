@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Ep\Tests\App\Migration;
 
 use Ep\Command\Helper\MigrateBuilder;
-use Ep\Contract\MigrateInterface;
+use Ep\Base\Contract\MigrateInterface;
 
 final class Initialization implements MigrateInterface
 {

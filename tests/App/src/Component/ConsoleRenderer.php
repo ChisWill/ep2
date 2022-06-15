@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Ep\Tests\App\Component;
 
 use Ep\Attribute\Inject;
-use Ep\Contract\ConsoleErrorRendererInterface;
+use Ep\Console\Contract\ConsoleErrorRendererInterface;
 use Throwable;
-use Ep\Contract\ConsoleRequestInterface;
+use Ep\Console\Contract\ConsoleRequestInterface;
 use Psr\Log\LoggerInterface;
 
 class ConsoleRenderer implements ConsoleErrorRendererInterface

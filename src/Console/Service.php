@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Ep\Console;
 
-use Ep\Contract\ConsoleFactoryInterface;
-use Ep\Contract\ConsoleResponseInterface;
+use Ep\Console\Contract\ConsoleFactoryInterface;
+use Ep\Console\Contract\ConsoleResponseInterface;
 use Symfony\Component\Console\Helper\HelperInterface;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Helper\QuestionHelper;

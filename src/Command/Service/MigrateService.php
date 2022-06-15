@@ -7,7 +7,7 @@ namespace Ep\Command\Service;
 use Ep\Base\Config;
 use Ep\Command\Helper\MigrateBuilder;
 use Ep\Console\Service as ConsoleService;
-use Ep\Contract\MigrateInterface;
+use Ep\Base\Contract\MigrateInterface;
 use Ep\Db\ActiveRecord;
 use Ep\Db\Query;
 use Ep\Db\Service as DbService;

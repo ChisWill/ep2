@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Ep\Tests\App\Command;
 
-use Ep\Contract\ConsoleRequestInterface;
+use Ep\Console\Contract\ConsoleRequestInterface;
 use Ep\Helper\Curl;
-use Ep\Traits\ConsoleService;
+use Ep\Console\Trait\ConsoleService;
 use Symfony\Component\Console\Input\InputArgument;
 
 class CurlCommand

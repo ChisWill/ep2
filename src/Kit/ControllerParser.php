@@ -32,18 +32,20 @@ final class ControllerParser
 
     /**
      * @throws InvalidArgumentException
+     * @throws ContainerExceptionInterface
      * @throws PageNotFoundException
      * @throws NotFoundExceptionInterface
-     * @throws ContainerExceptionInterface
      */
     public function parse(string|array $handler): array
     {
         [$class, $action] = $this->parseHandler($handler);
 
-        return [
-            $this->createController($class),
-            $action
-        ];
+        $callback = [$this->createController($class), $action];
+        if (!is_callable($callback)) {
+            throw new PageNotFoundException(sprintf('%s::%s() is not exists.', $class, $action));
+        }
+
+        return $callback;
     }
 
     /**

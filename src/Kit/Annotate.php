@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Ep\Kit;
 
+use Ep\Attribute\Contract\AspectInterface;
+use Ep\Attribute\Contract\ConfigureInterface;
+use Ep\Attribute\Contract\ProcessInterface;
 use Ep\Base\Constant;
-use Ep\Contract\Attribute\AspectInterface;
-use Ep\Contract\Attribute\ConfigureInterface;
-use Ep\Contract\Attribute\ProcessInterface;
-use Ep\Contract\HandlerInterface;
+use Ep\Base\Contract\HandlerInterface;
 use Yiisoft\Injector\Injector;
 use Psr\Container\ContainerInterface;
 use Psr\SimpleCache\CacheInterface;

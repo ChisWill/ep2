@@ -157,7 +157,7 @@ final class Router
                 $method = Method::ALL;
             }
 
-            foreach ($value[Attribute::TARGET_METHOD] as $item) {
+            foreach ($value[Attribute::TARGET_METHOD] ?? [] as $item) {
                 $this->attributeRules[sprintf('%s/%s', $path, trim($item['path'], '/'))] = [
                     (array) ($item['method'] ?? $method),
                     [$class, $item[Constant::ATTRIBUTE_TARGET]]
