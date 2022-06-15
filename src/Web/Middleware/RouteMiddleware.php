@@ -25,6 +25,7 @@ final class RouteMiddleware implements MiddlewareInterface
         Config $config
     ) {
         $this->router = $router
+            ->withSuffix($config->controllerSuffix)
             ->withEnableDefaultRule($config->enableDefaultRouteRule)
             ->withDefaultRule($config->defaultRouteRule);
     }

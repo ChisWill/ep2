@@ -33,6 +33,7 @@ final class CommandLoader implements CommandLoaderInterface
         private Util $util
     ) {
         $this->router = $router
+            ->withSuffix($config->commandSuffix)
             ->withEnableDefaultRule($config->enableDefaultRouteRule)
             ->withDefaultRule($config->defaultRouteRule);
         $this->parser = $parser->withSuffix($config->commandSuffix);

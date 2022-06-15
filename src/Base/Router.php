@@ -7,6 +7,7 @@ namespace Ep\Base;
 use Ep\Attribute\Route;
 use Ep\Exception\PageNotFoundException;
 use Ep\Kit\Annotate;
+use Ep\Helper\Str;
 use FastRoute\Dispatcher;
 use FastRoute\RouteCollector as FastRouteCollector;
 use Yiisoft\Aliases\Aliases;
@@ -19,6 +20,7 @@ use function FastRoute\cachedDispatcher;
 
 final class Router
 {
+    private string $suffix;
     private array $collectionRules = [];
     private array $attributeRules = [];
 
@@ -29,8 +31,17 @@ final class Router
         private RouteCollection $routeCollection,
         private Annotate $annotate
     ) {
+        $this->suffix = $config->controllerSuffix;
+
         $this->initCollection();
         $this->initAttribute();
+    }
+
+    public function withSuffix(string $suffix): self
+    {
+        $new = clone $this;
+        $new->suffix = $suffix;
+        return $new;
     }
 
     private bool $enableDefaultRule = true;
@@ -155,7 +166,6 @@ final class Router
 
             if ($path) {
                 [$path, $handler] = $this->generateRuleByClass($path, $class);
-                tt($path, $handler);
                 $this->attributeRules[$path] = [$method, $handler];
             }
         }
@@ -176,8 +186,25 @@ final class Router
         $fetch($this->routeCollection->getRoutes(), $this->collectionRules);
     }
 
-    private function generateRuleByClass($path, string $class): array
+    private function generateRuleByClass(string $path, string $class): array
     {
-        return [rtrim($path, '/') . '/{action:[a-zA-Z][\w-]*}', 'advance-app/back-end/test-app/<action>'];
+        return [
+            rtrim($path, '/') . '/{action:[a-zA-Z][\w-]*}',
+            implode(
+                '/',
+                array_map(
+                    static fn ($item): string => Str::camelToId($item, '-'),
+                    array_filter(
+                        explode(
+                            '\\',
+                            Str::ltrim(
+                                str_replace($this->suffix, '', $class),
+                                $this->config->rootNamespace
+                            )
+                        )
+                    )
+                )
+            ) . '/<action>'
+        ];
     }
 }
