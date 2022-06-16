@@ -56,6 +56,10 @@ final class Config
      */
     public ?array $defaultRouteRule = null;
     /**
+     * Route directory
+     */
+    public string $routeDir = '@root/routes';
+    /**
      * Runtime directory
      */
     public string $runtimeDir = '@root/runtime';

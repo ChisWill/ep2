@@ -11,6 +11,8 @@ use Ep\Helper\Str;
 use FastRoute\Dispatcher;
 use FastRoute\RouteCollector as FastRouteCollector;
 use Yiisoft\Aliases\Aliases;
+use Yiisoft\Files\FileHelper;
+use Yiisoft\Files\PathMatcher\PathMatcher;
 use Yiisoft\Http\Method;
 use Psr\SimpleCache\CacheInterface;
 use Attribute;
@@ -173,6 +175,17 @@ final class Router
 
     private function initCollection(): void
     {
+        $dir = $this->aliases->get($this->config->routeDir);
+        if (!file_exists($dir)) {
+            return;
+        }
+
+        foreach (FileHelper::findFiles($dir, [
+            'filter' => (new PathMatcher())->only('**.php')
+        ]) as $file) {
+            require($file);
+        }
+
         $fetch = static function (array $routes, array &$result) use (&$fetch): void {
             foreach ($routes as $route) {
                 if ($route instanceof RouteCollector) {

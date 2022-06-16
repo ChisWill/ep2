@@ -10,7 +10,6 @@ use Ep\Base\Env;
 use Ep\Base\Injector;
 use Ep\Base\Contract\EnvInterface;
 use Ep\Base\Contract\InjectorInterface;
-use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Yiisoft\Aliases\Aliases;
 use Yiisoft\Assets\AssetLoader;
 use Yiisoft\Assets\AssetLoaderInterface;
@@ -29,7 +28,6 @@ use Yiisoft\Log\Target;
 use Yiisoft\Profiler\Profiler;
 use Yiisoft\Profiler\ProfilerInterface;
 use Yiisoft\Yii\Event\ListenerCollectionFactory;
-use Psr\Cache\CacheItemPoolInterface;
 use Psr\Container\ContainerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\EventDispatcher\ListenerProviderInterface;
@@ -63,8 +61,7 @@ final class DiProvider implements ServiceProviderInterface
                 '__construct()' => [[Reference::to(Target::class)]]
             ],
             // Cache
-            CacheItemPoolInterface::class => fn (Aliases $aliases): CacheItemPoolInterface => new FilesystemAdapter('item-caches', 0, $aliases->get($this->config->runtimeDir)),
-            CacheInterface::class => fn (Aliases $aliases): CacheInterface => new FileCache($aliases->get($this->config->runtimeDir . '/simple-caches')),
+            CacheInterface::class => fn (Aliases $aliases): CacheInterface => new FileCache($aliases->get($this->config->runtimeDir . '/caches')),
             YiiCacheInterface::class => Cache::class,
             // View
             AssetLoaderInterface::class => AssetLoader::class,
@@ -72,7 +69,6 @@ final class DiProvider implements ServiceProviderInterface
             // Profiler
             ProfilerInterface::class => Profiler::class,
             // Event
-            ListenerCollection::class => fn (ListenerCollectionFactory $listenerCollectionFactory): ListenerCollection => $listenerCollectionFactory->create($this->config->events),
             ListenerProviderInterface::class => Provider::class,
             EventDispatcherInterface::class => Dispatcher::class,
         ];
@@ -80,6 +76,8 @@ final class DiProvider implements ServiceProviderInterface
 
     public function getExtensions(): array
     {
-        return [];
+        return [
+            ListenerCollection::class => fn (ContainerInterface $container): ListenerCollection => $container->get(ListenerCollectionFactory::class)->create($this->config->events),
+        ];
     }
 }

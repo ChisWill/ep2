@@ -6,6 +6,7 @@ namespace Ep\Tests\App\Controller;
 
 use Ep;
 use Ep\Attribute\Inject;
+use Ep\Attribute\Route;
 use Ep\Base\RouteCollection;
 use Ep\Kit\UrlGenerator;
 use Ep\Tests\App\Annotation\MethodAttribute;
@@ -19,6 +20,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use ReflectionMethod;
 use Yiisoft\Db\Connection\Connection;
 
+#[Route('t')]
 class TestController extends Controller
 {
     use TestTrait;
@@ -68,10 +70,13 @@ class TestController extends Controller
 
     public function route(RouteCollection $routeCollection, UrlGenerator $urlGenerator)
     {
-        tt($urlGenerator->generate('t-parent', [
-            'ctrl' => 'test',
-            'action' => 'route',
-            'id' => 9
-        ]), $routeCollection->getRoutes(), $routeCollection->getNames());
+        // tt($routeCollection->getRoutes(), $routeCollection->getNames());
+        return $this->string(
+            $urlGenerator->generate('t-parent', [
+                'ctrl' => 'test',
+                'action' => 'route',
+                'id' => 9
+            ])
+        );
     }
 }
