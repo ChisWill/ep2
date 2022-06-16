@@ -8,6 +8,8 @@ final class Constant
 {
     public const ATTRIBUTE_TARGET = 'target';
 
+    public const METHOD_AROUND = '__around';
+
     public const REQUEST_EXCEPTION = '__exception';
     public const REQUEST_CONTROLLER = '__controller-id';
     public const REQUEST_ACTION = '__action-id';

@@ -7,10 +7,13 @@ namespace Ep\Web;
 use Ep\Attribute\Middleware;
 use Ep\Base\Config;
 use Ep\Base\Constant;
+use Ep\Base\Contract\InjectorInterface;
+use Ep\Base\RouteParser;
 use Ep\Kit\Annotate;
-use Ep\Kit\ControllerParser;
-use Ep\Kit\ControllerRunner;
 use Ep\Kit\Util;
+use Ep\Web\Event\AfterRequest;
+use Ep\Web\Event\BeforeRequest;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Attribute;
@@ -19,12 +22,13 @@ use Closure;
 final class runner
 {
     public function __construct(
-        private ControllerParser $parser,
-        private ControllerRunner $runner,
+        private Config $config,
+        private InjectorInterface $injector,
+        private RouteParser $parser,
         private RequestHandlerFactory $requestHandlerFactory,
+        private EventDispatcherInterface $eventDispatcher,
         private Annotate $annotate,
-        private Util $util,
-        private Config $config
+        private Util $util
     ) {
         $this->parser = $parser->withSuffix($config->controllerSuffix);
     }
@@ -32,10 +36,10 @@ final class runner
     public function run(string|array|Closure $handler, ServerRequestInterface $request): ResponseInterface
     {
         if ($handler instanceof Closure) {
-            return $this->runner->runClosure($handler, $request);
+            return $this->runClosure($handler, $request);
         } else {
             [$controller, $action] = $this->parser->parse($handler);
-            return $this->runAction(
+            return $this->runMiddleware(
                 $controller,
                 $action,
                 $request
@@ -48,19 +52,41 @@ final class runner
         }
     }
 
-    private function runAction(object $controller, string $action, ServerRequestInterface $request): ResponseInterface
+    private function runMiddleware(object $controller, string $action, ServerRequestInterface $request): ResponseInterface
     {
         if ($middlewares = $this->annotate->getCache(Middleware::class, get_class($controller), Attribute::TARGET_CLASS)) {
             return $this->requestHandlerFactory
                 ->wrap($middlewares, $this->requestHandlerFactory->create($this->wrapController($controller, $action)))
                 ->handle($request);
         } else {
-            return $this->runner->runAction($controller, $action, $request);
+            return $this->runAction($controller, $action, $request);
+        }
+    }
+
+    private function runAction(object $controller, string $action, ServerRequestInterface $request): ResponseInterface
+    {
+        $this->eventDispatcher->dispatch(new BeforeRequest($request));
+
+        try {
+            return $response = $this->injector->call($controller, $action, [$request]);
+        } finally {
+            $this->eventDispatcher->dispatch(new AfterRequest($request, $response));
+        }
+    }
+
+    private function runClosure(Closure $callback, ServerRequestInterface $request): ResponseInterface
+    {
+        $this->eventDispatcher->dispatch(new BeforeRequest($request));
+
+        try {
+            return $response = $this->injector->invoke($callback, [$request]);
+        } finally {
+            $this->eventDispatcher->dispatch(new AfterRequest($request, $response));
         }
     }
 
     private function wrapController(object $controller, string $action): Closure
     {
-        return fn (ServerRequestInterface $request) => $this->runner->runAction($controller, $action, $request);
+        return fn (ServerRequestInterface $request) => $this->runAction($controller, $action, $request);
     }
 }

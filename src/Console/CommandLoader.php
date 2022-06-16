@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace Ep\Console;
 
 use Ep\Base\Config;
+use Ep\Base\RouteParser;
 use Ep\Base\Router;
 use Ep\Console\Contract\FactoryInterface;
 use Ep\Exception\PageNotFoundException;
 use Ep\Helper\Str;
-use Ep\Kit\ControllerParser;
-use Ep\Kit\ControllerRunner;
 use Ep\Kit\Util;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\CommandLoader\CommandLoaderInterface;
@@ -27,8 +26,8 @@ final class CommandLoader implements CommandLoaderInterface
     public function __construct(
         private Config $config,
         private Router $router,
-        private ControllerParser $parser,
-        private ControllerRunner $runner,
+        private RouteParser $parser,
+        private Runner $runner,
         private FactoryInterface $factory,
         private Util $util
     ) {
@@ -57,7 +56,7 @@ final class CommandLoader implements CommandLoaderInterface
             public function __construct(
                 private object $controller,
                 private string $action,
-                private ControllerRunner $runner,
+                private Runner $runner,
                 private FactoryInterface $factory,
                 string $name,
                 string $alias

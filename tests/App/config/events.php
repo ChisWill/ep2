@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Ep\Base\Event\AfterRequest;
-use Ep\Base\Event\BeforeRequest;
+use Ep\Web\Event\AfterRequest;
+use Ep\Web\Event\BeforeRequest;
 use Ep\Tests\App\Component\Event;
 use Ep\Tests\App\Controller\DemoController;
 use Ep\Web\Event\EndBody;

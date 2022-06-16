@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Ep\Base;
 
+use Ep\Base\Contract\HandlerInterface;
 use Ep\Base\Contract\InjectorInterface;
 use Ep\Kit\Annotate;
 use Yiisoft\Injector\Injector as YiiInjector;
@@ -25,7 +26,31 @@ final class Injector implements InjectorInterface
      */
     public function call(object $instance, string $method, array $arguments = []): mixed
     {
-        return $this->annotate->method($instance, $method, $arguments);
+        if (method_exists($instance, Constant::METHOD_AROUND)) {
+            array_unshift($arguments, $this->wrapCallHandler($instance, $method, $arguments));
+            return $this->injector->invoke([$instance, Constant::METHOD_AROUND], $arguments);
+        } else {
+            return $this->annotate->method($instance, $method, $arguments);
+        }
+    }
+
+    private function wrapCallHandler(object $instance, string $method, array $arguments): HandlerInterface
+    {
+        return new class($this->annotate, $instance, $method, $arguments) implements HandlerInterface
+        {
+            public function __construct(
+                private Annotate $annotate,
+                private object $instance,
+                private string $method,
+                private array $arguments
+            ) {
+            }
+
+            public function handle(): mixed
+            {
+                return $this->annotate->method($this->instance, $this->method, $this->arguments);
+            }
+        };
     }
 
     /**

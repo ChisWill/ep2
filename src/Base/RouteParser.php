@@ -2,9 +2,8 @@
 
 declare(strict_types=1);
 
-namespace Ep\Kit;
+namespace Ep\Base;
 
-use Ep\Base\Config;
 use Ep\Exception\PageNotFoundException;
 use Ep\Helper\Str;
 use Psr\Container\ContainerExceptionInterface;
@@ -12,7 +11,7 @@ use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use InvalidArgumentException;
 
-final class ControllerParser
+final class RouteParser
 {
     private string $suffix;
 

@@ -6,6 +6,8 @@ namespace Ep\Tests\App\Controller;
 
 use Ep\Attribute\Middleware;
 use Ep\Attribute\Route;
+use Ep\Base\Contract\HandlerInterface;
+use Ep\Kit\Util;
 use Ep\Tests\App\Annotation\BeforeAfterAspect;
 use Ep\Tests\App\Annotation\MethodAspect;
 use Ep\Tests\App\Component\FrontMiddleGroup;
@@ -19,6 +21,17 @@ use Psr\Http\Message\ServerRequestInterface;
 class AspectController
 {
     use Renderer;
+
+    public function __around(ServerRequestInterface $request, Util $util, HandlerInterface $handler)
+    {
+        t(__METHOD__);
+
+        $response = $handler->handle();
+
+        t(__METHOD__);
+
+        return $response;
+    }
 
     #[Route('p')]
     #[MethodAspect]
