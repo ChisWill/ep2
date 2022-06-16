@@ -6,6 +6,7 @@ namespace Ep\Base;
 
 use Ep\Attribute\Inject;
 use Yiisoft\Aliases\Aliases;
+use LogicException;
 
 class View
 {
@@ -44,6 +45,17 @@ class View
         return $new;
     }
 
+    /**
+     * @throws LogicException
+     */
+    public function getContext(): object
+    {
+        if ($this->context === null) {
+            throw new LogicException('The context of view has not been set yet.');
+        }
+        return $this->context;
+    }
+
     private ?string $contextId = null;
 
     public function withContextId(?string $contextId): self
@@ -60,7 +72,7 @@ class View
     {
         return $this->renderLayout($this->layout, [
             'content' => $this->renderPartial($path, $params)
-        ]);
+        ] + $params);
     }
 
     public function renderPartial(string $path, array $params = []): string

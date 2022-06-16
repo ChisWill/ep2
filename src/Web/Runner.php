@@ -6,9 +6,11 @@ namespace Ep\Web;
 
 use Ep\Attribute\Middleware;
 use Ep\Base\Config;
+use Ep\Base\Constant;
 use Ep\Kit\Annotate;
 use Ep\Kit\ControllerParser;
 use Ep\Kit\ControllerRunner;
+use Ep\Kit\Util;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Attribute;
@@ -21,7 +23,8 @@ final class runner
         private ControllerRunner $runner,
         private RequestHandlerFactory $requestHandlerFactory,
         private Annotate $annotate,
-        Config $config
+        private Util $util,
+        private Config $config
     ) {
         $this->parser = $parser->withSuffix($config->controllerSuffix);
     }
@@ -32,7 +35,16 @@ final class runner
             return $this->runner->runClosure($handler, $request);
         } else {
             [$controller, $action] = $this->parser->parse($handler);
-            return $this->runAction($controller, $action, $request);
+            return $this->runAction(
+                $controller,
+                $action,
+                $request
+                    ->withAttribute(
+                        Constant::REQUEST_CONTROLLER,
+                        $this->util->generateClassId(get_class($controller), $this->config->controllerSuffix)
+                    )
+                    ->withAttribute(Constant::REQUEST_ACTION, $action)
+            );
         }
     }
 

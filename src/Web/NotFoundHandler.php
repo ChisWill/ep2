@@ -30,7 +30,7 @@ final class NotFoundHandler implements RequestHandlerInterface
         return $this->service->string(
             $this->view->renderPartial('notFound', [
                 'path' => $request->getUri()->getPath(),
-                'exception' => $request->getAttribute(Constant::REQUEST_ATTRIBUTE_EXCEPTION)
+                'exception' => $request->getAttribute(Constant::REQUEST_EXCEPTION)
             ]),
             Status::NOT_FOUND
         );

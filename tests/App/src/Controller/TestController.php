@@ -31,7 +31,7 @@ class TestController extends Controller
         $this->db = Ep::getDb('sqlite');
     }
 
-    public function index(ServerRequestInterface $serverRequest)
+    public function index(ServerRequestInterface $request)
     {
         $this->testService->index();
 

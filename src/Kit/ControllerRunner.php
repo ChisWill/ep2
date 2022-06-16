@@ -20,7 +20,7 @@ final class ControllerRunner
 
     public function runAction(object $controller, string $action, mixed $request, mixed $response = null): mixed
     {
-        $request = $this->eventDispatcher->dispatch(new BeforeRequest($request, $response))->getRequest();
+        $this->eventDispatcher->dispatch(new BeforeRequest($request, $response));
 
         try {
             return $this->injector->call($controller, $action, array_filter([$request, $response]));
@@ -31,7 +31,7 @@ final class ControllerRunner
 
     public function runClosure(Closure $callback, mixed $request, mixed $response = null): mixed
     {
-        $request = $this->eventDispatcher->dispatch(new BeforeRequest($request, $response))->getRequest();
+        $this->eventDispatcher->dispatch(new BeforeRequest($request, $response));
 
         try {
             return $this->injector->invoke($callback, array_filter([$request, $response]));

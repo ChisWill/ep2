@@ -52,7 +52,7 @@ final class RouteMiddleware implements MiddlewareInterface
             return $this->runner->run($handler, $request);
         } catch (PageNotFoundException $e) {
             return $fallback->handle(
-                $request->withAttribute(Constant::REQUEST_ATTRIBUTE_EXCEPTION, $e)
+                $request->withAttribute(Constant::REQUEST_EXCEPTION, $e)
             );
         }
     }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ep\Web;
 
 use Ep\Base\Contract\InjectorInterface;
+use Ep\Base\Contract\MiddlewareGroupInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -52,7 +53,11 @@ final class RequestHandlerFactory
     private function buildMiddlewares(array $middlewares): iterable
     {
         foreach ($middlewares as $definition) {
-            if (is_string($definition)) {
+            if (is_subclass_of($definition, MiddlewareGroupInterface::class)) {
+                foreach ($this->buildMiddlewares($definition::getMiddlewares()) as $middleware) {
+                    yield $middleware;
+                }
+            } elseif (is_string($definition)) {
                 yield $this->container->get($definition);
             } elseif ($definition instanceof MiddlewareInterface) {
                 yield $definition;

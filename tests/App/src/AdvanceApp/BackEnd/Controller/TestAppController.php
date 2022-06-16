@@ -6,6 +6,7 @@ namespace Ep\Tests\App\AdvanceApp\BackEnd\Controller;
 
 use Ep\Attribute\Inject;
 use Ep\Attribute\Route;
+use Ep\Base\Constant;
 use Ep\Web\Trait\Renderer;
 use Ep\Web\Service;
 use Psr\Http\Message\ServerRequestInterface;
@@ -24,8 +25,11 @@ class TestAppController
         return $this->string((string) mt_rand(100, 200));
     }
 
-    public function view(ServerRequestInterface $req)
+    public function view(ServerRequestInterface $request)
     {
-        return $this->render('view');
+        $title = 'test title';
+        $controller = $request->getAttribute(Constant::REQUEST_CONTROLLER);
+        $action = $request->getAttribute(Constant::REQUEST_ACTION);
+        return $this->render('view', compact('title', 'controller', 'action'));
     }
 }

@@ -8,12 +8,13 @@ use Ep\Attribute\Middleware;
 use Ep\Attribute\Route;
 use Ep\Tests\App\Annotation\BeforeAfterAspect;
 use Ep\Tests\App\Annotation\MethodAspect;
+use Ep\Tests\App\Component\FrontMiddleGroup;
 use Ep\Tests\App\Middleware\ModuleMiddleware;
 use Ep\Web\Trait\Renderer;
 use Psr\Http\Message\ServerRequestInterface;
 
 #[Route('a')]
-#[Middleware([ModuleMiddleware::class])]
+#[Middleware([ModuleMiddleware::class, FrontMiddleGroup::class])]
 #[BeforeAfterAspect]
 class AspectController
 {
