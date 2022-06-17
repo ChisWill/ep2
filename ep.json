@@ -13,7 +13,8 @@
     },
     "migrate": {
         "db": "sqlite",
-        "path": "Migration"
+        "table": "migration",
+        "path": "@root/migrations"
     },
     "serve": {
         "address": "localhost",

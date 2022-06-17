@@ -7,7 +7,6 @@ namespace Ep\Tests\App\Controller;
 use Ep\Attribute\Middleware;
 use Ep\Attribute\Route;
 use Ep\Base\Contract\HandlerInterface;
-use Ep\Kit\Util;
 use Ep\Tests\App\Annotation\BeforeAfterAspect;
 use Ep\Tests\App\Annotation\MethodAspect;
 use Ep\Tests\App\Component\FrontMiddleGroup;
@@ -22,7 +21,7 @@ class AspectController
 {
     use Renderer;
 
-    public function __around(ServerRequestInterface $request, Util $util, HandlerInterface $handler)
+    public function __around(ServerRequestInterface $request, HandlerInterface $handler)
     {
         t(__METHOD__);
 

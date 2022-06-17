@@ -9,6 +9,7 @@ namespace Ep\Tests\App\Component;
 use Ep\Base\Config;
 use Ep\Auth\AuthRepository;
 use Ep\Auth\Method\HttpSession;
+use Ep\Base\Contract\EventListenerInterface;
 use Ep\Console\Contract\ErrorRendererInterface as ConsoleErrorRendererInterface;
 use Ep\Base\Contract\InjectorInterface;
 use Ep\Web\Contract\InterceptorInterface;
@@ -49,6 +50,7 @@ final class DiProvider implements ServiceProviderInterface
     public function getDefinitions(): array
     {
         return [
+            EventListenerInterface::class => EventListener::class,
             WebErrorRendererInterface::class => ErrorRenderer::class,
             ConsoleErrorRendererInterface::class => ConsoleRenderer::class,
             InterceptorInterface::class => Interceptor::class,
@@ -66,7 +68,7 @@ final class DiProvider implements ServiceProviderInterface
             // Sqlite
             'sqlite' => [
                 'class' => SqliteConnection::class,
-                '__construct()' => ['sqlite:' . dirname(__FILE__) . '/ep.sqlite'],
+                '__construct()' => ['sqlite:' . dirname(__FILE__, 3) . '/config/ep.sqlite'],
             ],
             // Redis
             RedisConnection::class => [

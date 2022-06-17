@@ -11,6 +11,5 @@ return [
     'env' => env('ENV'),
     'debug' => env('DEBUG'),
     'secretKey' => env('SECRET_KEY'),
-    'events' => require('events.php'),
     'params' => require('params.php')
 ];

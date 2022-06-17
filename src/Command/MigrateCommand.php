@@ -19,39 +19,30 @@ final class MigrateCommand
     {
         $this->define('create')
             ->addArgument('name', InputArgument::REQUIRED, 'Migration name')
-            ->addOption('path', null, InputOption::VALUE_REQUIRED, 'Save path')
             ->addOption('app', null, InputOption::VALUE_REQUIRED, 'App name')
             ->setDescription('Create an empty migration');
 
         $this
             ->define('init')
-            ->addOption('path', null, InputOption::VALUE_REQUIRED, 'Save path')
             ->addOption('app', null, InputOption::VALUE_REQUIRED, 'App name')
-            ->addOption('db', null, InputOption::VALUE_REQUIRED, 'Db name')
             ->addOption('prefix', null, InputOption::VALUE_REQUIRED, 'Table prefix')
             ->addOption('data', null, InputOption::VALUE_NONE, 'Whether initialize table data')
             ->setDescription('Initialize all tables');
 
         $this
             ->define('list')
-            ->addOption('path', null, InputOption::VALUE_REQUIRED, 'Save path')
             ->addOption('app', null, InputOption::VALUE_REQUIRED, 'App name')
-            ->addOption('db', null, InputOption::VALUE_REQUIRED, 'Db name')
             ->setDescription('Print list of all migrations');
 
         $this
             ->define('up')
-            ->addOption('path', null, InputOption::VALUE_REQUIRED, 'Save path')
             ->addOption('app', null, InputOption::VALUE_REQUIRED, 'App name')
-            ->addOption('db', null, InputOption::VALUE_REQUIRED, 'Db name')
             ->addOption('step', null, InputOption::VALUE_REQUIRED, 'The number of migrations to apply')
             ->setDescription('Execute all new migrations');
 
         $this
             ->define('down')
-            ->addOption('path', null, InputOption::VALUE_REQUIRED, 'Save path')
             ->addOption('app', null, InputOption::VALUE_REQUIRED, 'App name')
-            ->addOption('db', null, InputOption::VALUE_REQUIRED, 'Db name')
             ->addOption('step', null, InputOption::VALUE_REQUIRED, 'The number of migtions to downgrade')
             ->addOption('all', null, InputOption::VALUE_NONE, 'Whether downgrade all migration history')
             ->setDescription('Rollback last migration');

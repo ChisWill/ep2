@@ -21,7 +21,7 @@ class CurlCommand
 
     public function multiLock()
     {
-        $url = 'http://ep.cc/test/lock';
+        $url = 'http://ep2.cc/test/lock';
 
         $r = [];
         for ($i = 0; $i < 10; $i++) {
@@ -34,7 +34,7 @@ class CurlCommand
 
     public function multiTest()
     {
-        $url = 'http://ep.cc/test/lock';
+        $url = 'http://ep2.cc/test/lock';
 
         $start = microtime(true);
 
@@ -60,7 +60,7 @@ class CurlCommand
 
     public function single(RequestInterface $request)
     {
-        $r = Curl::get('http://ep.cc/test/' . $request->getArgument('action'));
+        $r = Curl::get('http://ep2.cc/test/' . $request->getArgument('action'));
 
         return $this->success($r);
     }

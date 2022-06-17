@@ -49,7 +49,7 @@ abstract class Service
     protected function getDb(): Connection
     {
         if ($this->db === null) {
-            $db = $this->request->getOption('db') ?? $this->defaultOptions['db'] ?? $this->request->getOption('common.db') ?? null;
+            $db = $this->defaultOptions['db'] ?? $this->request->getOption('common.db') ?? null;
             try {
                 $this->db = Ep::getDb($db);
             } catch (NotFoundExceptionInterface $e) {

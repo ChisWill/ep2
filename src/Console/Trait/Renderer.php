@@ -32,12 +32,14 @@ trait Renderer
 
     private function success(string $message = ''): ResponseInterface
     {
-        $this->__service->writeln($message);
+        if ($message) {
+            $this->__service->writeln($message);
+        }
 
         return $this->__service->status(Command::SUCCESS);
     }
 
-    private function error(string $message = ''): ResponseInterface
+    private function error(string $message): ResponseInterface
     {
         $this->__service->writeln($message);
 

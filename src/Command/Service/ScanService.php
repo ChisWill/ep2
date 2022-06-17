@@ -39,5 +39,7 @@ final class ScanService extends Service
             ),
             count($classList)
         );
+
+        $this->consoleService->writeln();
     }
 }

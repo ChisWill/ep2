@@ -15,12 +15,8 @@ class InitCommand
 {
     use Renderer;
 
-    private Service $service;
-
-    public function __construct(Service $service)
+    public function __construct(private Service $service)
     {
-        $this->service = $service;
-
         $this
             ->define('index')
             ->addArgument('name', null, 'your name')

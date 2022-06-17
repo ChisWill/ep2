@@ -7,96 +7,110 @@ namespace Ep\Base;
 use InvalidArgumentException;
 
 /**
- * The properties of Config are readonly
+ * @property string $rootNamespace Application root namespace
+ * @property array $aliases Path aliases
+ * @property bool $debug Whether start applicaion in debug mode
+ * @property string $env Current environment
+ * @property string $controllerSuffix Web controller suffix
+ * @property string $commandSuffix Console command suffix
+ * @property string $defaultController Default Controller name
+ * @property string $defaultAction Default action name
+ * @property bool $enableDefaultRouteRule Whether enable the default route rule
+ * @property ?array $defaultRouteRule Default route rule
+ * @property string $routeDir Route directory
+ * @property string $runtimeDir Runtime directory
+ * @property string $vendorPath Vendor directory
+ * @property string $viewPath View directory
+ * @property string $layoutDir Layout directory
+ * @property ?string $secretKey The application secretKey what should be generate by command "./ep generate/key"
+ * @property ?string $diProvider The classname of instance what implements interface "Yiisoft\Di\ServiceProviderInterface"
+ * @property array $params User parameters
  */
 final class Config
 {
     /**
      * Application root namespace
      */
-    public string $rootNamespace = 'App';
+    private string $rootNamespace = 'App';
     /**
      * Path aliases
      */
-    public array $aliases = [];
+    private array $aliases = [];
     /**
      * Whether start applicaion in debug mode
      */
-    public bool $debug = true;
+    private bool $debug = true;
     /**
      * Current environment
      */
-    public string $env = 'prod';
+    private string $env = 'prod';
     /**
      * Web controller suffix
      */
-    public string $controllerSuffix = 'Controller';
+    private string $controllerSuffix = 'Controller';
     /**
      * Console command suffix
      */
-    public string $commandSuffix = 'Command';
+    private string $commandSuffix = 'Command';
     /**
-     * Default Controller
+     * Default Controller name
      */
-    public string $defaultController = 'index';
+    private string $defaultController = 'index';
     /**
-     * Default action
+     * Default action name
      */
-    public string $defaultAction = 'index';
-    /**
-     * Database migration table name
-     */
-    public string $migrationTableName = 'migration';
+    private string $defaultAction = 'index';
     /**
      * Whether enable the default route rule
      */
-    public bool $enableDefaultRouteRule = true;
+    private bool $enableDefaultRouteRule = true;
     /**
      * Default route rule
      */
-    public ?array $defaultRouteRule = null;
+    private ?array $defaultRouteRule = null;
     /**
      * Route directory
      */
-    public string $routeDir = '@root/routes';
+    private string $routeDir = '@root/routes';
     /**
      * Runtime directory
      */
-    public string $runtimeDir = '@root/runtime';
+    private string $runtimeDir = '@root/runtime';
     /**
      * Vendor directory
      */
-    public string $vendorPath = '@root/vendor';
+    private string $vendorPath = '@root/vendor';
     /**
      * View directory
      */
-    public string $viewPath = '@root/views';
+    private string $viewPath = '@root/views';
     /**
      * Layout directory
      */
-    public string $layoutDir = '_layouts';
-    /**
-     * Events
-     */
-    public array $events = [];
+    private string $layoutDir = '_layouts';
     /**
      * The application secretKey what should be generate by command "./ep generate/key"
      */
-    public ?string $secretKey = null;
+    private ?string $secretKey = null;
     /**
      * The classname of instance what implements interface "Yiisoft\Di\ServiceProviderInterface"
      */
-    public ?string $diProvider = null;
+    private ?string $diProvider = null;
     /**
      * User parameters
      */
-    public array $params = [];
+    private array $params = [];
 
     public function __construct(array $values)
     {
         foreach ($values as $key => $value) {
             $this->$key = $value;
         }
+    }
+
+    public function __get(string $name): mixed
+    {
+        return $this->$name;
     }
 
     public function __set(string $name, mixed $value): void

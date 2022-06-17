@@ -5,14 +5,15 @@ declare(strict_types=1);
 namespace Ep\Command\Service;
 
 use Ep\Base\Config;
+use Ep\Base\Contract\MigrateInterface;
 use Ep\Command\Helper\MigrateBuilder;
 use Ep\Console\Service as ConsoleService;
-use Ep\Base\Contract\MigrateInterface;
 use Ep\Db\ActiveRecord;
 use Ep\Db\Query;
 use Ep\Db\Service as DbService;
 use Ep\Helper\Date;
 use Ep\Helper\File;
+use Yiisoft\Aliases\Aliases;
 use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Files\FileHelper;
 use Yiisoft\Files\PathMatcher\PathMatcher;
@@ -21,17 +22,16 @@ use Throwable;
 
 final class MigrateService extends Service
 {
-    private string $tableName;
-
     public function __construct(
         private Config $config,
+        private Aliases $aliases,
         private ConsoleService $consoleService,
         private GenerateService $generateService
     ) {
-        $this->tableName = $this->config->migrationTableName;
     }
 
-    private string $migratePath;
+    private string $app;
+    private string $tableName;
     private string $basePath;
     private MigrateBuilder $builder;
 
@@ -40,29 +40,25 @@ final class MigrateService extends Service
      */
     protected function configure(): void
     {
-        $this->migratePath = $this->request->getOption('path') ?? $this->defaultOptions['path'] ?? 'Migration';
-        $this->basePath = $this->getAppPath() . '/' . trim($this->migratePath, '/');
-
-        if ($this->request->hasOption('db')) {
-            $this->builder = new MigrateBuilder($this->getDb(), $this->consoleService);
-        }
+        $this->app = $this->request->getOption('app') ?? 'default';
+        $this->tableName = $this->defaultOptions['table'] ?? 'migration';
+        $this->basePath = $this->aliases->get($this->defaultOptions['path'] ?? '@root/migrations');
+        $this->builder = new MigrateBuilder($this->getDb(), $this->consoleService);
     }
 
     public function create(string $name): void
     {
-        $this->createFile('migrate/default', $this->generateClassName(), compact('name'));
+        $this->createFile($this->generateClassName($name), '/M' . date('Ym'), 'migrate/default', compact('name'));
     }
-
-    private string $initClassName = 'Initialization';
 
     public function init(): void
     {
         $this->createTable();
 
         $dbService = new DbService($this->getDb());
-        $name = $this->initClassName;
-        $upSql = '';
-        $downSql = '';
+
+        $name = 'Initialization';
+        $upSql = $downSql = '';
         $tables = $dbService->getTables($this->request->getOption('prefix') ?? '');
         foreach ($tables as $tableName) {
             if ($tableName !== $this->tableName) {
@@ -84,19 +80,20 @@ final class MigrateService extends Service
             }
         }
 
-        $this->createFile('migrate/init', $this->initClassName, compact('name', 'upSql', 'downSql', 'insertData'));
+        $this->createFile($name, '', 'migrate/init', compact('name', 'upSql', 'downSql', 'insertData'));
     }
 
     public function list(): void
     {
         $this->createTable();
 
-        $list = array_map([$this, 'getClassNameByFile'], $this->findMigrations());
+        $list = array_map(fn ($path): string => $this->getClassNameByPath($path), $this->findMigrations());
+        sort($list);
+
         $history = $this->getHistory();
 
         $total = count($list);
         $this->consoleService->writeln(sprintf('Total <info>%d</> migration%s found in <comment>%s</>', $total, $total > 1 ? 's' : '', $this->basePath));
-
         foreach ($list as $class) {
             if (in_array($class, $history)) {
                 $status = 'executed';
@@ -131,8 +128,8 @@ final class MigrateService extends Service
         }, function (array $instances): void {
             $this->builder->batchInsert(
                 $this->tableName,
-                ['version', ActiveRecord::CREATED_AT],
-                array_map(fn ($instance): array => [$this->replaceFromClassName(get_class($instance)), Date::fromUnix()], $instances)
+                ['app', 'version', ActiveRecord::CREATED_AT],
+                array_map(fn ($instance): array => [$this->app, get_class($instance), Date::fromUnix()], $instances)
             );
 
             $this->consoleService->writeln(sprintf('Commit count: %d.', count($instances)));
@@ -158,7 +155,10 @@ final class MigrateService extends Service
         }, function (array $instances): void {
             $this->builder->delete(
                 $this->tableName,
-                ['version' => array_map(fn ($instance): string => $this->replaceFromClassName(get_class($instance)), $instances)]
+                [
+                    'app' => $this->app,
+                    'version' => array_map(fn ($instance): string => get_class($instance), $instances)
+                ]
             );
 
             $this->consoleService->writeln(sprintf('Revert count: %d.', count($instances)));
@@ -192,7 +192,7 @@ final class MigrateService extends Service
             if ($this->step > 0 && $count === $this->step) {
                 break;
             }
-            $className = $this->getClassNameByFile($file);
+            $className = $this->getClassNameByPath($file);
             if (!class_exists($className)) {
                 $this->error("The class {$className} is not exists.");
             }
@@ -236,14 +236,13 @@ final class MigrateService extends Service
 
     private function getHistory(): array
     {
-        return array_map(
-            [$this, 'replaceToClassName'],
-            Query::find($this->getDb())
-                ->select('version')
-                ->from($this->tableName)
-                ->where(['LIKE', 'version', $this->replaceFromClassName($this->getClassNameByFile($this->basePath)) . '%', false])
-                ->column()
-        );
+        return Query::find($this->getDb())
+            ->select('version')
+            ->from($this->tableName)
+            ->where([
+                'app' => $this->app
+            ])
+            ->column();
     }
 
     private function findMigrations(): array
@@ -255,17 +254,13 @@ final class MigrateService extends Service
         ]);
     }
 
-    private function createFile(string $view, string $className, array $params = []): bool
+    private function createFile(string $className, string $classPath, string $view, array $params = []): bool
     {
-        $this->createDir();
-
-        $namespace = $this->userRootNamespace . '\\' . trim(str_replace('/', '\\', $this->migratePath), '/');
+        $this->createDir($classPath);
 
         $params['className'] = $className;
-        $params['namespace'] = $namespace;
-
-        if (@file_put_contents(sprintf('%s/%s.php', $this->basePath, $className), $this->generateService->render($view, $params))) {
-            $this->consoleService->writeln(sprintf('New migration file <info>%s.php</> has been created in <comment>%s</>', $className, $this->basePath));
+        if (@file_put_contents(sprintf('%s/%s.php', $this->basePath . $classPath, $className), $this->generateService->render($view, $params))) {
+            $this->consoleService->writeln(sprintf('New migration file <info>%s.php</> has been created in <comment>%s</>', $className, $this->basePath . $classPath));
             return true;
         } else {
             $this->consoleService->writeln('<error>Generate failed.</>');
@@ -273,40 +268,32 @@ final class MigrateService extends Service
         }
     }
 
-    private function generateClassName(): string
+    private function generateClassName(string $name): string
     {
-        $this->createDir();
+        $base = sprintf('M%s_', date('Ymd_Hi'));
 
-        $baseClassName = sprintf('M%s_', date('Ymd'));
         $files = FileHelper::findFiles($this->basePath, [
-            'filter' => (new PathMatcher())->only("**{$baseClassName}*.php")
+            'filter' => (new PathMatcher())->only("**{$base}*.php")
         ]);
 
-        if ($files) {
-            rsort($files);
-            $suffix = (int) str_replace($baseClassName, '', basename($files[0], '.php')) + 1;
-        } else {
-            $suffix = 1;
-        }
-
-        return $baseClassName . $suffix;
+        return sprintf('%s%d_%s', $base, count($files) + 1, $name);
     }
 
-    private function createDir(): void
+    private function createDir(string $dir = ''): void
     {
-        if (!file_exists($this->basePath)) {
-            File::mkdir($this->basePath);
+        $basePath = $dir ? $this->basePath . '/' . $dir : $this->basePath;
+        if (!file_exists($basePath)) {
+            File::mkdir($basePath);
         }
     }
 
-    private function replaceFromClassName(string $className): string
+    private function getClassNameByPath(string $path): string
     {
-        return str_replace('\\', '-', $className);
-    }
-
-    private function replaceToClassName(string $input): string
-    {
-        return str_replace('-', '\\', $input);
+        $class = basename($path, '.php');
+        if (!class_exists($class)) {
+            require($path);
+        }
+        return $class;
     }
 
     private function createTable(): void
@@ -316,6 +303,7 @@ final class MigrateService extends Service
         } catch (Exception $t) {
             $this->builder->createTable($this->tableName, [
                 'id' => $this->builder->primaryKey(),
+                'app' => $this->builder->string(50)->notNull(),
                 'version' => $this->builder->string(100)->notNull(),
                 ActiveRecord::CREATED_AT => $this->builder->dateTime()->notNull()
             ]);

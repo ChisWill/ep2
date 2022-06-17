@@ -70,7 +70,7 @@ final class runner
         try {
             return $response = $this->injector->call($controller, $action, [$request]);
         } finally {
-            $this->eventDispatcher->dispatch(new AfterRequest($request, $response));
+            $this->eventDispatcher->dispatch(new AfterRequest($request, $response ?? null));
         }
     }
 
@@ -81,7 +81,7 @@ final class runner
         try {
             return $response = $this->injector->invoke($callback, [$request]);
         } finally {
-            $this->eventDispatcher->dispatch(new AfterRequest($request, $response));
+            $this->eventDispatcher->dispatch(new AfterRequest($request, $response ?? null));
         }
     }
 

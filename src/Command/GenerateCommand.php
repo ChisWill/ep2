@@ -23,7 +23,6 @@ final class GenerateCommand
             ->define('model')
             ->addArgument('table', InputArgument::REQUIRED | InputArgument::IS_ARRAY, 'Table name')
             ->addOption('app', null, InputOption::VALUE_REQUIRED, 'App name')
-            ->addOption('db', null, InputOption::VALUE_REQUIRED, 'Db name')
             ->addOption('path', null, InputOption::VALUE_REQUIRED, 'Save path')
             ->addOption('prefix', null, InputOption::VALUE_REQUIRED, 'Table prefix')
             ->setDescription('Generate model');

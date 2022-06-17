@@ -9,6 +9,7 @@ use Ep\Base\Container;
 use Ep\Base\Env;
 use Ep\Base\Injector;
 use Ep\Base\Contract\EnvInterface;
+use Ep\Base\Contract\EventListenerInterface;
 use Ep\Base\Contract\InjectorInterface;
 use Yiisoft\Aliases\Aliases;
 use Yiisoft\Assets\AssetLoader;
@@ -69,6 +70,7 @@ final class DiProvider implements ServiceProviderInterface
             // Profiler
             ProfilerInterface::class => Profiler::class,
             // Event
+            ListenerCollection::class => static fn (ContainerInterface $container, ListenerCollectionFactory $factory): ListenerCollection => $factory->create($container->has(EventListenerInterface::class) ? $container->get(EventListenerInterface::class)->getListeners() : []),
             ListenerProviderInterface::class => Provider::class,
             EventDispatcherInterface::class => Dispatcher::class,
         ];
@@ -76,8 +78,6 @@ final class DiProvider implements ServiceProviderInterface
 
     public function getExtensions(): array
     {
-        return [
-            ListenerCollection::class => fn (ContainerInterface $container): ListenerCollection => $container->get(ListenerCollectionFactory::class)->create($this->config->events),
-        ];
+        return [];
     }
 }

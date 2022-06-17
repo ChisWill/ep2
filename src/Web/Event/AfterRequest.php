@@ -11,7 +11,7 @@ final class AfterRequest
 {
     public function __construct(
         private ServerRequestInterface $request,
-        private ResponseInterface $response
+        private ?ResponseInterface $response
     ) {
     }
 
@@ -20,7 +20,7 @@ final class AfterRequest
         return $this->request;
     }
 
-    public function getResponse(): ResponseInterface
+    public function getResponse(): ?ResponseInterface
     {
         return $this->response;
     }
