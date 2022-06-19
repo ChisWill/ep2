@@ -10,21 +10,11 @@ use InvalidArgumentException;
 
 final class Crypt
 {
+    private string $method;
+
     public function __construct(private Config $config)
     {
-    }
-
-    private string $method = 'AES-128-CBC';
-
-    /**
-     * @throws InvalidArgumentException
-     */
-    public function withMethod(string $method): self
-    {
-        $new = clone $this;
-        $new->method = $method;
-        $new->validate();
-        return $new;
+        $this->method = $config->cipherMethod;
     }
 
     private ?string $key = null;
@@ -32,10 +22,11 @@ final class Crypt
     /**
      * @throws InvalidArgumentException
      */
-    public function withKey(string $key): self
+    public function withMethod(string $method, string $key = null): self
     {
         $new = clone $this;
-        $new->key = $key;
+        $new->method = $method;
+        $new->key = $key ? base64_decode($key) : $key;
         $new->validate();
         return $new;
     }

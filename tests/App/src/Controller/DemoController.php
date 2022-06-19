@@ -174,10 +174,18 @@ class DemoController extends Controller
     public function crypt(Crypt $crypt)
     {
         $text = Str::random();
-        $pwd = $crypt->encrypt($text);
-        $parse = $crypt->decrypt($pwd);
+        $pwd1 = $crypt->encrypt($text);
+        $parse1 = $crypt->decrypt($pwd1);
 
-        return $this->json(compact('text', 'pwd', 'parse'));
+        $crypt = $crypt->withMethod('AES-256-CBC', 'hclOAajQ5DRIpgyLeXP4GfZRvSPNXfGh9fVxHWwCTyg=');
+        $pwd2 = $crypt->encrypt($text);
+        $parse2 = $crypt->decrypt($pwd2);
+
+        return $this->json([
+            'text' => $text,
+            '128' => compact('pwd1', 'parse1'),
+            '256' => compact('pwd2', 'parse2'),
+        ]);
     }
 
     public function validate()

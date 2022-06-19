@@ -27,11 +27,9 @@ use Ep\Helper\Arr;
     $config = array_filter(
         Arr::getValues(require($configPath), [
             'rootNamespace',
-            'env',
-            'vendorPath',
             'runtimeDir',
-            'migrationTableName',
-            'viewPath',
+            'vendorPath',
+            'cipherMethod',
             'diProvider',
             'params'
         ])

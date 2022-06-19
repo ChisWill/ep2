@@ -22,6 +22,7 @@ use InvalidArgumentException;
  * @property string $vendorPath Vendor directory
  * @property string $viewPath View directory
  * @property string $layoutDir Layout directory
+ * @property string $cipherMethod The cipher method
  * @property ?string $secretKey The application secretKey what should be generate by command "./ep generate/key"
  * @property ?string $diProvider The classname of instance what implements interface "Yiisoft\Di\ServiceProviderInterface"
  * @property array $params User parameters
@@ -88,6 +89,10 @@ final class Config
      * Layout directory
      */
     private string $layoutDir = '_layouts';
+    /**
+     * The cipher method
+     */
+    private string $cipherMethod = 'AES-128-CBC';
     /**
      * The application secretKey what should be generate by command "./ep generate/key"
      */

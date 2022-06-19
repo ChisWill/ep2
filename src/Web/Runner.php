@@ -11,10 +11,10 @@ use Ep\Base\RouteParser;
 use Ep\Kit\Util;
 use Ep\Web\Event\AfterRequest;
 use Ep\Web\Event\BeforeRequest;
+use Ep\Web\Trait\Middleware;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Ep\Web\Trait\Middleware;
 use Closure;
 
 final class runner
