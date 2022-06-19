@@ -4,22 +4,28 @@ declare(strict_types=1);
 
 namespace Ep\Tests\App\Controller;
 
-use Ep\Attribute\Middleware;
 use Ep\Attribute\Route;
 use Ep\Base\Contract\HandlerInterface;
-use Ep\Tests\App\Annotation\BeforeAfterAspect;
+use Ep\Tests\App\Annotation\CtrlBeforeAfterAspect;
 use Ep\Tests\App\Annotation\MethodAspect;
 use Ep\Tests\App\Component\FrontMiddleGroup;
 use Ep\Tests\App\Middleware\ModuleMiddleware;
+use Ep\Tests\App\Middleware\ModuleMiddleware2;
+use Ep\Web\Trait\Middleware;
 use Ep\Web\Trait\Renderer;
 use Psr\Http\Message\ServerRequestInterface;
 
 #[Route('a')]
-#[Middleware([ModuleMiddleware::class, FrontMiddleGroup::class])]
-#[BeforeAfterAspect]
+#[CtrlBeforeAfterAspect]
 class AspectController
 {
-    use Renderer;
+    use Renderer, Middleware;
+
+    public function __construct()
+    {
+        $this->middleware([ModuleMiddleware::class, ModuleMiddleware2::class])->only(['ping']);
+        $this->middleware([FrontMiddleGroup::class])->except(['test']);
+    }
 
     public function __around(ServerRequestInterface $request, HandlerInterface $handler)
     {
@@ -38,5 +44,11 @@ class AspectController
     {
         t('pong' . $request->getUri()->getPath());
         return $this->string('pong');
+    }
+
+    #[MethodAspect]
+    public function test()
+    {
+        return $this->string('test');
     }
 }

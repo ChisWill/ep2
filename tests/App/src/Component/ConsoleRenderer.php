@@ -35,12 +35,11 @@ class ConsoleRenderer implements ErrorRendererInterface
     private function log(Throwable $t, RequestInterface $request): void
     {
         $context = [
-            'category' => get_class($t)
+            'category' => get_class($t),
+            'route' => $request->getRoute(),
+            'arguments' => $request->getArguments(),
+            'options' => $request->getOptions()
         ];
-
-        $context['route'] = $request->getRoute();
-        $context['arguments'] = $request->getArguments();
-        $context['options'] = $request->getOptions();
 
         $this->log->emergency($this->renderContent($t, $request), $context);
     }

@@ -10,7 +10,7 @@ use Ep\Tests\App\Middleware\TestMiddle2;
 
 final class FrontMiddleGroup implements MiddlewareGroupInterface
 {
-    public static function getMiddlewares(): array
+    public function getMiddlewares(): array
     {
         return [
             TestMiddle1::class,

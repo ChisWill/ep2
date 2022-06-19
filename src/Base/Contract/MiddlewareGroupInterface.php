@@ -6,5 +6,5 @@ namespace Ep\Base\Contract;
 
 interface MiddlewareGroupInterface
 {
-    public static function getMiddlewares(): array;
+    public function getMiddlewares(): array;
 }

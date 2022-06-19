@@ -187,7 +187,7 @@ final class View extends BaseView
     private function registerFiles(string $type, array $files): void
     {
         foreach ($files as $key => $config) {
-            $file =  $config[0] ?? null;
+            $file =  $config[0];
             if (!is_string($file)) {
                 throw new InvalidArgumentException(sprintf('%s file should be string.', $type));
             }
@@ -208,7 +208,7 @@ final class View extends BaseView
     private function registerStrings(string $type, array $strings): void
     {
         foreach ($strings as $key => $config) {
-            $string =  $config[0] ?? null;
+            $string =  $config[0];
             switch ($type) {
                 case 'JS':
                     if (!is_string($string) && !($string instanceof Script)) {
@@ -236,7 +236,7 @@ final class View extends BaseView
         }
     }
 
-    private function registerJsVars(array $jsVars)
+    private function registerJsVars(array $jsVars): void
     {
         foreach ($jsVars as [$name, $value, $position]) {
             if (!is_string($name)) {

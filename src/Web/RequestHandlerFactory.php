@@ -53,12 +53,15 @@ final class RequestHandlerFactory
     private function buildMiddlewares(array $middlewares): iterable
     {
         foreach ($middlewares as $definition) {
-            if (is_subclass_of($definition, MiddlewareGroupInterface::class)) {
-                foreach ($this->buildMiddlewares($definition::getMiddlewares()) as $middleware) {
+            if (is_string($definition)) {
+                $definition = $this->container->get($definition);
+            }
+            if ($definition instanceof MiddlewareGroupInterface) {
+                $list = $definition->getMiddlewares();
+                krsort($list);
+                foreach ($this->buildMiddlewares($list) as $middleware) {
                     yield $middleware;
                 }
-            } elseif (is_string($definition)) {
-                yield $this->container->get($definition);
             } elseif ($definition instanceof MiddlewareInterface) {
                 yield $definition;
             } elseif (is_callable($definition)) {

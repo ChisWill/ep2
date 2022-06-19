@@ -4,19 +4,17 @@ declare(strict_types=1);
 
 namespace Ep\Web;
 
-use Ep\Attribute\Middleware;
 use Ep\Base\Config;
 use Ep\Base\Constant;
 use Ep\Base\Contract\InjectorInterface;
 use Ep\Base\RouteParser;
-use Ep\Kit\Annotate;
 use Ep\Kit\Util;
 use Ep\Web\Event\AfterRequest;
 use Ep\Web\Event\BeforeRequest;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Attribute;
+use Ep\Web\Trait\Middleware;
 use Closure;
 
 final class runner
@@ -27,7 +25,6 @@ final class runner
         private RouteParser $parser,
         private RequestHandlerFactory $requestHandlerFactory,
         private EventDispatcherInterface $eventDispatcher,
-        private Annotate $annotate,
         private Util $util
     ) {
         $this->parser = $parser->withSuffix($config->controllerSuffix);
@@ -54,7 +51,7 @@ final class runner
 
     private function runMiddleware(object $controller, string $action, ServerRequestInterface $request): ResponseInterface
     {
-        if ($middlewares = $this->annotate->getCache(Middleware::class, get_class($controller), Attribute::TARGET_CLASS)) {
+        if ($middlewares = isset(class_uses($controller)[Middleware::class]) ? call_user_func([$controller, Constant::METHOD_MIDDLEWARE_GET], $action) : []) {
             return $this->requestHandlerFactory
                 ->wrap($middlewares, $this->requestHandlerFactory->create($this->wrapController($controller, $action)))
                 ->handle($request);

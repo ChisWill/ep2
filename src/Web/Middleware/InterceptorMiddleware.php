@@ -25,10 +25,10 @@ final class InterceptorMiddleware implements MiddlewareInterface
         }
 
         foreach ($interceptor->includePath() as $path => $class) {
-            $this->includePath['/' . trim($path, '/')] = (array) $class;
+            $this->includePath['/' . ltrim($path, '/')] = (array) $class;
         }
         foreach ($interceptor->excludePath() as $path => $class) {
-            $this->excludePath['/' . trim($path, '/')] = (array) $class;
+            $this->excludePath['/' . ltrim($path, '/')] = (array) $class;
         }
     }
 

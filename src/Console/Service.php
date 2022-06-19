@@ -7,6 +7,7 @@ namespace Ep\Console;
 use Ep\Console\Contract\FactoryInterface;
 use Ep\Console\Contract\ResponseInterface;
 use Symfony\Component\Console\Exception\CommandNotFoundException;
+use Symfony\Component\Console\Exception\InvalidArgumentException;
 use Symfony\Component\Console\Helper\HelperInterface;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Helper\QuestionHelper;
@@ -17,6 +18,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
 use Exception;
+use RuntimeException;
 
 final class Service
 {
@@ -61,6 +63,7 @@ final class Service
 
     /**
      * @throws InvalidArgumentException
+     * @throws RuntimeException
      */
     public function confirm(string $message, bool $default = false): bool
     {
@@ -72,6 +75,7 @@ final class Service
 
     /**
      * @throws InvalidArgumentException
+     * @throws RuntimeException
      */
     public function prompt(string $message, string $default = '', bool $hidden = false): string
     {

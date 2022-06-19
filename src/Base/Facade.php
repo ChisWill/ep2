@@ -23,7 +23,7 @@ abstract class Facade
             return static::$instances[$id];
         }
 
-        return static::$instances[$id] = static::create();
+        return static::$instances[$id] = static::createInstance();
     }
 
     public static function swap(object $new): object
@@ -40,7 +40,7 @@ abstract class Facade
         unset(static::$instances[static::getFacadeAccessor()]);
     }
 
-    protected static function create(): object
+    protected static function createInstance(): object
     {
         return Ep::getDi()->get(static::getFacadeAccessor());
     }

@@ -18,6 +18,7 @@ use Yiisoft\Db\Exception\Exception;
 use Yiisoft\Files\FileHelper;
 use Yiisoft\Files\PathMatcher\PathMatcher;
 use Closure;
+use RuntimeException;
 use Throwable;
 
 final class MigrateService extends Service
@@ -51,6 +52,9 @@ final class MigrateService extends Service
         $this->createFile($this->generateClassName($name), '/M' . date('Ym'), 'migrate/default', compact('name'));
     }
 
+    /**
+     * @throws RuntimeException
+     */
     public function init(): void
     {
         $this->createTable();
@@ -245,6 +249,9 @@ final class MigrateService extends Service
             ->column();
     }
 
+    /**
+     * @throws RuntimeException
+     */
     private function findMigrations(): array
     {
         $this->createDir();
@@ -254,6 +261,9 @@ final class MigrateService extends Service
         ]);
     }
 
+    /**
+     * @throws RuntimeException
+     */
     private function createFile(string $className, string $classPath, string $view, array $params = []): bool
     {
         $this->createDir($classPath);
@@ -279,6 +289,9 @@ final class MigrateService extends Service
         return sprintf('%s%d_%s', $base, count($files) + 1, $name);
     }
 
+    /**
+     * @throws RuntimeException
+     */
     private function createDir(string $dir = ''): void
     {
         $basePath = $dir ? $this->basePath . '/' . $dir : $this->basePath;

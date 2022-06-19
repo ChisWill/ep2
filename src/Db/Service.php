@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ep\Db;
 
 use Yiisoft\Db\Connection\ConnectionInterface;
+use RuntimeException;
 
 final class Service
 {
@@ -21,6 +22,9 @@ final class Service
         return $tables;
     }
 
+    /**
+     * @throws RuntimeException
+     */
     public function getDDL(string $tableName): string
     {
         switch ($this->db->getDriverName()) {
@@ -36,11 +40,19 @@ SELECT `sql` FROM `sqlite_master` WHERE `type`='table' AND tbl_name='{$tableName
 SQL;
                 $field = 'sql';
                 break;
+            default:
+                throw new RuntimeException('Unsupported DB driver "' . $this->db->getDriverName() . '".');
         }
 
-        return Query::find($this->db)
+        $result = Query::find($this->db)
             ->createCommand()
             ->setRawSql($sql)
-            ->queryOne()[$field];
+            ->queryOne();
+
+        if (!$result) {
+            throw new RuntimeException('The table name "' . $tableName . '" is not exists.');
+        }
+
+        return $result[$field];
     }
 }

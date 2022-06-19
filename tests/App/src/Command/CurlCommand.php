@@ -15,8 +15,7 @@ class CurlCommand
 
     public function __construct()
     {
-        $this->define('single')
-            ->addArgument('action', InputArgument::REQUIRED, 'target url');
+        $this->define('single')->addArgument('action', InputArgument::REQUIRED, 'target url');
     }
 
     public function multiLock()

@@ -9,7 +9,7 @@ use Ep\Attribute\Contract\AspectInterface;
 use Ep\Base\Contract\HandlerInterface;
 
 #[Attribute(Attribute::TARGET_CLASS)]
-final class BeforeAfterAspect implements AspectInterface
+final class CtrlBeforeAfterAspect implements AspectInterface
 {
 	public function __construct()
 	{

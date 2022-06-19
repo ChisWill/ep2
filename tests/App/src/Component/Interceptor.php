@@ -6,13 +6,14 @@ namespace Ep\Tests\App\Component;
 
 use Ep\Web\Contract\InterceptorInterface;
 use Ep\Tests\App\Middleware\RootMiddleware;
+use Ep\Tests\App\Middleware\RootMiddleware2;
 
 class Interceptor implements InterceptorInterface
 {
     public function includePath(): array
     {
         return [
-            '/a/p' => RootMiddleware::class,
+            '/a/' => [RootMiddleware::class, RootMiddleware2::class],
         ];
     }
 

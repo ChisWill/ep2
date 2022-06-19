@@ -100,8 +100,8 @@ final class Crypt
     public function generateKey(): string
     {
         $length = explode('-', $this->method)[1] ?? '';
-        $length = is_numeric($length) ? (int) $length : 128;
-        return random_bytes($length / 8);
+        $length = is_numeric($length) ? $length : 128;
+        return random_bytes(intval($length / 8));
     }
 
     /**

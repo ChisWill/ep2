@@ -32,7 +32,7 @@ final class Ep extends Facade
     /**
      * {@inheritDoc}
      */
-    protected static function create(): object
+    protected static function createInstance(): object
     {
         return new Core();
     }

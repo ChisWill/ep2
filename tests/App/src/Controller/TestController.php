@@ -15,7 +15,6 @@ use Ep\Tests\App\Annotation\TestAspect2;
 use Ep\Tests\App\Component\Controller;
 use Ep\Tests\App\Objects\Human\Child;
 use Ep\Tests\App\Service\TestService;
-use Ep\Tests\App\Traits\TestTrait;
 use Psr\Http\Message\ServerRequestInterface;
 use ReflectionMethod;
 use Yiisoft\Db\Connection\Connection;
@@ -23,8 +22,6 @@ use Yiisoft\Db\Connection\Connection;
 #[Route('t')]
 class TestController extends Controller
 {
-    use TestTrait;
-
     private Connection $db;
 
     public function __construct(
@@ -64,7 +61,7 @@ class TestController extends Controller
     #[TestAspect1(name: 'first'), TestAspect2(name: 'second')]
     public function aspect()
     {
-        $this->print($this->father->getName());
+        t($this->father->getName());
         return $this->success();
     }
 
