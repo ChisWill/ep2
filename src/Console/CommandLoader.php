@@ -8,6 +8,7 @@ use Ep\Base\Config;
 use Ep\Base\RouteParser;
 use Ep\Base\Router;
 use Ep\Console\Contract\FactoryInterface;
+use Ep\Console\Trait\Renderer;
 use Ep\Exception\PageNotFoundException;
 use Ep\Helper\Str;
 use Ep\Kit\Util;
@@ -33,8 +34,8 @@ final class CommandLoader implements CommandLoaderInterface
     ) {
         $this->router = $router
             ->withSuffix($config->commandSuffix)
-            ->withEnableDefaultRule($config->enableDefaultRouteRule)
-            ->withDefaultRule($config->defaultRouteRule);
+            ->withEnableAttributeRule(false)
+            ->withEnableCollectioneRule(false);
         $this->parser = $parser->withSuffix($config->commandSuffix);
     }
 
@@ -73,7 +74,7 @@ final class CommandLoader implements CommandLoaderInterface
              */
             protected function configure(): void
             {
-                $definitions = method_exists($this->controller, '__getDefinitions') ? $this->controller->__getDefinitions() : [];
+                $definitions = isset(class_uses($this->controller)[Renderer::class]) ? $this->controller->__getDefinitions() : [];
                 if (isset($definitions[$this->action])) {
                     $this
                         ->setDefinition($definitions[$this->action]->getDefinitions())

@@ -15,7 +15,6 @@ use Ep\Base\Contract\InjectorInterface;
 use Ep\Web\Contract\InterceptorInterface;
 use Ep\Web\Contract\ErrorRendererInterface as WebErrorRendererInterface;
 use Ep\Tests\App\Component\AuthFailHandler;
-use Ep\Tests\App\Component\Renderer;
 use Ep\Tests\App\Component\ErrorRenderer;
 use Ep\Tests\App\Component\Interceptor;
 use Ep\Tests\App\Component\UserRepository;
@@ -30,9 +29,10 @@ use Ep\Tests\Support\Object\Wing\WingInterface;
 use Psr\Log\LoggerInterface;
 use Yiisoft\Aliases\Aliases;
 use Yiisoft\Db\Connection\Connection;
-use Yiisoft\Db\Mysql\Connection as MysqlConnection;
+use Yiisoft\Db\Mysql\ConnectionPDO as MysqlConnection;
 use Yiisoft\Db\Redis\Connection as RedisConnection;
-use Yiisoft\Db\Sqlite\Connection as SqliteConnection;
+use Yiisoft\Db\Sqlite\ConnectionPDO as SqliteConnection;
+use Yiisoft\Db\Sqlite\PDODriver;
 use Yiisoft\Di\ServiceProviderInterface;
 use Yiisoft\Log\Logger;
 use Yiisoft\Log\Target;
@@ -68,7 +68,7 @@ final class DiProvider implements ServiceProviderInterface
             // Sqlite
             'sqlite' => [
                 'class' => SqliteConnection::class,
-                '__construct()' => ['sqlite:' . dirname(__FILE__, 3) . '/config/ep.sqlite'],
+                '__construct()' => [new PDODriver('sqlite:' . dirname(__FILE__, 3) . '/config/ep.sqlite')],
             ],
             // Redis
             RedisConnection::class => [

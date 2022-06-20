@@ -6,6 +6,7 @@ namespace Ep\Tests\App\Controller;
 
 use DateInterval;
 use Ep;
+use Ep\Attribute\Route;
 use Ep\Auth\AuthRepository;
 use Ep\Auth\Method\HttpSession;
 use Ep\Db\Query;
@@ -111,7 +112,6 @@ class DemoController extends Controller
         $result = [];
         $query = Student::find($this->db)
             ->joinWith('class')
-            ->where(['like', 'student.name', 'A%', false])
             ->andWhere(['class.id' => 3]);
         $result['RawSql'] = $query->getRawSql();
         $user = $query->one();

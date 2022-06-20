@@ -48,10 +48,28 @@ final class Router
 
     private bool $enableDefaultRule = true;
 
-    public function withEnableDefaultRule(bool $enableDefaultRule): self
+    public function withEnableDefaultRule(bool $enable): self
     {
         $new = clone $this;
-        $new->enableDefaultRule = $enableDefaultRule;
+        $new->enableDefaultRule = $enable;
+        return $new;
+    }
+
+    private bool $enableAttributeRule = true;
+
+    public function withEnableAttributeRule(bool $enable): self
+    {
+        $new = clone $this;
+        $new->enableAttributeRule = $enable;
+        return $new;
+    }
+
+    private bool $enableCollectioneRule = true;
+
+    public function withEnableCollectioneRule(bool $enable): self
+    {
+        $new = clone $this;
+        $new->enableCollectioneRule = $enable;
         return $new;
     }
 
@@ -127,6 +145,10 @@ final class Router
 
     private function addAttributeRoute(FastRouteCollector $route): void
     {
+        if (!$this->enableAttributeRule) {
+            return;
+        }
+
         foreach ($this->attributeRules as $path => [$method, $handler]) {
             $route->addRoute($method, $path, $handler);
         };
@@ -134,6 +156,10 @@ final class Router
 
     private function addCollectionRoute(FastRouteCollector $route): void
     {
+        if (!$this->enableCollectioneRule) {
+            return;
+        }
+
         $add = static function (array $groupRules) use (&$add, $route): void {
             foreach ($groupRules as $group => $rules) {
                 if (is_string($group)) {
@@ -152,7 +178,8 @@ final class Router
     {
         foreach ($this->annotate->getCache(Route::class) as $class => $value) {
             if (isset($value[Attribute::TARGET_CLASS])) {
-                $path = '/' . trim($value[Attribute::TARGET_CLASS]['path'], '/');
+                $path = trim($value[Attribute::TARGET_CLASS]['path'], '/');
+                $path = $path ? '/' . $path : '';
                 $method = $value[Attribute::TARGET_CLASS]['method'] ?? Method::ALL;
             } else {
                 $path = '';

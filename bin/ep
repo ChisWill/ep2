@@ -10,16 +10,27 @@ use Ep\Helper\Arr;
 (static function (): void {
     $cwd = getcwd();
 
-    if (file_exists($cwd . '/ep.json')) {
-        $options = json_decode(file_get_contents($cwd . '/ep.json'), true);
-    } else {
+    if (!file_exists($cwd . '/ep.json')) {
         fwrite(STDERR, "Could not find a ep.json file in {$cwd}" . PHP_EOL);
         exit(1);
     }
 
-    require($options['bootstrap'] ?? './vendor/autoload.php');
+    $options = json_decode(file_get_contents($cwd . '/ep.json') ?: '{}', true);
+    $bootstrapPath = $options['bootstrap'] ?? './vendor/autoload.php';
+    if (!file_exists($bootstrapPath)) {
+        fwrite(STDERR, "Could not find bootstrap file in \"{$bootstrapPath}\"." . PHP_EOL);
+        fwrite(STDERR, 'Please specifies "bootstrap" in ep.json.' . PHP_EOL);
+        exit(1);
+    }
+    require($bootstrapPath);
+
     $rootPath = realpath($options['rootPath'] ?? './');
-    $configPath = $rootPath . '/' . ltrim($options['configPath'], './');
+    $configPath = $rootPath . '/' . ltrim($options['configPath'] ?? 'config/main.php', './');
+    if (!file_exists($configPath)) {
+        fwrite(STDERR, "Could not find config file in \"{$configPath}\"." . PHP_EOL);
+        fwrite(STDERR, 'Please specifies "configPath" in ep.json.' . PHP_EOL);
+        exit(1);
+    }
     unset($options['bootstrap'], $options['rootPath'], $options['configPath']);
 
     $core = Ep::create($rootPath);
@@ -36,7 +47,7 @@ use Ep\Helper\Arr;
     );
 
     $options['common'] ??= [];
-    $options['common']['userRootNamespace'] = $config['rootNamespace'];
+    $options['common']['userRootNamespace'] = $config['rootNamespace'] ?? 'App';
     $config['rootNamespace'] = 'Ep';
 
     $app = $core->config($config)->ready(Application::class);
