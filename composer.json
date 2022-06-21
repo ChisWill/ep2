@@ -29,6 +29,7 @@
         "yiisoft/http": "^1.0",
         "yiisoft/injector": "^1.0",
         "yiisoft/json": "^1.0",
+        "yiisoft/log": "^2.0",
         "yiisoft/session": "^1.0",
         "yiisoft/strings": "^2.0",
         "yiisoft/validator": "3.0.x-dev",

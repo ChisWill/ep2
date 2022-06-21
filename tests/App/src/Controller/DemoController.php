@@ -6,6 +6,7 @@ namespace Ep\Tests\App\Controller;
 
 use DateInterval;
 use Ep;
+use Ep\Attribute\Inject;
 use Ep\Attribute\Route;
 use Ep\Auth\AuthRepository;
 use Ep\Auth\Method\HttpSession;
@@ -21,6 +22,7 @@ use Ep\Tests\Support\Object\Animal\Bird;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
+use Psr\SimpleCache\CacheInterface;
 use Yiisoft\Aliases\Aliases;
 use Yiisoft\Cache\Cache;
 use Yiisoft\Cookies\Cookie;
@@ -32,6 +34,8 @@ use Yiisoft\Session\SessionInterface;
 
 class DemoController extends Controller
 {
+    #[Inject]
+    private CacheInterface $cache;
     private Connection $db;
 
     public function __construct()

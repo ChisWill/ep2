@@ -23,8 +23,6 @@ final class GenerateCommand
             ->define('model')
             ->addArgument('table', InputArgument::REQUIRED | InputArgument::IS_ARRAY, 'Table name')
             ->addOption('app', null, InputOption::VALUE_REQUIRED, 'App name')
-            ->addOption('path', null, InputOption::VALUE_REQUIRED, 'Save path')
-            ->addOption('prefix', null, InputOption::VALUE_REQUIRED, 'Table prefix')
             ->setDescription('Generate model');
     }
 
@@ -39,21 +37,11 @@ final class GenerateCommand
 
     public function model(RequestInterface $request): ResponseInterface
     {
-        foreach ($request->getArgument('table') as $table) {
-            $request->setOption('table', $table);
-            $this->generateModel($request);
-        }
-        return $this->success();
-    }
-
-    private function generateModel(RequestInterface $request): void
-    {
         $service = $this->service->load($request);
 
-        if ($service->hasModel()) {
-            $service->updateModel();
-        } else {
-            $service->createModel();
+        foreach ($request->getArgument('table') as $table) {
+            $service->generateModel($table);
         }
+        return $this->success();
     }
 }

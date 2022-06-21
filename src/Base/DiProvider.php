@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace Ep\Base;
 
-use Ep\Base\Config;
-use Ep\Base\Container;
-use Ep\Base\Env;
-use Ep\Base\Injector;
 use Ep\Base\Contract\EnvInterface;
 use Ep\Base\Contract\EventListenerInterface;
 use Ep\Base\Contract\InjectorInterface;

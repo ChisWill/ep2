@@ -53,15 +53,8 @@ final class GenerateService extends Service
 
     private function configureModel(): void
     {
-        $this->table = $this->request->getOption('table');
-        $this->path = $this->request->getOption('path') ?? $this->defaultOptions['model.path'] ?? 'Model';
-        $this->prefix = $this->request->getOption('prefix') ?? $this->defaultOptions['model.prefix'] ?? '';
-
-        $tableSchema = $this->getDb()->getTableSchema($this->table, true);
-        if (!$tableSchema) {
-            $this->error(sprintf('The table "%s" is not exists.', $this->table));
-        }
-        $this->tableSchema = $tableSchema;
+        $this->path = $this->defaultOptions['model.path'] ?? 'Model';
+        $this->prefix = $this->defaultOptions['model.prefix'] ?? '';
     }
 
     public function createKey(): void
@@ -71,7 +64,28 @@ final class GenerateService extends Service
         $this->consoleService->writeln('<info>Generate secret key successfully.</>');
     }
 
-    public function createModel(): void
+    public function generateModel(string $table): void
+    {
+        $this->setTable($table);
+
+        if ($this->hasModel()) {
+            $this->updateModel();
+        } else {
+            $this->createModel();
+        }
+    }
+
+    private function setTable(string $table): void
+    {
+        $tableSchema = $this->getDb()->getTableSchema($table, true);
+        if (!$tableSchema) {
+            $this->error(sprintf('The table "%s" is not exists.', $table));
+        }
+        $this->table = $table;
+        $this->tableSchema = $tableSchema;
+    }
+
+    private function createModel(): void
     {
         $filePath = $this->getFilePath();
         if (!file_exists($filePath)) {
@@ -93,7 +107,7 @@ final class GenerateService extends Service
         }
     }
 
-    public function updateModel(): void
+    private function updateModel(): void
     {
         $filename = $this->getModelFileName();
         [$classes, $rules] = $this->getModelRuleData();
@@ -112,7 +126,7 @@ final class GenerateService extends Service
         }
     }
 
-    public function hasModel(): bool
+    private function hasModel(): bool
     {
         return file_exists($this->getModelFileName());
     }
