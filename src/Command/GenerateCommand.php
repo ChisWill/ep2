@@ -26,11 +26,9 @@ final class GenerateCommand
             ->setDescription('Generate model');
     }
 
-    public function key(RequestInterface $request): ResponseInterface
+    public function key(): ResponseInterface
     {
-        $this->service
-            ->load($request)
-            ->createKey();
+        $this->service->createKey();
 
         return $this->success();
     }

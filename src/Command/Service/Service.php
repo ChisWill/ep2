@@ -12,27 +12,36 @@ use Yiisoft\Db\Connection\Connection;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use InvalidArgumentException;
+use LogicException;
 
 abstract class Service
 {
     #[Inject]
     private Util $util;
 
-    protected RequestInterface $request;
+    private RequestInterface $request;
 
     final public function load(RequestInterface $request): static
     {
         $new = clone $this;
         $new->request = $request;
-        $new->initDefaultOptions();
+        $new->loadDefaultOptions();
         $new->configure();
         return $new;
+    }
+
+    protected function getRequest(): RequestInterface
+    {
+        if (!isset($this->request)) {
+            throw new LogicException('Must call method "' . static::class . '::load()" first.');
+        }
+        return $this->request;
     }
 
     protected string $userRootNamespace;
     protected array $defaultOptions;
 
-    private function initDefaultOptions(): void
+    private function loadDefaultOptions(): void
     {
         $options = $this->request->getOptions();
 
@@ -65,11 +74,6 @@ abstract class Service
     protected function getAppPath(): string
     {
         return $this->util->getAppPath($this->userRootNamespace);
-    }
-
-    protected function getClassNameByFile(string $file): string
-    {
-        return $this->util->getClassNameByFile($this->userRootNamespace, $file);
     }
 
     /**

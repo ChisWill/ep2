@@ -41,7 +41,7 @@ final class MigrateService extends Service
      */
     protected function configure(): void
     {
-        $this->app = $this->request->getOption('app') ?? 'default';
+        $this->app = $this->getRequest()->getOption('app') ?? 'default';
         $this->tableName = $this->defaultOptions['table'] ?? 'migration';
         $this->basePath = $this->aliases->get($this->defaultOptions['path'] ?? '@root/migrations');
         $this->builder = new MigrateBuilder($this->getDb(), $this->consoleService);
@@ -63,7 +63,7 @@ final class MigrateService extends Service
 
         $name = 'Initialization';
         $upSql = $downSql = '';
-        $tables = $dbService->getTables($this->request->getOption('prefix') ?? '');
+        $tables = $dbService->getTables($this->getRequest()->getOption('prefix') ?? '');
         foreach ($tables as $tableName) {
             if ($tableName !== $this->tableName) {
                 $upSql .= $dbService->getDDL($tableName) . ";\n";
@@ -71,7 +71,7 @@ final class MigrateService extends Service
             }
         }
         $insertData = [];
-        if ($this->request->getOption('data')) {
+        if ($this->getRequest()->getOption('data')) {
             foreach ($tables as $tableName) {
                 $data = Query::find($this->getDb())->from($tableName)->all();
                 if (!$data) {
@@ -115,7 +115,7 @@ final class MigrateService extends Service
 
     public function up(): void
     {
-        $this->step = (int) ($this->request->getOption('step') ?? 0);
+        $this->step = (int) ($this->getRequest()->getOption('step') ?? 0);
 
         $this->migrate('up', function (array $instances): bool {
             if (!$instances) {
@@ -142,7 +142,7 @@ final class MigrateService extends Service
 
     public function down(): void
     {
-        $this->step = $this->request->getOption('all') ? 0 : (int) ($this->request->getOption('step') ?? 1);
+        $this->step = $this->getRequest()->getOption('all') ? 0 : (int) ($this->getRequest()->getOption('step') ?? 1);
 
         $this->migrate('down', function (array $instances): bool {
             if (!$instances) {

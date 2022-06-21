@@ -16,10 +16,12 @@ final class ServeService extends Service
      */
     protected function configure(): void
     {
-        $this->address = $this->request->getOption('address') ?? $this->defaultOptions['address'] ?? 'localhost';
-        $this->port = $this->request->getOption('port') ?? $this->defaultOptions['port'] ?? '8080';
-        $this->docroot = $this->request->getOption('docroot') ?? $this->defaultOptions['docroot'] ?? 'public';
-        $this->router = $this->request->getOption('router') ?? $this->defaultOptions['router'] ?? '';
+        $options = $this->getRequest()->getOptions();
+
+        $this->address = $options['address'] ?? $this->defaultOptions['address'] ?? 'localhost';
+        $this->port = $options['port'] ?? $this->defaultOptions['port'] ?? '8080';
+        $this->docroot = $options['docroot'] ?? $this->defaultOptions['docroot'] ?? 'public';
+        $this->router = $options['router'] ?? $this->defaultOptions['router'] ?? '';
     }
 
     public function serve(): void

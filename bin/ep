@@ -28,7 +28,7 @@ use Ep\Helper\Arr;
     $configPath = $rootPath . '/' . ltrim($options['configPath'] ?? 'config/main.php', './');
     if (!file_exists($configPath)) {
         fwrite(STDERR, "Could not find config file in \"{$configPath}\"." . PHP_EOL);
-        fwrite(STDERR, 'Please specifies "configPath" in ep.json.' . PHP_EOL);
+        fwrite(STDERR, 'Please specifies "rootPath" and "configPath" in ep.json.' . PHP_EOL);
         exit(1);
     }
     unset($options['bootstrap'], $options['rootPath'], $options['configPath']);

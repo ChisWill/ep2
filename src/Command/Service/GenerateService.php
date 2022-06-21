@@ -39,7 +39,7 @@ final class GenerateService extends Service
      */
     protected function configure(): void
     {
-        switch ($this->request->getRoute()) {
+        switch ($this->getRequest()->getRoute()) {
             case 'generate/model':
                 $this->configureModel();
                 break;
