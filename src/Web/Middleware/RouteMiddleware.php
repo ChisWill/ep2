@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Ep\Web\Middleware;
 
 use Ep\Base\Config;
-use Ep\Base\Constant;
 use Ep\Base\Router;
 use Ep\Exception\PageNotFoundException;
 use Ep\Web\Runner;
