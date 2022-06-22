@@ -11,7 +11,6 @@ final class Constant
     public const METHOD_AROUND = '__around';
     public const METHOD_MIDDLEWARE_GET = '__getMiddlewares';
 
-    public const REQUEST_EXCEPTION = '__exception';
     public const REQUEST_CONTROLLER = '__controller-id';
     public const REQUEST_ACTION = '__action-id';
 

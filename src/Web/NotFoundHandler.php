@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Ep\Web;
 
-use Ep\Base\Constant;
+use Ep\Exception\PageNotFoundException;
 use Yiisoft\Http\Status;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -30,7 +30,7 @@ final class NotFoundHandler implements RequestHandlerInterface
         return $this->service->string(
             $this->view->renderPartial('notFound', [
                 'path' => $request->getUri()->getPath(),
-                'exception' => $request->getAttribute(Constant::REQUEST_EXCEPTION)
+                'exception' => $request->getAttribute(PageNotFoundException::class)
             ]),
             Status::NOT_FOUND
         );
