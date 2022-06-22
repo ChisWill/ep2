@@ -7,7 +7,6 @@ namespace Ep\Tests\App\Controller;
 use DateInterval;
 use Ep;
 use Ep\Attribute\Inject;
-use Ep\Attribute\Route;
 use Ep\Auth\AuthRepository;
 use Ep\Auth\Method\HttpSession;
 use Ep\Db\Query;

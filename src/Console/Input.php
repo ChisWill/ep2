@@ -4,13 +4,17 @@ declare(strict_types=1);
 
 namespace Ep\Console;
 
+use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\InputDefinition;
 use Symfony\Component\Console\Input\InputInterface;
 
 final class Input implements InputInterface
 {
-    public function __construct(private InputInterface $input)
+    private ArgvInput $input;
+
+    public function __construct()
     {
+        $this->input = new ArgvInput();
     }
 
     /**
@@ -24,7 +28,7 @@ final class Input implements InputInterface
     /**
      * {@inheritDoc}
      */
-    public function hasParameterOption($values, bool $onlyParams = false): bool
+    public function hasParameterOption(string|array $values, bool $onlyParams = false): bool
     {
         return $this->input->hasParameterOption($values, $onlyParams);
     }
@@ -32,7 +36,7 @@ final class Input implements InputInterface
     /**
      * {@inheritDoc}
      */
-    public function getParameterOption($values, $default = false, bool $onlyParams = false)
+    public function getParameterOption(string|array $values, string|bool|int|float|array|null $default = false, bool $onlyParams = false): mixed
     {
         return $this->input->getParameterOption($values, $default, $onlyParams);
     }
@@ -66,7 +70,7 @@ final class Input implements InputInterface
     /**
      * {@inheritDoc}
      */
-    public function getArgument(string $name)
+    public function getArgument(string $name): mixed
     {
         return $this->arguments[$name] ?? $this->input->getArgument($name);
     }
@@ -74,7 +78,7 @@ final class Input implements InputInterface
     /**
      * {@inheritDoc}
      */
-    public function setArgument(string $name, $value): void
+    public function setArgument(string $name, mixed $value): void
     {
         $this->arguments[$name] = $value;
     }
@@ -82,7 +86,7 @@ final class Input implements InputInterface
     /**
      * {@inheritDoc}
      */
-    public function hasArgument($name): bool
+    public function hasArgument(string $name): bool
     {
         return array_key_exists($name, $this->arguments) || $this->input->hasArgument($name);
     }
@@ -100,7 +104,7 @@ final class Input implements InputInterface
     /**
      * {@inheritDoc}
      */
-    public function getOption(string $name)
+    public function getOption(string $name): mixed
     {
         return $this->options[$name] ?? $this->input->getOption($name);
     }
@@ -108,7 +112,7 @@ final class Input implements InputInterface
     /**
      * {@inheritDoc}
      */
-    public function setOption(string $name, $value): void
+    public function setOption(string $name, mixed $value): void
     {
         $this->options[$name] = $value;
     }
@@ -135,5 +139,10 @@ final class Input implements InputInterface
     public function setInteractive(bool $interactive): void
     {
         $this->input->setInteractive($interactive);
+    }
+
+    public function __toString(): string
+    {
+        return $this->input->__toString();
     }
 }

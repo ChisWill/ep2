@@ -26,7 +26,7 @@ final class Application extends SymfonyApplication implements ApplicationInterfa
     /**
      * {@inheritDoc}
      */
-    public function run(InputInterface $input = null, OutputInterface $output = null)
+    public function run(InputInterface $input = null, OutputInterface $output = null): int
     {
         $input ??= $this->input;
         $output ??= $this->output;
@@ -41,7 +41,7 @@ final class Application extends SymfonyApplication implements ApplicationInterfa
     /**
      * {@inheritDoc}
      */
-    public function extractNamespace(string $name, int $limit = null)
+    public function extractNamespace(string $name, int $limit = null): string
     {
         $parts = explode('/', $name, -1);
 

@@ -29,7 +29,7 @@ final class DiProvider implements ServiceProviderInterface
             CommandLoaderInterface::class => CommandLoader::class,
             EventDispatcherInterface::class => EventDispatcher::class,
             // Input
-            InputInterface::class => static fn (): InputInterface => new ArgvInput(null, null),
+            InputInterface::class => static fn (): InputInterface => new ArgvInput(),
             // Output
             OutputInterface::class => ConsoleOutput::class,
         ];

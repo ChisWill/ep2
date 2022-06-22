@@ -42,7 +42,7 @@ final class CommandLoader implements CommandLoaderInterface
     /**
      * {@inheritdoc}
      */
-    public function get(string $name)
+    public function get(string $name): Command
     {
         return $this->wrapCommand($name);
     }
@@ -106,7 +106,7 @@ final class CommandLoader implements CommandLoaderInterface
     /**
      * {@inheritdoc}
      */
-    public function has(string $name)
+    public function has(string $name): bool
     {
         return in_array($this->parse($name), $this->getNames());
     }
@@ -136,7 +136,7 @@ final class CommandLoader implements CommandLoaderInterface
     /**
      * {@inheritdoc}
      */
-    public function getNames()
+    public function getNames(): array
     {
         if ($this->commands === null) {
             $this->commands = $this->getCommands($this->getCommandFiles());
