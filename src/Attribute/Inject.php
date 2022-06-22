@@ -21,11 +21,11 @@ final class Inject implements ProcessInterface
     }
 
     /**
-     * @param ReflectionProperty $reflector
+     * @param ReflectionProperty $property
      */
-    public function process(object $instance, Reflector $reflector, array $arguments = []): void
+    public function process(object $instance, Reflector $property, array $arguments = []): void
     {
-        $className = $reflector->getType()->getName();
+        $className = $property->getType()->getName();
 
         $target = $this->getTargetFromArguments($arguments, $className) ?? Ep::getDi()->get($className);
 
@@ -38,8 +38,8 @@ final class Inject implements ProcessInterface
             }
         }
 
-        $reflector->setAccessible(true);
-        $reflector->setValue($instance, $target);
+        $property->setAccessible(true);
+        $property->setValue($instance, $target);
     }
 
     private function getTargetFromArguments(array $arguments, string $className): ?object
