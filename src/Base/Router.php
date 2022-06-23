@@ -167,7 +167,9 @@ final class Router
                         $add($rules);
                     });
                 } else {
-                    $route->addRoute(...$rules);
+                    if ($rules[2] !== null) {
+                        $route->addRoute(...$rules);
+                    }
                 }
             }
         };

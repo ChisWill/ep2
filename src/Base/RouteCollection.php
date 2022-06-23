@@ -69,49 +69,49 @@ final class RouteCollection
         return $this;
     }
 
-    public function get(string $pattern, string|array|Closure $action): RouteCollector
+    public function get(string $pattern): RouteCollector
     {
-        return $this->match(Method::GET, $pattern, $action);
+        return $this->match(Method::GET, $pattern);
     }
 
-    public function post(string $pattern, string|array|Closure $action): RouteCollector
+    public function post(string $pattern): RouteCollector
     {
-        return $this->match(Method::POST, $pattern, $action);
+        return $this->match(Method::POST, $pattern);
     }
 
-    public function put(string $pattern, string|array|Closure $action): RouteCollector
+    public function put(string $pattern): RouteCollector
     {
-        return $this->match(Method::PUT, $pattern, $action);
+        return $this->match(Method::PUT, $pattern);
     }
 
-    public function delete(string $pattern, string|array|Closure $action): RouteCollector
+    public function delete(string $pattern): RouteCollector
     {
-        return $this->match(Method::DELETE, $pattern, $action);
+        return $this->match(Method::DELETE, $pattern);
     }
 
-    public function patch(string $pattern, string|array|Closure $action): RouteCollector
+    public function patch(string $pattern): RouteCollector
     {
-        return $this->match(Method::PATCH, $pattern, $action);
+        return $this->match(Method::PATCH, $pattern);
     }
 
-    public function head(string $pattern, string|array|Closure $action): RouteCollector
+    public function head(string $pattern): RouteCollector
     {
-        return $this->match(Method::HEAD, $pattern, $action);
+        return $this->match(Method::HEAD, $pattern);
     }
 
-    public function options(string $pattern, string|array|Closure $action): RouteCollector
+    public function options(string $pattern): RouteCollector
     {
-        return $this->match(Method::OPTIONS, $pattern, $action);
+        return $this->match(Method::OPTIONS, $pattern);
     }
 
-    public function any(string $pattern, string|array|Closure $action): RouteCollector
+    public function any(string $pattern): RouteCollector
     {
-        return $this->match(Method::ALL, $pattern, $action);
+        return $this->match(Method::ALL, $pattern);
     }
 
-    public function match(string|array $method, string $pattern, string|array|Closure $action): RouteCollector
+    public function match(string|array $method, string $pattern): RouteCollector
     {
-        $route = new RouteCollector($method, $pattern, $action);
+        $route = new RouteCollector($method, $pattern);
 
         if ($this->name !== null) {
             $route->name($this->name);
@@ -142,10 +142,8 @@ final class RouteCollector
 {
     public function __construct(
         private string|array $method,
-        private string $pattern,
-        private string|array|Closure $action
+        private string $pattern
     ) {
-        $this->action = $action;
     }
 
     private ?string $name = null;
@@ -153,6 +151,14 @@ final class RouteCollector
     public function name(string $name): self
     {
         $this->name = $name;
+        return $this;
+    }
+
+    private string|array|Closure|null $action = null;
+
+    public function action(string|array|Closure $action): self
+    {
+        $this->action = $action;
         return $this;
     }
 
