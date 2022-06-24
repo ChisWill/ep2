@@ -228,9 +228,7 @@ final class MigrateService extends Service
 
             try {
                 call_user_func($after, $instances);
-                if ($this->getDb()->getPDO()->inTransaction()) {
-                    $transaction->commit();
-                }
+                $transaction->commit();
             } catch (Throwable $t) {
                 $transaction->rollBack();
                 $this->error($t->getMessage());

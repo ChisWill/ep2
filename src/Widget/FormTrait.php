@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Ep\Widget;
 
 use Yiisoft\Validator\Result;
+use Yiisoft\Validator\SimpleRuleHandlerContainer;
 use Yiisoft\Validator\Validator;
 
 trait FormTrait
@@ -13,7 +14,7 @@ trait FormTrait
 
     public function validate(): bool
     {
-        $this->result = (new Validator())->validate($this, $this->rules());
+        $this->result = (new Validator(new SimpleRuleHandlerContainer()))->validate($this, $this->rules());
 
         return $this->result->isValid();
     }

@@ -27,7 +27,7 @@ final class Service
      */
     public function getDDL(string $tableName): string
     {
-        switch ($this->db->getDriverName()) {
+        switch ($this->db->getName()) {
             case 'mysql':
                 $sql = <<<SQL
 SHOW CREATE TABLE `{$tableName}`;
@@ -41,7 +41,7 @@ SQL;
                 $field = 'sql';
                 break;
             default:
-                throw new RuntimeException('Unsupported DB driver "' . $this->db->getDriverName() . '".');
+                throw new RuntimeException('Unsupported DB driver "' . $this->db->getName() . '".');
         }
 
         $result = Query::find($this->db)

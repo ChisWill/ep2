@@ -23,14 +23,14 @@
     $(function() {
         $("#btn").click(function() {
             $.post('', $("#form").serialize(), function(r) {
-                if (r.errno == 0) {
+                if (r.code == 200) {
                     alert('ok');
                     location.reload();
                 } else {
                     var s = '';
                     var d = '';
-                    for (var k in r.error) {
-                        s += d + k + '：' + r.error[k];
+                    for (var k in r.message) {
+                        s += d + k + '：' + r.message[k];
                         d = "\n";
                     }
                     alert(s);

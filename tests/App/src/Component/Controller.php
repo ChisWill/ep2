@@ -14,17 +14,17 @@ class Controller
     protected function success(array|string $body = []): ResponseInterface
     {
         return $this->json([
-            'errno' => 0,
-            'error' => 'OK',
+            'code' => 200,
+            'message' => 'OK',
             'body' => $body
         ]);
     }
 
-    protected function error(array|string $error, int $errno = 500, array|string $body = []): ResponseInterface
+    protected function error(array|string $message, int $code = 500, array|string $body = []): ResponseInterface
     {
         return $this->json([
-            'errno' => $errno,
-            'error' => $error,
+            'code' => $code,
+            'message' => $message,
             'body' => $body
         ]);
     }

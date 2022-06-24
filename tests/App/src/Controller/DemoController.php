@@ -9,13 +9,13 @@ use Ep;
 use Ep\Attribute\Inject;
 use Ep\Auth\AuthRepository;
 use Ep\Auth\Method\HttpSession;
+use Ep\Db\ActiveQuery;
 use Ep\Db\Query;
 use Ep\Helper\Str;
 use Ep\Kit\Crypt;
 use Ep\Tests\App\Component\Controller;
 use Ep\Tests\App\Facade\Cache as FacadeCache;
 use Ep\Tests\App\Facade\Logger;
-use Ep\Tests\App\Form\TestForm;
 use Ep\Tests\App\Model\Student;
 use Ep\Tests\Support\Object\Animal\Bird;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -27,7 +27,6 @@ use Yiisoft\Cache\Cache;
 use Yiisoft\Cookies\Cookie;
 use Yiisoft\Cookies\CookieCollection;
 use Yiisoft\Db\Connection\Connection;
-use Yiisoft\Db\Redis\Connection as RedisConnection;
 use Yiisoft\Factory\Factory;
 use Yiisoft\Session\SessionInterface;
 
@@ -113,6 +112,7 @@ class DemoController extends Controller
     public function query()
     {
         $result = [];
+        /** @var ActiveQuery */
         $query = Student::find($this->db)
             ->joinWith('class')
             ->andWhere(['class.id' => 3]);
@@ -138,22 +138,23 @@ class DemoController extends Controller
 
         $insert = Query::find($this->db)->insert('student', [
             'class_id' => 1,
+            'password' => mt_rand(),
             'name' => '路人乙' . mt_rand(0, 100)
         ]);
-        $insert = Query::find($this->db)->insert('student', Query::find($this->db)->from('student')->select(['name', 'age'])->where(['id' => 1]));
+        $insert = Query::find($this->db)->insert('student', Query::find($this->db)->from('student')->select(['name', 'class_id', 'password', 'age'])->where(['id' => 1]));
         $update =  Query::find($this->db)->update('student', ['desc' => 'code: ' . mt_rand()], 'id=:id', [':id' => 2]);
 
-        $batchInsert = Query::find($this->db)->batchInsert('student', ['name', 'age'], [
-            ['a1', 11],
-            ['b1', 22],
-            ['c1', 33],
+        $batchInsert = Query::find($this->db)->batchInsert('student', ['name', 'class_id', 'password', 'age'], [
+            ['a1', mt_rand(1, 10), mt_rand(), 11],
+            ['b1', mt_rand(1, 10), mt_rand(), 22],
+            ['c1', mt_rand(1, 10), mt_rand(), 33],
         ]);
         $upsert = Query::find($this->db)->upsert('student', ['id' => 72, 'name' => 'julia', 'age' => 99], ['age' => 33]);
         $delete = Query::find($this->db)->delete('student', ['id' => 75]);
 
         $increment = Query::find($this->db)->increment('student', ['age' => -1, 'name' => 'peter'], 'id=:id', [':id' => 9]);
 
-        return compact('insert', 'update', 'batchInsert', 'upsert', 'delete', 'increment');
+        return $this->json(compact('insert', 'update', 'batchInsert', 'upsert', 'delete', 'increment'));
     }
 
     public function event(EventDispatcherInterface $dipatcher)
@@ -161,17 +162,6 @@ class DemoController extends Controller
         $dipatcher->dispatch($this);
 
         return $this->string();
-    }
-
-    public function redis(RedisConnection $redis)
-    {
-        $result = [];
-        $r = $redis->set('a', mt_rand(0, 100), 'ex', 5, 'nx');
-        $result['set'] = $r;
-        $r = $redis->get('a');
-        $result['get'] = $r;
-
-        return $this->json($result);
     }
 
     public function crypt(Crypt $crypt)
@@ -210,19 +200,6 @@ class DemoController extends Controller
             ->one();
 
         return $this->success($data);
-    }
-
-    public function form(ServerRequestInterface $request, TestForm $form)
-    {
-        if ($form->load($request->getParsedBody())) {
-            if ($form->validate()) {
-                return $this->success($form->getAttributes());
-            } else {
-                return $this->error($form->getErrors());
-            }
-        }
-
-        return $this->render('form');
     }
 
     public function arform(ServerRequestInterface $request)
