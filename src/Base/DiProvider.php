@@ -21,6 +21,7 @@ use Yiisoft\EventDispatcher\Dispatcher\Dispatcher;
 use Yiisoft\EventDispatcher\Provider\ListenerCollection;
 use Yiisoft\EventDispatcher\Provider\Provider;
 use Yiisoft\Log\Logger;
+use Yiisoft\Log\StreamTarget;
 use Yiisoft\Log\Target;
 use Yiisoft\Profiler\Profiler;
 use Yiisoft\Profiler\ProfilerInterface;
@@ -57,6 +58,7 @@ final class DiProvider implements ServiceProviderInterface
                 'class' => Logger::class,
                 '__construct()' => [[Reference::to(Target::class)]]
             ],
+            Target::class => StreamTarget::class,
             // Cache
             CacheInterface::class => fn (Aliases $aliases): CacheInterface => new FileCache($aliases->get($this->config->runtimeDir . '/caches')),
             YiiCacheInterface::class => Cache::class,
