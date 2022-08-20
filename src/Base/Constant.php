@@ -15,4 +15,5 @@ final class Constant
     public const REQUEST_ACTION = '__action-id';
 
     public const CACHE_ATTRIBUTE_DATA = 'Ep-Cache-Attribute-Data';
+    public const CACHE_MAX_TIME = 86400 * 365 * 50;
 }

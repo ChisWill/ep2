@@ -14,6 +14,7 @@ use Psr\Container\ContainerInterface;
 use Psr\SimpleCache\CacheInterface;
 use Attribute;
 use Closure;
+use Error;
 use ReflectionAttribute;
 use ReflectionClass;
 use ReflectionMethod;
@@ -103,9 +104,13 @@ final class Annotate
     {
         $data = [];
         $setData = static function (array $attributes, string $class, int $type, string $name = null) use (&$data): void {
+            /** @var ReflectionAttribute[] $attributes */
             foreach ($attributes as $attribute) {
-                /** @var ReflectionAttribute $attribute */
-                $instance = $attribute->newInstance();
+                try {
+                    $instance = $attribute->newInstance();
+                } catch (Error $e) {
+                    continue;
+                }
                 if ($instance instanceof ConfigureInterface) {
                     switch ($type) {
                         case Attribute::TARGET_CLASS:
@@ -142,7 +147,7 @@ final class Annotate
             }
         }
 
-        $this->cache->set(Constant::CACHE_ATTRIBUTE_DATA, $data, 86400 * 365 * 100);
+        $this->cache->set(Constant::CACHE_ATTRIBUTE_DATA, $data, Constant::CACHE_MAX_TIME);
     }
 
     /**
