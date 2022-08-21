@@ -20,7 +20,7 @@ class Classes extends ActiveRecord
 {
     public const PK = 'id';
 
-    public function tableName(): string
+    public static function tableName(): string
     {
         return '{{%class}}';
     }

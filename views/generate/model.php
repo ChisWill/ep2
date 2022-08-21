@@ -12,7 +12,7 @@ class <?= $className ?> extends ActiveRecord
 {
     public const PK = <?= $primaryKey ?>;
 
-    public function tableName(): string
+    public static function tableName(): string
     {
         return '{{%<?= $tableName ?>}}';
     }

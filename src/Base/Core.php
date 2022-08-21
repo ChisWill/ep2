@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace Ep\Base;
 
-use Ep\Base\Contract\ApplicationInterface;
+use Ep\Base\Contract\DiProviderFactoryInterface;
 use Ep\Base\Contract\EnvInterface;
 use Ep\Base\Contract\InjectorInterface;
 use Yiisoft\Db\Connection\Connection;
 use Yiisoft\Di\Container;
 use Yiisoft\Di\ContainerConfig;
 use Yiisoft\Di\ContainerConfigInterface;
+use Yiisoft\Di\ServiceProviderInterface;
 use Yiisoft\Factory\Factory;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
@@ -46,11 +47,11 @@ final class Core
      */
     public function ready(string $application): object
     {
-        if (!is_subclass_of($application, ApplicationInterface::class)) {
-            throw new LogicException(sprintf('The application "%s" must implements %s', $application, ApplicationInterface::class));
+        if (!is_subclass_of($application, DiProviderFactoryInterface::class)) {
+            throw new LogicException(sprintf('The application "%s" must implements %s', $application, DiProviderFactoryInterface::class));
         }
         $this->config ??= $this->createConfig();
-        $this->containerConfig ??= $this->createContainerConfig($application::getDiProviderName());
+        $this->containerConfig ??= $this->createContainerConfig($application::createDiProvider());
         $this->container ??= (new Container($this->containerConfig))->get(ContainerInterface::class);
         return $this->container->get($application);
     }
@@ -109,14 +110,13 @@ final class Core
         }
     }
 
-    private function createContainerConfig(?string $appDiProvider): ContainerConfigInterface
+    private function createContainerConfig(ServiceProviderInterface $appDiProvider): ContainerConfigInterface
     {
         $providers = [
-            new DiProvider($this->env, $this->config)
+            new DiProvider($this->env, $this->config),
+            $appDiProvider
         ];
-        if ($appDiProvider) {
-            $providers[] = new $appDiProvider($this->config);
-        }
+
         if ($this->config->diProvider) {
             $providers[] = new $this->config->diProvider($this->config);
         }

@@ -154,7 +154,7 @@ abstract class ActiveRecord extends YiiActiveRecord implements DataSetInterface
     /**
      * {@inheritDoc}
      */
-    public function getAttributeValue(string $attribute)
+    public function getAttributeValue(string $attribute): mixed
     {
         return $this->getAttribute($attribute);
     }
