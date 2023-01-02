@@ -122,7 +122,7 @@ abstract class ActiveRecord extends YiiActiveRecord implements DataSetInterface
     /**
      * {@inheritDoc}
      */
-    public function update(array $attributeNames = null)
+    public function update(array $attributeNames = null): false|int
     {
         if (in_array(static::UPDATED_AT, $this->attributes())) {
             $this->{static::UPDATED_AT} = Date::fromUnix();

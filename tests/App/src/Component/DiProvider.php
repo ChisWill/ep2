@@ -22,10 +22,6 @@ use Ep\Tests\Support\Car\Car;
 use Ep\Tests\Support\Car\CarInterface;
 use Ep\Tests\Support\Car\Wheel;
 use Ep\Tests\Support\Car\WheelInterface;
-use Ep\Tests\Support\Object\Engine\EngineInterface;
-use Ep\Tests\Support\Object\Engine\SteamEngine;
-use Ep\Tests\Support\Object\Wing\AngelWing;
-use Ep\Tests\Support\Object\Wing\WingInterface;
 use Psr\Log\LoggerInterface;
 use Yiisoft\Aliases\Aliases;
 use Yiisoft\Db\Connection\Connection;
@@ -71,29 +67,19 @@ final class DiProvider implements ServiceProviderInterface
                 '__construct()' => [new PDODriver('sqlite:' . dirname(__FILE__, 3) . '/config/ep.sqlite')],
             ],
             // Redis
-            RedisConnection::class => [
-                'class' => RedisConnection::class,
-                'hostname()' => [$this->params['db']['redis']['hostname']],
-                'database()' => [$this->params['db']['redis']['database']],
-                'password()' => [$this->params['db']['redis']['password']],
-                'port()'     => [$this->params['db']['redis']['port']]
-            ],
+            // RedisConnection::class => [
+            //     'class' => RedisConnection::class,
+            //     'hostname()' => [$this->params['db']['redis']['hostname']],
+            //     'database()' => [$this->params['db']['redis']['database']],
+            //     'password()' => [$this->params['db']['redis']['password']],
+            //     'port()'     => [$this->params['db']['redis']['port']]
+            // ],
             // Mysql
             Connection::class => [
                 'class' => MysqlConnection::class,
-                '__construct()' => [$this->params['db']['mysql']['dsn']],
-                'setUsername()' => [$this->params['db']['mysql']['username']],
-                'setPassword()' => [$this->params['db']['mysql']['password']]
+                '__construct()' => [new PDODriver($this->params['db']['mysql']['dsn'], $this->params['db']['mysql']['username'], $this->params['db']['mysql']['password'])]
             ],
-
             // Others
-            WingInterface::class => [
-                'class' => AngelWing::class,
-                'addSpeed()' => [
-                    20
-                ]
-            ],
-            EngineInterface::class => SteamEngine::class,
             WheelInterface::class => Wheel::class,
             CarInterface::class => Car::class,
         ];
