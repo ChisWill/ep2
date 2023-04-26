@@ -25,10 +25,11 @@ use Ep\Tests\Support\Car\WheelInterface;
 use Psr\Log\LoggerInterface;
 use Yiisoft\Aliases\Aliases;
 use Yiisoft\Db\Connection\Connection;
-use Yiisoft\Db\Mysql\ConnectionPDO as MysqlConnection;
+use Yiisoft\Db\Mysql\Connection as MysqlConnection;
+use Yiisoft\Db\Mysql\Driver as MysqlDriver;
 use Yiisoft\Db\Redis\Connection as RedisConnection;
-use Yiisoft\Db\Sqlite\ConnectionPDO as SqliteConnection;
-use Yiisoft\Db\Sqlite\PDODriver;
+use Yiisoft\Db\Sqlite\Connection as SqliteConnection;
+use Yiisoft\Db\Sqlite\Driver as SqliteDriver;
 use Yiisoft\Di\ServiceProviderInterface;
 use Yiisoft\Log\Logger;
 use Yiisoft\Log\Target;
@@ -64,7 +65,7 @@ final class DiProvider implements ServiceProviderInterface
             // Sqlite
             'sqlite' => [
                 'class' => SqliteConnection::class,
-                '__construct()' => [new PDODriver('sqlite:' . dirname(__FILE__, 3) . '/config/ep.sqlite')],
+                '__construct()' => [new SqliteDriver('sqlite:' . dirname(__FILE__, 3) . '/config/ep.sqlite')],
             ],
             // Redis
             // RedisConnection::class => [
@@ -77,7 +78,7 @@ final class DiProvider implements ServiceProviderInterface
             // Mysql
             Connection::class => [
                 'class' => MysqlConnection::class,
-                '__construct()' => [new PDODriver($this->params['db']['mysql']['dsn'], $this->params['db']['mysql']['username'], $this->params['db']['mysql']['password'])]
+                '__construct()' => [new MysqlDriver($this->params['db']['mysql']['dsn'], $this->params['db']['mysql']['username'], $this->params['db']['mysql']['password'])]
             ],
             // Others
             WheelInterface::class => Wheel::class,

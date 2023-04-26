@@ -23,7 +23,7 @@
         "yiisoft/auth": "^3.0",
         "yiisoft/cache": "^2.0",
         "yiisoft/cache-file": "^2.0",
-        "yiisoft/db": "dev-master",
+        "yiisoft/db": "^1.0",
         "yiisoft/di": "^1.0",
         "yiisoft/factory": "^1.0",
         "yiisoft/files": "^2.0",
@@ -34,16 +34,15 @@
         "yiisoft/log": "^2.0",
         "yiisoft/session": "^1.0",
         "yiisoft/strings": "^2.0",
-        "yiisoft/validator": "dev-master",
+        "yiisoft/validator": "^1.1",
         "yiisoft/yii-event": "^1.0"
     },
     "require-dev": {
         "phpbench/phpbench": "^1.0",
         "phpunit/phpunit": "^9.4",
         "vimeo/psalm": "^4.5",
-        "yiisoft/db-mysql": "dev-master",
-        "yiisoft/db-redis": "dev-master",
-        "yiisoft/db-sqlite": "dev-master",
+        "yiisoft/db-mysql": "^1.0",
+        "yiisoft/db-sqlite": "^1.0",
         "yiisoft/log-target-file": "^2.0"
     },
     "suggest": {

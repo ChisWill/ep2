@@ -26,7 +26,7 @@ use Yiisoft\Aliases\Aliases;
 use Yiisoft\Cache\Cache;
 use Yiisoft\Cookies\Cookie;
 use Yiisoft\Cookies\CookieCollection;
-use Yiisoft\Db\Connection\Connection;
+use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Factory\Factory;
 use Yiisoft\Session\SessionInterface;
 
@@ -34,7 +34,7 @@ class DemoController extends Controller
 {
     #[Inject]
     private CacheInterface $cache;
-    private Connection $db;
+    private ConnectionInterface $db;
 
     public function __construct()
     {

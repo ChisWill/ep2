@@ -16,13 +16,13 @@ use Ep\Tests\App\Component\Controller;
 use Ep\Tests\App\Objects\Human\Child;
 use Ep\Tests\App\Service\TestService;
 use Psr\Http\Message\ServerRequestInterface;
+use Yiisoft\Db\Connection\ConnectionInterface;
 use ReflectionMethod;
-use Yiisoft\Db\Connection\Connection;
 
 #[Route('t')]
 class TestController extends Controller
 {
-    private Connection $db;
+    private ConnectionInterface $db;
 
     public function __construct(
         private TestService $testService

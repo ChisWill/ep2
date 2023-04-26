@@ -10,8 +10,9 @@ use Yiisoft\Auth\IdentityInterface;
 use Yiisoft\Validator\Result;
 use Yiisoft\Validator\Rule\{
     Callback,
-    HasLength,
-    InRange,
+    Length,
+    In,
+    Integer,
     Number,
     Regex,
     Required,
@@ -32,7 +33,7 @@ class Student extends ActiveRecord implements IdentityInterface
 {
     public const PK = 'id';
 
-    public static function tableName(): string
+    public function tableName(): string
     {
         return '{{%student}}';
     }
@@ -42,21 +43,21 @@ class Student extends ActiveRecord implements IdentityInterface
         return $this->userRules() + [
             'class_id' => [
                 new Required(),
-                new Number(asInteger: true),
+                new Integer(),
             ],
             'name' => [
                 new Required(),
-                new HasLength(max: 50),
+                new Length(max: 50),
             ],
             'password' => [
                 new Required(),
-                new HasLength(max: 100),
+                new Length(max: 100),
             ],
             'age' => [
-                new Number(asInteger: true, skipOnEmpty: true),
+                new Integer(skipOnEmpty: true),
             ],
             'sex' => [
-                new Number(asInteger: true, skipOnEmpty: true),
+                new Integer(skipOnEmpty: true),
             ],
         ];
     }
@@ -66,11 +67,11 @@ class Student extends ActiveRecord implements IdentityInterface
         $ageRange = array_keys(array_fill(18, 30, 1));
         return [
             'age' => [
-                new Number(asInteger: true, max: 99, tooBigMessage: '最多99岁'),
-                new InRange(range: $ageRange, skipOnEmpty: true, message: sprintf('Range is: %s', implode(', ', $ageRange)))
+                new Integer(max: 99, greaterThanMaxMessage: '最多99岁'),
+                new In(values: $ageRange, skipOnEmpty: true, message: sprintf('Range is: %s', implode(', ', $ageRange)))
             ],
-            'name' => [new HasLength(max: 8, min: 2, tooLongMessage: '用户名最多8个字')],
-            'password' => [new HasLength(max: 6, tooLongMessage: '最多6个'), new Regex(pattern: '/^[a-z\d]{4,6}$/i', message: '4-8个字符')],
+            'name' => [new Length(max: 8, min: 2, greaterThanMaxMessage: '用户名最多8个字')],
+            'password' => [new Length(max: 6, greaterThanMaxMessage: '最多6个'), new Regex(pattern: '/^[a-z\d]{4,6}$/i', message: '4-8个字符')],
             'birthday' => [new Callback(callback: [self::class, 'checkDate'])]
         ];
     }
@@ -94,7 +95,7 @@ class Student extends ActiveRecord implements IdentityInterface
         return (string) $this->id ?: null;
     }
 
-    public function getData(): mixed
+    public function getData(): ?array
     {
         return $this->getAttributes();
     }

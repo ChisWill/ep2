@@ -1,10 +1,10 @@
 <h2>Form</h2>
 
 <p>
-    <a href="form">新纪录</a>
+    <a href="arform">新纪录</a>
 </p>
 <p>
-    <a href="redirect">编辑最新的记录</a>
+    <a href="redirectUrl">编辑最新的记录</a>
 </p>
 
 <form method="post" id="form">

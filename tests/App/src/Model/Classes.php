@@ -20,7 +20,7 @@ class Classes extends ActiveRecord
 {
     public const PK = 'id';
 
-    public static function tableName(): string
+    public function tableName(): string
     {
         return '{{%class}}';
     }
@@ -35,7 +35,7 @@ class Classes extends ActiveRecord
         return [];
     }
 
-    public function getData(): mixed
+    public function getData(): ?array
     {
         return $this->getAttributes();
     }

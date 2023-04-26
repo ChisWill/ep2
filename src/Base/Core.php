@@ -7,7 +7,7 @@ namespace Ep\Base;
 use Ep\Base\Contract\DiProviderFactoryInterface;
 use Ep\Base\Contract\EnvInterface;
 use Ep\Base\Contract\InjectorInterface;
-use Yiisoft\Db\Connection\Connection;
+use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Di\Container;
 use Yiisoft\Di\ContainerConfig;
 use Yiisoft\Di\ContainerConfigInterface;
@@ -86,9 +86,9 @@ final class Core
         return $this->container->get(InjectorInterface::class);
     }
 
-    public function getDb(string $id = null): Connection
+    public function getDb(string $id = null): ConnectionInterface
     {
-        return $this->container->get($id ?? Connection::class);
+        return $this->container->get($id ?? ConnectionInterface::class);
     }
 
     public function getCache(string $id = null): CacheInterface
