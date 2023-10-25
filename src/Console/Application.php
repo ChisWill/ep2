@@ -5,15 +5,13 @@ declare(strict_types=1);
 namespace Ep\Console;
 
 use Ep;
-use Ep\Base\Contract\DiProviderFactoryInterface;
 use Ep\Base\ErrorHandler;
 use Ep\Console\Contract\FactoryInterface;
 use Symfony\Component\Console\Application as SymfonyApplication;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Yiisoft\Di\ServiceProviderInterface;
 
-final class Application extends SymfonyApplication implements DiProviderFactoryInterface
+final class Application extends SymfonyApplication
 {
     public function __construct(
         private InputInterface $input,
@@ -47,13 +45,5 @@ final class Application extends SymfonyApplication implements DiProviderFactoryI
         $parts = explode('/', $name, -1);
 
         return ucfirst(implode('/', $limit === null ? $parts : array_slice($parts, 0, $limit)));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public static function createDiProvider(): ServiceProviderInterface
-    {
-        return new DiProvider();
     }
 }

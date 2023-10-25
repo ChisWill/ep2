@@ -4,14 +4,11 @@ declare(strict_types=1);
 
 namespace Ep\Base;
 
-use Ep\Base\Contract\DiProviderFactoryInterface;
-use Ep\Base\Contract\EnvInterface;
 use Ep\Base\Contract\InjectorInterface;
 use Yiisoft\Db\Connection\ConnectionInterface;
 use Yiisoft\Di\Container;
 use Yiisoft\Di\ContainerConfig;
 use Yiisoft\Di\ContainerConfigInterface;
-use Yiisoft\Di\ServiceProviderInterface;
 use Yiisoft\Factory\Factory;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
@@ -21,7 +18,7 @@ use LogicException;
 final class Core
 {
     private string $rootPath;
-    private EnvInterface $env;
+    private Env $env;
 
     public function create(string $rootPath): self
     {
@@ -39,7 +36,6 @@ final class Core
     }
 
     private Config $config;
-    private ContainerConfig $containerConfig;
     private ContainerInterface $container;
 
     /**
@@ -47,21 +43,14 @@ final class Core
      */
     public function ready(string $application): object
     {
-        if (!is_subclass_of($application, DiProviderFactoryInterface::class)) {
-            throw new LogicException(sprintf('The application "%s" must implements %s', $application, DiProviderFactoryInterface::class));
-        }
         $this->config ??= $this->createConfig();
-        $this->containerConfig ??= $this->createContainerConfig($application::createDiProvider());
-        $this->container ??= (new Container($this->containerConfig))->get(ContainerInterface::class);
+        $this->container ??= new Container(
+            $this->createContainerConfig($application, $this->env, $this->config)
+        );
         return $this->container->get($application);
     }
 
-    public function getContainerConfig(): ContainerConfig
-    {
-        return $this->containerConfig;
-    }
-
-    public function getEnv(): EnvInterface
+    public function getEnv(): Env
     {
         return $this->env;
     }
@@ -110,19 +99,22 @@ final class Core
         }
     }
 
-    private function createContainerConfig(ServiceProviderInterface $appDiProvider): ContainerConfigInterface
+    private function createContainerConfig(string $application, Env $env, Config $config): ContainerConfigInterface
     {
         $providers = [
-            new DiProvider($this->env, $this->config),
-            $appDiProvider
+            new DiProvider($env, $config)
         ];
 
-        if ($this->config->diProvider) {
-            $providers[] = new $this->config->diProvider($this->config);
+        if (isset($config->diProviderMap[$application])) {
+            $providers[] = new $config->diProviderMap[$application]();
+        }
+
+        if ($config->diProviderClass) {
+            $providers[] = new $config->diProviderClass($config);
         }
 
         return ContainerConfig::create()
             ->withProviders($providers)
-            ->withValidate($this->config->debug);
+            ->withValidate($config->debug);
     }
 }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Ep\Web;
 
-use Ep\Base\Contract\MiddlewareGroupInterface;
+use Ep\Web\Contract\MiddlewareGroupInterface;
 
 final class MiddlewareDefinition implements MiddlewareGroupInterface
 {

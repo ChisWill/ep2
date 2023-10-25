@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Ep\Tests\App\Component;
 
-use Ep\Base\Contract\MiddlewareGroupInterface;
+use Ep\Web\Contract\MiddlewareGroupInterface;
 use Ep\Tests\App\Middleware\TestMiddle1;
 use Ep\Tests\App\Middleware\TestMiddle2;
 

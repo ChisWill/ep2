@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Ep\Base;
 
-use Ep\Base\Contract\EnvInterface;
-use Ep\Base\Contract\EventListenerInterface;
 use Ep\Base\Contract\InjectorInterface;
 use Yiisoft\Aliases\Aliases;
 use Yiisoft\Assets\AssetLoader;
@@ -18,14 +16,12 @@ use Yiisoft\Cache\File\FileCache;
 use Yiisoft\Definitions\Reference;
 use Yiisoft\Di\ServiceProviderInterface;
 use Yiisoft\EventDispatcher\Dispatcher\Dispatcher;
-use Yiisoft\EventDispatcher\Provider\ListenerCollection;
 use Yiisoft\EventDispatcher\Provider\Provider;
 use Yiisoft\Log\Logger;
 use Yiisoft\Log\StreamTarget;
 use Yiisoft\Log\Target;
 use Yiisoft\Profiler\Profiler;
 use Yiisoft\Profiler\ProfilerInterface;
-use Yiisoft\Yii\Event\ListenerCollectionFactory;
 use Psr\Container\ContainerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\EventDispatcher\ListenerProviderInterface;
@@ -35,7 +31,7 @@ use Psr\SimpleCache\CacheInterface;
 final class DiProvider implements ServiceProviderInterface
 {
     public function __construct(
-        private EnvInterface $env,
+        private Env $env,
         private Config $config
     ) {
     }
@@ -68,7 +64,6 @@ final class DiProvider implements ServiceProviderInterface
             // Profiler
             ProfilerInterface::class => Profiler::class,
             // Event
-            ListenerCollection::class => static fn (ContainerInterface $container, ListenerCollectionFactory $factory): ListenerCollection => $factory->create($container->has(EventListenerInterface::class) ? $container->get(EventListenerInterface::class)->getListeners() : []),
             ListenerProviderInterface::class => Provider::class,
             EventDispatcherInterface::class => Dispatcher::class,
         ];

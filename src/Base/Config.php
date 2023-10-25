@@ -4,37 +4,42 @@ declare(strict_types=1);
 
 namespace Ep\Base;
 
+use Ep\Console\Application as ConsoleApplication;
+use Ep\Console\DiProvider as ConsoleDiProvider;
+use Ep\Web\Application as WebApplication;
+use Ep\Web\DiProvider as WebProvider;
 use InvalidArgumentException;
 
 /**
- * @property string $rootNamespace Application root namespace
- * @property array $aliases Path aliases
- * @property bool $debug Whether start applicaion in debug mode
- * @property string $env Current environment
- * @property string $controllerSuffix Web controller suffix
- * @property string $commandSuffix Console command suffix
- * @property string $defaultController Default Controller name
- * @property string $defaultAction Default action name
- * @property bool $enableDefaultRouteRule Whether enable the default route rule
- * @property ?array $defaultRouteRule Default route rule
- * @property string $routeDir Route directory
- * @property string $runtimeDir Runtime directory
- * @property string $vendorPath Vendor directory
- * @property string $viewPath View directory
- * @property string $layoutDir Layout directory
- * @property string $cipherMethod The cipher method
- * @property ?string $secretKey The application secretKey what should be generate by command "./ep generate/key"
- * @property ?string $diProvider The classname of instance what implements interface "Yiisoft\Di\ServiceProviderInterface"
- * @property array $params User parameters
+ * @property string $rootNamespace the application root namespace
+ * @property array $aliases the path aliases
+ * @property bool $debug whether start applicaion in debug mode
+ * @property string $env the current environment
+ * @property string $controllerSuffix the web controller suffix
+ * @property string $commandSuffix the console command suffix
+ * @property string $defaultController the default Controller name
+ * @property string $defaultAction the default action name
+ * @property bool $enableDefaultRouteRule whether enable the default route rule
+ * @property ?array $defaultRouteRule the default route rule
+ * @property string $routeDir the route directory
+ * @property string $runtimeDir the runtime directory
+ * @property string $vendorPath the vendor directory
+ * @property string $viewPath the view directory
+ * @property string $layoutDir the layout directory
+ * @property string $cipherMethod the cipher method
+ * @property ?string $secretKey the application secretKey what should be generate by command "./ep generate/key"
+ * @property ?string $diProviderClass the classname of instance what implements interface "Yiisoft\Di\ServiceProviderInterface"
+ * @property array $diProviderMap the default di provider mapping 
+ * @property array $params the user parameters
  */
 final class Config
 {
     /**
-     * Application root namespace
+     * The application root namespace
      */
     private string $rootNamespace = 'App';
     /**
-     * Path aliases
+     * The path aliases
      */
     private array $aliases = [];
     /**
@@ -42,23 +47,23 @@ final class Config
      */
     private bool $debug = true;
     /**
-     * Current environment
+     * The current environment
      */
     private string $env = 'prod';
     /**
-     * Web controller suffix
+     * The web controller suffix
      */
     private string $controllerSuffix = 'Controller';
     /**
-     * Console command suffix
+     * The console command suffix
      */
     private string $commandSuffix = 'Command';
     /**
-     * Default Controller name
+     * The default Controller name
      */
     private string $defaultController = 'index';
     /**
-     * Default action name
+     * The default action name
      */
     private string $defaultAction = 'index';
     /**
@@ -66,27 +71,27 @@ final class Config
      */
     private bool $enableDefaultRouteRule = true;
     /**
-     * Default route rule
+     * The default route rule
      */
     private ?array $defaultRouteRule = null;
     /**
-     * Route directory
+     * The route directory
      */
     private string $routeDir = '@root/routes';
     /**
-     * Runtime directory
+     * The runtime directory
      */
     private string $runtimeDir = '@root/runtime';
     /**
-     * Vendor directory
+     * The vendor directory
      */
     private string $vendorPath = '@root/vendor';
     /**
-     * View directory
+     * The view directory
      */
     private string $viewPath = '@root/views';
     /**
-     * Layout directory
+     * The layout directory
      */
     private string $layoutDir = '_layouts';
     /**
@@ -100,9 +105,16 @@ final class Config
     /**
      * The classname of instance what implements interface "Yiisoft\Di\ServiceProviderInterface"
      */
-    private ?string $diProvider = null;
+    private ?string $diProviderClass = null;
     /**
-     * User parameters
+     * The default di provider mapping
+     */
+    private array $diProviderMap = [
+        WebApplication::class => WebProvider::class,
+        ConsoleApplication::class => ConsoleDiProvider::class
+    ];
+    /**
+     * The user parameters
      */
     private array $params = [];
 

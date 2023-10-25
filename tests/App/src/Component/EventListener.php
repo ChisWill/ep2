@@ -4,15 +4,14 @@ declare(strict_types=1);
 
 namespace Ep\Tests\App\Component;
 
-use Ep\Base\Contract\EventListenerInterface;
 use Ep\Tests\App\Controller\DemoController;
 use Ep\Web\Event\AfterRequest;
 use Ep\Web\Event\BeforeRequest;
 use Ep\Web\Event\EndBody;
 
-final class EventListener implements EventListenerInterface
+final class EventListener
 {
-    public function getListeners(): array
+    public static function getListeners(): array
     {
         return [
             DemoController::class => [

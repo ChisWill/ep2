@@ -9,6 +9,7 @@ use Ep;
 use Ep\Attribute\Inject;
 use Ep\Auth\AuthRepository;
 use Ep\Auth\Method\HttpSession;
+use Ep\Base\Config;
 use Ep\Db\ActiveQuery;
 use Ep\Db\Query;
 use Ep\Helper\Str;
@@ -17,7 +18,7 @@ use Ep\Tests\App\Component\Controller;
 use Ep\Tests\App\Facade\Cache as FacadeCache;
 use Ep\Tests\App\Facade\Logger;
 use Ep\Tests\App\Model\Student;
-use Ep\Tests\Support\Object\Animal\Bird;
+use Ep\Tests\App\Objects\Weapon\Bow;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
@@ -118,9 +119,9 @@ class DemoController extends Controller
             ->andWhere(['class.id' => 3]);
         $result['RawSql'] = $query->getRawSql();
         $user = $query->one();
-        if ($user) {
-            $result['Model Attributes'] = $user->getAttributes();
-        }
+        // if ($user) {
+        //     $result['Model Attributes'] = $user->getAttributes();
+        // }
         $result['Count'] = $query->count();
         $list = $query->asArray()->all();
         $result['All'] = $list;
@@ -321,19 +322,20 @@ class DemoController extends Controller
 
     public function factory(Factory $factory)
     {
-        $bird1 = $factory->create(Bird::class);
+        $bow1 = $factory->create(Bow::class);
 
-        $bird2 = $factory->create(Bird::class);
+        $bow2 = $factory->create(Bow::class);
 
         return $this->json([
-            'ref' => $bird1 === $bird2,
-            'name' => get_class($bird1) === Bird::class,
-            'value' => $bird1->getSpeed() === 30
+            'ref' => $bow1 === $bow2,
+            'name' => get_class($bow1) === Bow::class
         ]);
     }
 
-    public function test()
+    public function test(Config $config)
     {
+        tt($config->params);
+
         return $this->string();
     }
 }

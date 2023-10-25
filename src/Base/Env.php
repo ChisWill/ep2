@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace Ep\Base;
 
-use Ep\Base\Contract\EnvInterface;
 use Dotenv\Dotenv;
 use Dotenv\Repository\RepositoryBuilder;
 use Dotenv\Repository\RepositoryInterface;
 
-final class Env implements EnvInterface
+final class Env
 {
     private RepositoryInterface $repository;
 

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Ep\Web;
 
-use Ep\Base\Contract\DiProviderFactoryInterface;
 use Ep\Base\ErrorHandler;
 use Ep\Web\Middleware\InterceptorMiddleware;
 use Ep\Web\Middleware\RouteMiddleware;
@@ -12,14 +11,13 @@ use HttpSoft\Emitter\Exception\HeadersAlreadySentException;
 use HttpSoft\Emitter\Exception\OutputAlreadySentException;
 use HttpSoft\Emitter\SapiEmitter;
 use HttpSoft\ServerRequest\ServerRequestCreator;
-use Yiisoft\Di\ServiceProviderInterface;
 use Yiisoft\Http\Method;
 use Yiisoft\Session\SessionMiddleware;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-final class Application implements DiProviderFactoryInterface
+final class Application
 {
     public function __construct(
         private ServerRequestCreator $serverRequestCreator,
@@ -83,13 +81,5 @@ final class Application implements DiProviderFactoryInterface
             $response,
             $request->getMethod() === Method::HEAD
         );
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public static function createDiProvider(): ServiceProviderInterface
-    {
-        return new DiProvider();
     }
 }

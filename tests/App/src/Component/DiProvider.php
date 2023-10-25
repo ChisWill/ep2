@@ -9,7 +9,6 @@ namespace Ep\Tests\App\Component;
 use Ep\Base\Config;
 use Ep\Auth\AuthRepository;
 use Ep\Auth\Method\HttpSession;
-use Ep\Base\Contract\EventListenerInterface;
 use Ep\Console\Contract\ErrorRendererInterface as ConsoleErrorRendererInterface;
 use Ep\Base\Contract\InjectorInterface;
 use Ep\Web\Contract\InterceptorInterface;
@@ -22,6 +21,7 @@ use Ep\Tests\Support\Car\Car;
 use Ep\Tests\Support\Car\CarInterface;
 use Ep\Tests\Support\Car\Wheel;
 use Ep\Tests\Support\Car\WheelInterface;
+use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 use Yiisoft\Aliases\Aliases;
 use Yiisoft\Db\Connection\Connection;
@@ -31,6 +31,7 @@ use Yiisoft\Db\Redis\Connection as RedisConnection;
 use Yiisoft\Db\Sqlite\Connection as SqliteConnection;
 use Yiisoft\Db\Sqlite\Driver as SqliteDriver;
 use Yiisoft\Di\ServiceProviderInterface;
+use Yiisoft\EventDispatcher\Provider\ListenerCollection;
 use Yiisoft\Log\Logger;
 use Yiisoft\Log\Target;
 use Yiisoft\Log\Target\File\FileTarget;
@@ -47,7 +48,25 @@ final class DiProvider implements ServiceProviderInterface
     public function getDefinitions(): array
     {
         return [
-            EventListenerInterface::class => EventListener::class,
+            ListenerCollection::class => static function (ContainerInterface $container, InjectorInterface $injector): ListenerCollection {
+                $listenerCollection = new ListenerCollection();
+                foreach (EventListener::getListeners() as $eventName => $listeners) {
+                    foreach ($listeners as $callable) {
+                        $listener =
+                            function (object $event) use ($callable, $container, $injector) {
+                                if (is_array($callable)) {
+                                    $callable = [$container->get($callable[0]), $callable[1]];
+                                }
+                                return $injector->invoke(
+                                    $callable,
+                                    [$event]
+                                );
+                            };
+                        $listenerCollection = $listenerCollection->add($listener, $eventName);
+                    }
+                }
+                return $listenerCollection;
+            },
             WebErrorRendererInterface::class => ErrorRenderer::class,
             ConsoleErrorRendererInterface::class => ConsoleRenderer::class,
             InterceptorInterface::class => Interceptor::class,
